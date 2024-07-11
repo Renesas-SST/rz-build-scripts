@@ -125,6 +125,18 @@ function unpack_bsp(){
     cd ${REN_LOCAL_META} && git checkout ${REN_LOCAL_BRANCH} && rm -rf .git
 }
 
+function setup_meta_chromium() {
+	git clone https://github.com/kraj/meta-clang -b dunfell-clang14
+	git clone https://github.com/OSSystems/meta-browser.git
+	cd meta-browser
+	git checkout e75da7cc83393b174220b808d96f8f05ab7ad4d2
+	cd ../
+	rm -rf meta-openembedded/
+	git clone https://github.com/openembedded/meta-openembedded
+	cd meta-openembedded
+	git checkout 116bfe8d5e5851e7fc5424f40da8691a19c5b5ee
+}
+
 function get_bsp(){
     cd ${RZ_TARGET_DIR}
     git clone ${REN_LOCAL_REPO} ${REN_LOCAL_META}
@@ -157,6 +169,8 @@ function get_bsp(){
     cd ..
 
     git clone https://github.com/LairdCP/meta-summit-radio.git -b lrd-11.39.0.x
+
+    setup_meta_chromium
     echo "---------------------- Download completed --------------------------------------"
 }
 
