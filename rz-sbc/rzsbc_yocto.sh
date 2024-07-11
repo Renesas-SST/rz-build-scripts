@@ -7,7 +7,7 @@ REN_LINUX_BSP_PKG="RTK0EF0045Z0021AZJ-v3.0.5-update1"
 REN_LINUX_BSP_META="rzg_vlp_v3.0.5"
 REN_LOCAL_META="meta-renesas"
 REN_LOCAL_REPO="git@github.com:Renesas-SST/meta-renesas.git"
-REN_LOCAL_BRANCH="rzg2l-sbc-qt-demo-rc1"
+REN_LOCAL_BRANCH="rz-sbc"
 
 # RZ MPU Graphics Library Evaluation Version V1.1.2
 REN_GPU_MALI_LIB_PKG="RTK0EF0045Z13001ZJ-v1.1.2_EN"
