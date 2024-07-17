@@ -1,12 +1,12 @@
 #!/bin/bash
-# Version: Release4
+# Version: RC2
 # -----------------------------Yocto package------------------------------------
 # Make sure that the following packages have been downloaded from the official website
 # RZ/G Verified Linux Package [5.10-CIP] V3.0.5 update1
 REN_LINUX_BSP_PKG="RTK0EF0045Z0021AZJ-v3.0.5-update1"
 REN_LINUX_BSP_META="rzg_vlp_v3.0.5"
 REN_LOCAL_META="meta-renesas"
-REN_LOCAL_REPO="git@github.com:Renesas-SST/meta-renesas.git"
+REN_LOCAL_REPO="https://github.com/Renesas-SST/meta-renesas.git"
 REN_LOCAL_BRANCH="dunfell/rz-sbc"
 
 # RZ MPU Graphics Library Evaluation Version V1.1.2
@@ -126,15 +126,11 @@ function unpack_bsp(){
 }
 
 function setup_meta_chromium() {
-	git clone https://github.com/kraj/meta-clang -b dunfell-clang14
+	git clone https://github.com/kraj/meta-clang -b dunfell-clang12
+
 	git clone https://github.com/OSSystems/meta-browser.git
 	cd meta-browser
-	git checkout e75da7cc83393b174220b808d96f8f05ab7ad4d2
-	cd ../
-	rm -rf meta-openembedded/
-	git clone https://github.com/openembedded/meta-openembedded
-	cd meta-openembedded
-	git checkout 116bfe8d5e5851e7fc5424f40da8691a19c5b5ee
+	git checkout f2d5539552b54099893a7339cbb2ab46b42ee754
 }
 
 function get_bsp(){
