@@ -228,6 +228,11 @@ function build() {
 
     # New style
     TEMPLATECONF=$PWD/meta-renesas/meta-rzg2l/docs/template/conf/rzpi source poky/oe-init-build-env build
+
+    # Copy overrides file as yocto doesnt copy site.conf.sample
+    cp ../meta-renesas/meta-rzg2l/docs/template/conf/rzpi/site.conf.sample conf/site.conf
+
+    # Initiate build
     MACHINE=rzpi bitbake core-image-qt
 
     echo
