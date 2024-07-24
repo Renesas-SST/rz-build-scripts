@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version: RC2
+# Version: Release
 # -----------------------------Yocto package------------------------------------
 # Make sure that the following packages have been downloaded from the official website
 # RZ/G Verified Linux Package [5.10-CIP] V3.0.5 update1
@@ -229,8 +229,21 @@ function build() {
     # New style
     TEMPLATECONF=$PWD/meta-renesas/meta-rzg2l/docs/template/conf/rzpi source poky/oe-init-build-env build
 
-    # Copy overrides file as yocto doesnt copy site.conf.sample
-    cp ../meta-renesas/meta-rzg2l/docs/template/conf/rzpi/site.conf.sample conf/site.conf
+    # Check local overrides file
+    if [ ! -e "$WORKSPACE/site.conf" ]; then
+        echo "Local site.conf file not present in this workspace ($WORKSPACE). Please prepare one!"
+        exit
+    fi
+
+    # Copy local overrides file to yocto build conf folder
+    cp ${WORKSPACE}/site.conf conf/site.conf
+
+    # Read and store revision from site.conf
+    site_file="conf/site.conf"
+    revision_value=$(grep '^SRCREV_pn-linux-renesas =' "$site_file" | cut -d '=' -f2)
+    revision_value=$(echo "$revision_value" | sed 's/"//g')
+
+    echo "This build is based on release tag:$revision_value"
 
     # Initiate build
     MACHINE=rzpi bitbake core-image-qt
