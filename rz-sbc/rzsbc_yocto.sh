@@ -37,9 +37,11 @@ function guideline() {
     echo ""
     echo "========="
     echo "Build yocto"
-    echo " ./rzsbc_yocto.sh build <target_dir>"
-    echo ""
+    echo " ./rzsbc_yocto.sh <target_build> <target_dir>"
     echo "--------------------------"
+    echo " - <target_build>: the build options. It can be an image build (1) or a SDK build (2) as follows"
+    echo "     1. build"
+    echo "     2. build-sdk"
     echo " - <target_dir>: the build directory"
     echo "     If not set <target_dir>: current directory will be selected"
     echo "------------------------------------------------------------"
@@ -212,6 +214,43 @@ function setup() {
     echo "========================================================================="
 }
 
+# Main build-sdk
+function build-sdk() {
+    setup $1
+
+    # Build RZ
+    cd ${RZ_TARGET_DIR}
+    echo "In yocto. pwd = ${PWD}"
+    #source poky/oe-init-build-env
+    echo "Env setup completed. pwd = ${PWD}"
+
+    # Legacy style
+    #cp ../meta-renesas/docs/template/conf/rzpi/* conf/
+    #bitbake core-image-qt
+
+    # New style
+    TEMPLATECONF=$PWD/meta-renesas/meta-rzg2l/docs/template/conf/rzpi source poky/oe-init-build-env build
+
+    # if targe directory is not present, we have to build common before building sdk.
+    if [ ! -d "${RZ_TARGET_DIR}/build/tmp/deploy/images" ];then
+        echo "This SDK build will start from scratch."
+        # Copy overrides file as yocto doesnt copy site.conf.sample
+        cp ../meta-renesas/meta-rzg2l/docs/template/conf/rzpi/site.conf.sample conf/site.conf
+        # Initiate build
+        MACHINE=rzpi bitbake core-image-qt
+        #Initiate build sdk
+        MACHINE=rzpi bitbake core-image-qt -c populate_sdk
+    else
+        #Initiate build sdk
+        MACHINE=rzpi bitbake core-image-qt -c populate_sdk
+    fi
+    echo
+    echo "Finished the rz yocto sdk build for RZ SBC board"
+    echo "========================================================================"
+
+    #output
+}
+
 # Main build
 function build() {
     setup $1
@@ -288,6 +327,8 @@ if [ ! -n "$1" ] ; then
 else
     if [ $1 = "build" ]; then
         build $2
+    elif [ $1 = "build-sdk" ]; then
+        build-sdk $2
     else
         guideline
     fi
