@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version: RC2
+# Version: Default
 # -----------------------------Yocto package------------------------------------
 # Make sure that the following packages have been downloaded from the official website
 # RZ/G Verified Linux Package [5.10-CIP] V3.0.5 update1
@@ -192,6 +192,31 @@ function unpack_codec(){
     rm -fr ${zip_dir}
 }
 
+function setup_conf(){
+    # Build RZ
+    cd ${RZ_TARGET_DIR}
+    echo "In yocto. pwd = ${PWD}"
+    #source poky/oe-init-build-env
+    echo "Env setup completed. pwd = ${PWD}"
+
+    # Legacy style
+    #cp ../meta-renesas/docs/template/conf/rzpi/* conf/
+    #bitbake core-image-qt
+
+    # New style
+    TEMPLATECONF=$PWD/meta-renesas/meta-rzg2l/docs/template/conf/rzpi source poky/oe-init-build-env build
+
+    # Copy overrides file as yocto doesnt copy site.conf.sample
+    cp ../meta-renesas/meta-rzg2l/docs/template/conf/rzpi/site.conf.sample conf/site.conf
+
+    # Read and store revision from site.conf
+    site_file="conf/site.conf"
+    revision_value=$(grep '^SRCREV_pn-linux-renesas =' "$site_file" | cut -d '=' -f2)
+    revision_value=$(echo "$revision_value" | sed 's/"//g')
+
+    echo "This build is based on release tag:$revision_value"
+}
+
 # Main setup
 function setup() {
     # Check and note down directory locations
@@ -218,32 +243,16 @@ function setup() {
 function build-sdk() {
     setup $1
 
-    # Build RZ
-    cd ${RZ_TARGET_DIR}
-    echo "In yocto. pwd = ${PWD}"
-    #source poky/oe-init-build-env
-    echo "Env setup completed. pwd = ${PWD}"
-
-    # Legacy style
-    #cp ../meta-renesas/docs/template/conf/rzpi/* conf/
-    #bitbake core-image-qt
-
-    # New style
-    TEMPLATECONF=$PWD/meta-renesas/meta-rzg2l/docs/template/conf/rzpi source poky/oe-init-build-env build
+    setup_conf
 
     # if targe directory is not present, we have to build common before building sdk.
     if [ ! -d "${RZ_TARGET_DIR}/build/tmp/deploy/images" ];then
         echo "This SDK build will start from scratch."
-        # Copy overrides file as yocto doesnt copy site.conf.sample
-        cp ../meta-renesas/meta-rzg2l/docs/template/conf/rzpi/site.conf.sample conf/site.conf
-        # Initiate build
-        MACHINE=rzpi bitbake core-image-qt
-        #Initiate build sdk
-        MACHINE=rzpi bitbake core-image-qt -c populate_sdk
-    else
-        #Initiate build sdk
-        MACHINE=rzpi bitbake core-image-qt -c populate_sdk
     fi
+
+    #Initiate build sdk
+    MACHINE=rzpi bitbake core-image-qt -c populate_sdk
+
     echo
     echo "Finished the rz yocto sdk build for RZ SBC board"
     echo "========================================================================"
@@ -255,21 +264,7 @@ function build-sdk() {
 function build() {
     setup $1
 
-    # Build RZ
-    cd ${RZ_TARGET_DIR}
-    echo "In yocto. pwd = ${PWD}"
-    #source poky/oe-init-build-env
-    echo "Env setup completed. pwd = ${PWD}"
-
-    # Legacy style
-    #cp ../meta-renesas/docs/template/conf/rzpi/* conf/
-    #bitbake core-image-qt
-
-    # New style
-    TEMPLATECONF=$PWD/meta-renesas/meta-rzg2l/docs/template/conf/rzpi source poky/oe-init-build-env build
-
-    # Copy overrides file as yocto doesnt copy site.conf.sample
-    cp ../meta-renesas/meta-rzg2l/docs/template/conf/rzpi/site.conf.sample conf/site.conf
+    setup_conf
 
     # Initiate build
     MACHINE=rzpi bitbake core-image-qt
