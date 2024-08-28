@@ -29,7 +29,7 @@ LSB_REL_OK="20.04"
 
 # Guidance
 # Currently, this script supports for RZ SBC board
-function guideline() {
+guideline() {
     echo "------------------------------------------------------------"
     echo "Syntax Error!!!"
     echo "How to use script:"
@@ -47,7 +47,7 @@ function guideline() {
     echo "------------------------------------------------------------"
 }
 
-function check_and_set_dir() {
+check_and_set_dir() {
     if [ -n "$1" ]; then
         TARGET_DIR=$1
         if [ ! -d "$TARGET_DIR" ]; then
@@ -62,12 +62,12 @@ function check_and_set_dir() {
 
 }
 
-function log_error(){
+log_error(){
     local string=$1
     echo -ne "\e[31m $string \e[0m\n"
 }
 
-function check_pkg_require(){
+check_pkg_require(){
     # check required pacakages are downloaded from Renesas website and local package
     local check=0
 
@@ -100,7 +100,7 @@ function check_pkg_require(){
     [ ${check} -ne 0 ] && echo "Package check failed. Fix erros and copy dependencies here." && exit
 }
 
-function extract_to_meta(){
+extract_to_meta(){
     local zipfile=$1
     local tarfile=$2
     local tardir=$3
@@ -112,7 +112,7 @@ function extract_to_meta(){
     sync
 }
 
-function unpack_bsp(){
+unpack_bsp(){
     local pkg_file=${WORKSPACE}/${REN_LINUX_BSP_PKG}${SUFFIX_ZIP}
     local zip_dir=${REN_LINUX_BSP_PKG}
 
@@ -127,7 +127,7 @@ function unpack_bsp(){
     cd ${REN_LOCAL_META} && git checkout ${REN_LOCAL_BRANCH} && rm -rf .git
 }
 
-function setup_meta_chromium() {
+setup_meta_chromium() {
 	git clone https://github.com/kraj/meta-clang -b dunfell-clang12
 
 	git clone https://github.com/OSSystems/meta-browser.git
@@ -135,7 +135,7 @@ function setup_meta_chromium() {
 	git checkout f2d5539552b54099893a7339cbb2ab46b42ee754
 }
 
-function get_bsp(){
+get_bsp(){
     cd ${RZ_TARGET_DIR}
     git clone ${REN_LOCAL_REPO} ${REN_LOCAL_META}
     cd ${REN_LOCAL_META} && git checkout ${REN_LOCAL_BRANCH}
@@ -172,7 +172,7 @@ function get_bsp(){
     echo "---------------------- Download completed --------------------------------------"
 }
 
-function unpack_gpu(){
+unpack_gpu(){
     local pkg_file=${WORKSPACE}/${REN_GPU_MALI_LIB_PKG}${SUFFIX_ZIP}
     local zip_dir=${REN_GPU_MALI_LIB_PKG}
 
@@ -182,7 +182,7 @@ function unpack_gpu(){
     rm -fr ${zip_dir}
 }
 
-function unpack_codec(){
+unpack_codec(){
     local pkg_file=${WORKSPACE}/${REN_VEDIO_CODEC_LIB_PKG}${SUFFIX_ZIP}
     local zip_dir=${REN_VEDIO_CODEC_LIB_PKG}
 
@@ -192,7 +192,7 @@ function unpack_codec(){
     rm -fr ${zip_dir}
 }
 
-function setup_conf(){
+setup_conf(){
     # Build RZ
     cd ${RZ_TARGET_DIR}
     echo "In yocto. pwd = ${PWD}"
@@ -204,7 +204,7 @@ function setup_conf(){
     #bitbake core-image-qt
 
     # New style
-    TEMPLATECONF=$PWD/meta-renesas/meta-rzg2l/docs/template/conf/rzpi source poky/oe-init-build-env build
+    TEMPLATECONF=$PWD/meta-renesas/meta-rzg2l/docs/template/conf/rzpi . ./poky/oe-init-build-env build
 
     # Copy overrides file as yocto doesnt copy site.conf.sample
     cp ../meta-renesas/meta-rzg2l/docs/template/conf/rzpi/site.conf.sample conf/site.conf
@@ -218,7 +218,7 @@ function setup_conf(){
 }
 
 # Main setup
-function setup() {
+setup() {
     # Check and note down directory locations
     check_and_set_dir $1
     # if targe directory is not present, we have to create and unpack the contents.
@@ -240,7 +240,7 @@ function setup() {
 }
 
 # Main build-sdk
-function build-sdk() {
+build_sdk() {
     setup $1
 
     setup_conf
@@ -261,7 +261,7 @@ function build-sdk() {
 }
 
 # Main build
-function build() {
+build() {
     setup $1
 
     setup_conf
@@ -277,7 +277,7 @@ function build() {
 }
 
 # Main output
-function output() {
+output() {
     export OUTPUT=${WORKSPACE}/output
 
     if [ ! -d ${OUTPUT} ];then
@@ -310,7 +310,7 @@ else
     if [ $1 = "build" ]; then
         build $2
     elif [ $1 = "build-sdk" ]; then
-        build-sdk $2
+        build_sdk $2
     else
         guideline
     fi
