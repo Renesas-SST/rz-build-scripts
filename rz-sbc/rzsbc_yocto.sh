@@ -167,6 +167,10 @@ function get_bsp(){
     cd ..
 
     git clone https://github.com/LairdCP/meta-summit-radio.git -b lrd-11.39.0.x
+    # Add patch for meta-summit-radio to support eSDK build
+    cd meta-summit-radio
+    git apply ${WORKSPACE}/0001-rzsbc-summit-radio-pre-3.4-support-eSDK-build.patch
+    cd ..
 
     setup_meta_chromium
     echo "---------------------- Download completed --------------------------------------"
@@ -232,7 +236,7 @@ function setup() {
         check_pkg_require
         mkdir -p ${RZ_TARGET_DIR}
         #unpack_bsp
-	get_bsp
+        get_bsp
         unpack_gpu
         unpack_codec
     else
@@ -257,7 +261,7 @@ function build-sdk() {
     fi
 
     #Initiate build sdk
-    MACHINE=rzpi bitbake core-image-qt -c populate_sdk
+    MACHINE=rzpi bitbake core-image-qt -c populate_sdk_ext
 
     echo
     echo "Finished the rz yocto sdk build for RZ SBC board"
