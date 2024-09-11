@@ -17,6 +17,9 @@ REN_GPU_MALI_LIB_META_FEATURE="meta-rz-features_graphics_v1.1.2"
 REN_VEDIO_CODEC_LIB_PKG="RTK0EF0045Z15001ZJ-v1.1.0_EN"
 REN_VEDIO_CODEC_LIB_META_FEATURE="meta-rz-features_codec_v1.1.0"
 
+patch_list=("0001-meta-classes-esdk-explicitly-address-the-location-of.patch"
+            "0001-rzsbc-summit-radio-pre-3.4-support-eSDK-build.patch")
+
 SUFFIX_ZIP=".zip"
 SUFFIX_TAR=".tar.gz"
 
@@ -100,6 +103,17 @@ check_pkg_require(){
     [ ${check} -ne 0 ] && echo "Package check failed. Fix erros and copy dependencies here." && exit
 }
 
+check_patch_require(){
+    echo "Checking patch dependencies..."
+    for patch in "${patch_list[@]}"; do
+        if [ ! -e "${WORKSPACE}/${patch}" ]; then
+	    echo "Patch ${patch} not present in this workspace ($WORKSPACE)."
+	    echo "This patch is essential for the build. Please check!"
+	    exit
+        fi
+    done
+}
+
 extract_to_meta(){
     local zipfile=$1
     local tarfile=$2
@@ -144,6 +158,7 @@ get_bsp(){
     git clone https://git.yoctoproject.org/git/poky
     cd poky
     git checkout dunfell-23.0.26
+    git apply ${WORKSPACE}/0001-meta-classes-esdk-explicitly-address-the-location-of.patch
     cd ..
 
     git clone https://github.com/openembedded/meta-openembedded
@@ -234,6 +249,7 @@ setup() {
     # if targe directory is not present, we have to create and unpack the contents.
     if [ ! -d ${RZ_TARGET_DIR} ];then
         check_pkg_require
+        check_patch_require
         mkdir -p ${RZ_TARGET_DIR}
         #unpack_bsp
         get_bsp
