@@ -342,6 +342,7 @@ build_sdk() {
     echo "Finished the rz yocto sdk build for RZ SBC board"
     echo "========================================================================"
 
+    deploy_build_assets
     #output
 }
 
@@ -358,7 +359,25 @@ build() {
     echo "Finished the rz yocto build for RZ SBC board"
     echo "========================================================================"
 
+    deploy_build_assets
     #output
+}
+
+deploy_build_assets() {
+    local target_dir="${RZ_TARGET_DIR}/build/tmp/deploy/images/rzpi/host/src"
+
+    # Check if the src directory already exists
+    if [ ! -d ${target_dir} ];then
+        mkdir -p ${target_dir}
+    fi
+
+    # Copy build assets to the src directory
+    cp "${PATCH_FILE}" "$target_dir"
+    cp "${JQ}" "$target_dir"
+    cp -r "${TOP_DIR}/patches" "$target_dir"
+    cp "${TOP_DIR}/rzsbc_yocto.sh" "$target_dir"
+    cp "${TOP_DIR}/site.conf" "$target_dir"
+    cp "${TOP_DIR}/../README.md" "$target_dir"
 }
 
 # Main output
