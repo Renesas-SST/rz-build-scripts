@@ -22,6 +22,11 @@ SUFFIX_TAR=".tar.gz"
 
 LSB_ID_OK="Ubuntu"
 LSB_REL_OK="20.04"
+
+TOP_DIR=`pwd`
+JQ="$TOP_DIR/jq-linux-amd64"
+PATCH_FILE="$TOP_DIR/git_patch.json"
+
 # ------------------------------------------------------------------------------
 
 # -----------------------------Global variable------------------------------------
@@ -45,6 +50,45 @@ guideline() {
     echo " - <target_dir>: the build directory"
     echo "     If not set <target_dir>: current directory will be selected"
     echo "------------------------------------------------------------"
+}
+
+apply_patches() {
+    local key="$1"
+    local target_dir="$2"
+
+    echo "Applying patches for key: $key in directory: $target_dir"
+
+    # Get the list of patches from the JSON file
+    local patch_list
+    patch_list=$("${JQ}" -r ".${key}[]" "$PATCH_FILE")
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to parse JSON file."
+        exit 1
+    fi
+
+    # Check if the patch list is empty or null
+    if [ -z "$patch_list" ]; then
+        echo "No patches to apply for key: $key"
+        return 0
+    fi
+
+    echo "Patch list: $patch_list"  # Debugging line
+
+    # Apply each patch
+    while IFS= read -r local_patch; do
+        # Remove any leading/trailing whitespace from patch file names
+        local_patch=$(echo "$local_patch" | xargs)
+        if [ -f "$TOP_DIR/$local_patch" ]; then
+            echo "Applying local patch: $TOP_DIR/$local_patch"
+            echo $PWD
+            git apply "$TOP_DIR/$local_patch"
+            if [ $? -ne 0 ]; then
+                echo "Error: Failed to apply patch $TOP_DIR/$local_patch."
+                exit 1
+            fi
+        fi
+
+    done <<< "$patch_list"
 }
 
 check_and_set_dir() {
@@ -76,7 +120,7 @@ check_pkg_require(){
     lsb_rel=`lsb_release -r | cut -f2`
 
     if [ ${lsb_id} != ${LSB_ID_OK} ] || [ ${lsb_rel} != ${LSB_REL_OK} ]; then
-    	echo "Only known working OS is ${LSB_OK}. Kindly ensure this script is run on a supported OS or docker container"
+        echo "Only known working OS is ${LSB_OK}. Kindly ensure this script is run on a supported OS or docker container"
         exit 0
     fi
 
@@ -97,7 +141,27 @@ check_pkg_require(){
         check=3
     fi
 
-    [ ${check} -ne 0 ] && echo "Package check failed. Fix erros and copy dependencies here." && exit
+    [ ${check} -ne 0 ] && echo "Package check failed. Fix errors and copy dependencies here." && exit
+}
+
+check_patch_require() {
+    echo "Checking patch dependencies..."
+
+    # Extract all patch paths from the JSON file and ignore empty entries
+    local patch_list
+    patch_list=$("${JQ}" -r '.[] | .[]' "$PATCH_FILE")
+
+    # Check if each patch file exists
+    for patch_path in $patch_list; do
+        if [ -n "$patch_path" ]; then
+            echo "Checking patch: $patch_path"
+            if [ ! -e "${WORKSPACE}/${patch_path}" ]; then
+                echo "Error: Patch ${patch_path} is not present in this workspace (${WORKSPACE}/${patch_path})."
+                echo "This patch is essential for the build. Please check!"
+                exit 1
+            fi
+        fi
+    done
 }
 
 extract_to_meta(){
@@ -128,14 +192,18 @@ unpack_bsp(){
 }
 
 setup_meta_chromium() {
-	git clone https://github.com/kraj/meta-clang -b dunfell-clang12
+    git clone https://github.com/kraj/meta-clang -b dunfell-clang12
+    cd meta-clang
+    apply_patches "clang"
+    cd ..
 
-	git clone https://github.com/OSSystems/meta-browser.git
-	cd meta-browser
-	git checkout f2d5539552b54099893a7339cbb2ab46b42ee754
+    git clone https://github.com/OSSystems/meta-browser.git
+    cd meta-browser
+    git checkout f2d5539552b54099893a7339cbb2ab46b42ee754
+    apply_patches "browser"
 }
 
-get_bsp(){
+get_bsp() {
     cd ${RZ_TARGET_DIR}
     git clone ${REN_LOCAL_REPO} ${REN_LOCAL_META}
     cd ${REN_LOCAL_META} && git checkout ${REN_LOCAL_BRANCH}
@@ -144,35 +212,44 @@ get_bsp(){
     git clone https://git.yoctoproject.org/git/poky
     cd poky
     git checkout dunfell-23.0.26
+    apply_patches "poky"
     cd ..
 
     git clone https://github.com/openembedded/meta-openembedded
     cd meta-openembedded
     git checkout 6334241447e461f849035c47f071fa4a2125fee1
+    apply_patches "openembedded"
     cd ..
 
     git clone https://git.yoctoproject.org/git/meta-gplv2
     cd meta-gplv2
     git checkout 60b251c25ba87e946a0ca4cdc8d17b1cb09292ac
+    apply_patches "gplv2"
     cd ..
 
     git clone https://github.com/meta-qt5/meta-qt5.git
     cd meta-qt5
     git checkout -b tmp c1b0c9f546289b1592d7a895640de103723a0305
+    apply_patches "qt5"
     cd ..
 
     git clone https://git.yoctoproject.org/git/meta-virtualization
     cd meta-virtualization
     git checkout 521459bf588435e847d981657485bae8d6f003b5
+    apply_patches "virtualization"
     cd ..
 
     git clone https://github.com/LairdCP/meta-summit-radio.git -b lrd-11.39.0.x
+    # Add patch for meta-summit-radio to support eSDK build
+    cd meta-summit-radio
+    apply_patches summit
+    cd ..
 
     setup_meta_chromium
     echo "---------------------- Download completed --------------------------------------"
 }
 
-unpack_gpu(){
+unpack_gpu() {
     local pkg_file=${WORKSPACE}/${REN_GPU_MALI_LIB_PKG}${SUFFIX_ZIP}
     local zip_dir=${REN_GPU_MALI_LIB_PKG}
 
@@ -182,7 +259,7 @@ unpack_gpu(){
     rm -fr ${zip_dir}
 }
 
-unpack_codec(){
+unpack_codec() {
     local pkg_file=${WORKSPACE}/${REN_VEDIO_CODEC_LIB_PKG}${SUFFIX_ZIP}
     local zip_dir=${REN_VEDIO_CODEC_LIB_PKG}
 
@@ -209,12 +286,7 @@ setup_conf(){
     # Copy overrides file as yocto doesnt copy site.conf.sample
     cp ../meta-renesas/meta-rzg2l/docs/template/conf/rzpi/site.conf.sample conf/site.conf
 
-    # Read and store revision from site.conf
-    site_file="conf/site.conf"
-    revision_value=$(grep '^SRCREV_pn-linux-renesas =' "$site_file" | cut -d '=' -f2)
-    revision_value=$(echo "$revision_value" | sed 's/"//g')
-
-    echo "This build is based on release tag:$revision_value"
+    echo "This build is a common build for rzsbc. It is not based on any release tag."
 }
 
 # Main setup
@@ -224,9 +296,10 @@ setup() {
     # if targe directory is not present, we have to create and unpack the contents.
     if [ ! -d ${RZ_TARGET_DIR} ];then
         check_pkg_require
+	check_patch_require
         mkdir -p ${RZ_TARGET_DIR}
         #unpack_bsp
-	get_bsp
+        get_bsp
         unpack_gpu
         unpack_codec
     else
@@ -251,12 +324,13 @@ build_sdk() {
     fi
 
     #Initiate build sdk
-    MACHINE=rzpi bitbake core-image-qt -c populate_sdk
+    MACHINE=rzpi bitbake core-image-qt -c populate_sdk_ext
 
     echo
     echo "Finished the rz yocto sdk build for RZ SBC board"
     echo "========================================================================"
 
+    deploy_build_assets
     #output
 }
 
@@ -273,7 +347,25 @@ build() {
     echo "Finished the rz yocto build for RZ SBC board"
     echo "========================================================================"
 
+    deploy_build_assets
     #output
+}
+
+deploy_build_assets() {
+    local target_dir="${RZ_TARGET_DIR}/build/tmp/deploy/images/rzpi/host/src"
+
+    # Check if the src directory already exists
+    if [ ! -d ${target_dir} ];then
+        mkdir -p ${target_dir}
+    fi
+
+    # Copy build assets to the src directory
+    cp "${PATCH_FILE}" "$target_dir"
+    cp "${JQ}" "$target_dir"
+    cp -r "${TOP_DIR}/patches" "$target_dir"
+    cp "${TOP_DIR}/rzsbc_yocto.sh" "$target_dir"
+    cp "${TOP_DIR}/site.conf" "$target_dir"
+    cp "${TOP_DIR}/../README.md" "$target_dir"
 }
 
 # Main output
@@ -304,6 +396,8 @@ output() {
 }
 
 # Main process
+echo "PWD=${TOP_DIR}"
+echo "Jquerry = ${JQ}"
 if [ ! -n "$1" ] ; then
     guideline
 else
