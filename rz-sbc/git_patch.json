@@ -1,13 +1,78 @@
 {
-	"poky": ["patches/0001-meta-classes-esdk-explicitly-address-the-location-of.patch"],
-	"summit":["patches/0001-rzsbc-summit-radio-pre-3.4-support-eSDK-build.patch"],
-	"qt5":[""],
-	"clang":[""],
-	"openembedded":[""],
-	"rz-features":[""],
-	"virtualization":[""],
-	"browser":[""],
-	"gplv2":[""],
-	"git": [""]
+	"poky": {
+		"url": "https://git.yoctoproject.org/git/poky",
+		"branch": "",
+		"tag": "dunfell-23.0.26",
+		"commit": "",
+		"patches": ["patches/poky/0001-meta-classes-esdk-explicitly-address-the-location-of.patch"],
+		"type": "git"
+	},
+	"meta-summit-radio": {
+		"url": "https://github.com/LairdCP/meta-summit-radio.git",
+		"branch": "lrd-11.39.0.x",
+		"tag": "",
+		"commit": "",
+		"patches": ["patches/meta-summit-radio/0001-rzsbc-summit-radio-pre-3.4-support-eSDK-build.patch"],
+		"type": "git"
+	},
+	"meta-renesas": {
+		"url": "https://github.com/Renesas-SST/meta-renesas.git",
+		"branch": "dunfell/rz-sbc",
+		"tag": "",
+		"commit": "",
+		"patches": [],
+		"type": "git"
+	},
+	"meta-qt5": {
+		"url": "https://github.com/meta-qt5/meta-qt5.git",
+		"branch": "",
+		"tag": "",
+		"commit": "c1b0c9f546289b1592d7a895640de103723a0305",
+		"patches": [],
+		"type": "git"
+	},
+	"meta-openembedded": {
+		"url": "https://github.com/openembedded/meta-openembedded",
+		"branch": "",
+		"tag": "",
+		"commit": "6334241447e461f849035c47f071fa4a2125fee1",
+		"patches": [],
+		"type": "git"
+	},
+	"meta-virtualization": {
+		"url": "https://git.yoctoproject.org/git/meta-virtualization",
+		"branch": "",
+		"tag": "",
+		"commit": "521459bf588435e847d981657485bae8d6f003b5",
+		"patches": [],
+		"type": "git"
+	},
+	"meta-gplv2": {
+		"url": "https://git.yoctoproject.org/git/meta-gplv2",
+		"branch": "",
+		"tag": "",
+		"commit": "60b251c25ba87e946a0ca4cdc8d17b1cb09292ac",
+		"patches": [],
+		"type": "git"
+	},
+	"meta-clang": {
+		"url": "https://github.com/kraj/meta-clang",
+		"branch": "dunfell-clang12",
+		"tag": "",
+		"commit": "",
+		"patches": [],
+		"type": "git"
+	},
+	"meta-browser": {
+		"url": "https://github.com/OSSystems/meta-browser.git",
+		"branch": "",
+		"tag": "",
+		"commit": "f2d5539552b54099893a7339cbb2ab46b42ee754",
+		"patches": [],
+		"type": "git"
+	},
+	"meta-rz-features": {
+		"patches": [],
+		"type": "local"
+	}
 }
-

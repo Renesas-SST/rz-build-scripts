@@ -8,6 +8,7 @@ This directory holds the automated build scripts that perform the rz yocto repos
 .
 ├── git_patch.json
 ├── jq-linux-amd64
+├── README.md
 ├── patches
 │   ├── 0001-meta-classes-esdk-explicitly-address-the-location-of.patch
 │   └── 0001-rzsbc-summit-radio-pre-3.4-support-eSDK-build.patch
@@ -22,11 +23,33 @@ This directory holds the automated build scripts that perform the rz yocto repos
 
 | File           | Description                                                                                                                                       |
 |----------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
-| git_patch.json | contains json keys and list of patchfiles to apply.                                                                                               |
+| git_patch.json | contains json keys and repository configuration such as: url, branch, tag, commit, repo type and patch paths to apply.                                                                                                |
 | jq-linux-amd64 | json querry oss binary to perform reads of git_patch.json from shell script.                                                                      |
 | patches/       | folder containing patches. This should ideally be organized into sub directories named after the json key.                                        |
 | rzsbc_yocto.sh | main build script that performs setup, configure and build operations.                                                                            |
 | site.conf      | An over-riding site.conf. This file is used as an override and replaces the default site.conf from the meta template. This is to force specific tags or commits in the build.|
+| README.md      | This document. This document provides an overview of the rz-sbc build package. It serves as a guide for users to understand how to set up and execute the Yocto build process, as well as how to manage and utilize the build artifacts and patches.|
+
+## Managing Repositories and Applying Patches
+
+In the `git_patch.json` file, you will find a list of repositories, their branches or tags, and any patches that need to be applied. This section will guide you through how to use this information for successful builds.
+
+### Repository Information
+The `git_patch.json` contains the following fields for each repository:
+
+- url: The URL to clone the repository.
+- branch/tag/commit: Specifies the branch, tag, or commit to check out.
+- patches: Lists the patches that need to be applied to this repository.
+- type: Defines whether the repository is hosted remotely (e.g., "git") or is local (e.g., "local").
+
+### Note
+
+When checking out a repository, the order of priority is:
+
+- First, it will look for a tag.
+- If no tag is specified, it will check for a commit.
+- If neither a tag nor a commit is found, it will look for a branch.
+- If none of these are found, it will use the default branch if the layer is not already present. If the layer exists, it will leave the existing folder unchanged.
 
 ## Yocto Build
 
@@ -46,11 +69,11 @@ To perform yocto build with all RZ SOc's IP's functioning, you will need to down
 > Please ensure that you are making this build in an ubuntu 20.04 OS environment through docker/VM/native-OS installations.
 
 Once you download the packages, place the zip files here.
-Then rerun the build script and it will take ov everythig else.
+Then rerun the build script and it will take care of everything else.
 
 ## Build output
 
-The final output within your yocto build directory will be under `tmp/deploy/images/rzpi/`. If the default location is chosen and no arguements are passed to the script beyond `build`; the images are under `yocto_rzsbc_board/build/tmp/deploy/images/rzpi/`.
+The final output within your yocto build directory will be under `tmp/deploy/images/rzpi/`. If the default location is chosen and no arguments are passed to the script beyond `build`; the images are under `yocto_rzsbc_board/build/tmp/deploy/images/rzpi/`.
 
 ```
 .
@@ -64,6 +87,7 @@ The final output within your yocto build directory will be under `tmp/deploy/ima
 │   ├── src
 │   │   ├── git_patch.json
 │   │   ├── jq-linux-amd64
+│   │   ├── README.md
 │   │   ├── patches
 │   │   │   ├── 0001-meta-classes-esdk-explicitly-address-the-location-of.patch
 │   │   │   └── 0001-rzsbc-summit-radio-pre-3.4-support-eSDK-build.patch
@@ -169,7 +193,7 @@ The final output within your yocto build directory will be under `tmp/deploy/ima
     │       └── Readme.md
     └── Readme.md
 
-25 directories, 90 files
+25 directories, 91 files
 ```
 ## User Manual
 
