@@ -21,18 +21,19 @@ The build script includes functionality to detect and apply new patches as they 
 ## Hierarchy
 
 ```
-.
 ├── README.md
 └── rz-sbc
     ├── git_patch.json
     ├── jq-linux-amd64
     ├── patches
-    │   ├── 0001-meta-classes-esdk-explicitly-address-the-location-of.patch
-    │   └── 0001-rzsbc-summit-radio-pre-3.4-support-eSDK-build.patch
+    │   ├── meta-summit-radio
+    │   │   └── 0001-rzsbc-summit-radio-pre-3.4-support-eSDK-build.patch
+    │   └── poky
+    │       └── 0001-meta-classes-esdk-explicitly-address-the-location-of.patch
+    ├── README.md
     ├── rzsbc_yocto.sh
     └── site.conf
 
-3 directories, 7 files
-
+4 directories, 8 files
 ```
 

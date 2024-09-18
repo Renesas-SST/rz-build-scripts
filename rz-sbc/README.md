@@ -8,14 +8,16 @@ This directory holds the automated build scripts that perform the rz yocto repos
 .
 ├── git_patch.json
 ├── jq-linux-amd64
-├── README.md
 ├── patches
-│   ├── 0001-meta-classes-esdk-explicitly-address-the-location-of.patch
-│   └── 0001-rzsbc-summit-radio-pre-3.4-support-eSDK-build.patch
+│   ├── meta-summit-radio
+│   │   └── 0001-rzsbc-summit-radio-pre-3.4-support-eSDK-build.patch
+│   └── poky
+│       └── 0001-meta-classes-esdk-explicitly-address-the-location-of.patch
+├── README.md
 ├── rzsbc_yocto.sh
 └── site.conf
 
-2 directories, 6 files
+3 directories, 7 files
 
 ``` 
 
