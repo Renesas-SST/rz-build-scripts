@@ -85,14 +85,19 @@ The final output within your yocto build directory will be under `tmp/deploy/ima
 │   │   ├── core-image-qt-rzpi-20240914083354.testdata.json
 │   │   ├── core-image-qt-rzpi.manifest -> core-image-qt-rzpi-20240914083354.rootfs.manifest
 │   │   └── core-image-qt-rzpi.testdata.json -> core-image-qt-rzpi-20240914083354.testdata.json
+│   ├── env
+│   │   ├── core-image-qt.env
+│   │   └── Readme.md
 │   ├── Readme.md
 │   ├── src
 │   │   ├── git_patch.json
 │   │   ├── jq-linux-amd64
 │   │   ├── README.md
 │   │   ├── patches
-│   │   │   ├── 0001-meta-classes-esdk-explicitly-address-the-location-of.patch
-│   │   │   └── 0001-rzsbc-summit-radio-pre-3.4-support-eSDK-build.patch
+│   │   │   ├── meta-summit-radio
+│   │   │   │   └── 0001-rzsbc-summit-radio-pre-3.4-support-eSDK-build.patch
+│   │   │   └── poky
+│   │   │       └── 0001-meta-classes-esdk-explicitly-address-the-location-of.patch
 │   │   ├── rzsbc_yocto.sh
 │   │   └── site.conf
 │   └── tools
@@ -165,7 +170,6 @@ The final output within your yocto build directory will be under `tmp/deploy/ima
 ├── RZG2L-SBC_Evaluation_license.pdf
 └── target
     ├── env
-    │   ├── core-image-qt.env
     │   ├── Readme.md
     │   └── uEnv.txt
     ├── images
@@ -195,7 +199,7 @@ The final output within your yocto build directory will be under `tmp/deploy/ima
     │       └── Readme.md
     └── Readme.md
 
-25 directories, 91 files
+28 directories, 92 files
 ```
 ## User Manual
 
