@@ -489,10 +489,23 @@ setup_conf(){
     # New style
     TEMPLATECONF=$PWD/meta-renesas/meta-rzg2l/docs/template/conf/rzpi . ./poky/oe-init-build-env build
 
-    # Copy overrides file as yocto doesnt copy site.conf.sample
-    cp ../meta-renesas/meta-rzg2l/docs/template/conf/rzpi/site.conf.sample conf/site.conf
+    # Check local overrides file
+    if [ ! -e "$WORKSPACE/site.conf" ]; then
+        echo "Local site.conf file not present in this workspace ($WORKSPACE). Assuming developer default build!"
+        # Copy default template overrides file as yocto doesnt copy site.conf.sample
+        cp ../meta-renesas/meta-rzg2l/docs/template/conf/rzpi/site.conf.sample conf/site.conf
+        echo "This build is a common build for rzsbc. It is not based on any release tag."
+    else
+        # Copy local overrides file to yocto build conf folder
+        cp ${WORKSPACE}/site.conf conf/site.conf
+        # Read and store revision from site.conf
+        site_file="conf/site.conf"
+        revision_value=$(grep '^SRCREV_pn-linux-renesas =' "$site_file" | cut -d '=' -f2)
+        revision_value=$(echo "$revision_value" | sed 's/"//g')
+        echo "This build is based on release tag:$revision_value"
+    fi
 
-    echo "This build is a common build for rzsbc. It is not based on any release tag."
+
 }
 
 # Main setup
@@ -579,6 +592,9 @@ deploy_build_assets() {
     cp "${JQ}" "$target_dir"
     cp -r "${TOP_DIR}/patches" "$target_dir"
     cp "${TOP_DIR}/rzsbc_yocto.sh" "$target_dir"
+    if [ -e "${TOP_DIR}/site.conf" ]; then
+        cp "${TOP_DIR}/site.conf" "$target_dir"
+    fi
     cp "${TOP_DIR}/README.md" "$target_dir"
 }
 

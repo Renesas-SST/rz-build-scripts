@@ -14,21 +14,22 @@ This directory holds the automated build scripts that perform the rz yocto repos
 │   └── poky
 │       └── 0001-meta-classes-esdk-explicitly-address-the-location-of.patch
 ├── README.md
-└── rzsbc_yocto.sh
-
+├── rzsbc_yocto.sh
+└── site.conf       /* (optional) */
 3 directories, 6 files
 
 ``` 
 
 ## Organization:
 
-| File           | Description                                                                                                                                       |
-|----------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
-| git_patch.json | contains json keys and repository configuration such as: url, branch, tag, commit, repo type and patch paths to apply.                                                                                                |
-| jq-linux-amd64 | json querry oss binary to perform reads of git_patch.json from shell script.                                                                      |
-| patches/       | folder containing patches. This should ideally be organized into sub directories named after the json key.                                        |
-| rzsbc_yocto.sh | main build script that performs setup, configure and build operations.                                                                            |
-| README.md      | This document. This document provides an overview of the rz-sbc build package. It serves as a guide for users to understand how to set up and execute the Yocto build process, as well as how to manage and utilize the build artifacts and patches.|
+| File                 | Description                                                                                                                                                     |
+|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| git_patch.json       | contains json keys and repository configuration such as: url, branch, tag, commit, repo type and patch paths to apply.                                          |
+| jq-linux-amd64       | json querry oss binary to perform reads of git_patch.json from shell script.                                                                                    |
+| patches/             | folder containing patches. This should ideally be organized into sub directories named after the json key.                                                      |
+| rzsbc_yocto.sh       | main build script that performs setup, configure and build operations.                                                                                          |
+| site.conf [optional] | An optional overrride site.conf. If present, this will be used as the override file. If not, the template conf site.conf will be used from meta-renesas layer.  |
+| README.md            | This document. This document provides an overview of the rz-sbc build package. It serves as a guide for users to understand how to set up and execute the Yocto build process, as well as how to manage and utilize the build artifacts and patches.|
 
 ## Managing Repositories and Applying Patches
 
@@ -58,7 +59,7 @@ To perform yocto build with all RZ SOc's IP's functioning, you will need to down
 
 | File                             |   Description                                                                                                                |
 |----------------------------------|------------------------------------------------------------------------------------------------------------------------------|
-| RTK0EF0045Z13001ZJ-v1.1.2_EN.zip | RZ Mali GPU driver and HAL package  |
+| RTK0EF0045Z13001ZJ-v1.1.2_EN.zip | RZ Mali GPU driver and HAL package.  |
 | RTK0EF0045Z15001ZJ-v1.1.0_EN.zip | RZ codec driver and HAL package.    |
 
 > [!IMPORTANT]
