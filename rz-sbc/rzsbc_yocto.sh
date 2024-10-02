@@ -489,6 +489,9 @@ setup_conf(){
 	# New style
 	TEMPLATECONF=$PWD/meta-renesas/meta-rzg2l/docs/template/conf/rzpi . ./poky/oe-init-build-env build
 
+	# Remove templateconf.cfg as it will reference the old workspace directory when installing the eSDK on another host PC
+	rm -f "conf/templateconf.cfg"
+
 	# Check local overrides file
 	if [ ! -e "$WORKSPACE/site.conf" ]; then
 		echo "Local site.conf file not present in this workspace ($WORKSPACE). Assuming developer default build!"
