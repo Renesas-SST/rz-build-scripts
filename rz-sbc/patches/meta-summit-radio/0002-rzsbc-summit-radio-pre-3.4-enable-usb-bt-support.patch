@@ -1,0 +1,70 @@
+From e37d1e7abf988ba6512eecfae42e585f7bcf53c1 Mon Sep 17 00:00:00 2001
+From: Vu Dang <vu.dang.te@renesas.com>
+Date: Tue, 8 Oct 2024 19:00:19 +0700
+Subject: [PATCH 2/2] rzsbc: summit-radio-pre-3.4: enable usb bt support
+
+USB BT support is configured in defconfigs/lwb5p. Change the image feature
+to lwb5p and enable all supported USB BT devices that can be configured.
+
+Signed-off-by: Vu Dang <vu.dang.te@renesas.com>
+---
+ ...-usb-bt-extend-usb-bt-devices-suppor.patch | 25 +++++++++++++++++++
+ .../kernel-module-lwb5p-backports-summit.bb   |  6 +++++
+ 2 files changed, 31 insertions(+)
+ create mode 100644 meta-summit-radio-pre-3.4/recipes-bsp/summit-backports/files/0001-backport-drivers-usb-bt-extend-usb-bt-devices-suppor.patch
+
+diff --git a/meta-summit-radio-pre-3.4/recipes-bsp/summit-backports/files/0001-backport-drivers-usb-bt-extend-usb-bt-devices-suppor.patch b/meta-summit-radio-pre-3.4/recipes-bsp/summit-backports/files/0001-backport-drivers-usb-bt-extend-usb-bt-devices-suppor.patch
+new file mode 100644
+index 0000000..c9d64d7
+--- /dev/null
++++ b/meta-summit-radio-pre-3.4/recipes-bsp/summit-backports/files/0001-backport-drivers-usb-bt-extend-usb-bt-devices-suppor.patch
+@@ -0,0 +1,25 @@
++From 0e7f28f3a3c2520c0e1104c0d28caa9ae495d887 Mon Sep 17 00:00:00 2001
++From: Vu Dang <vu.dang.te@renesas.com>
++Date: Mon, 30 Sep 2024 09:50:27 +0000
++Subject: [PATCH] backport-drivers: usb-bt: extend usb bt devices support
++
++Enable support for Realtek, MediaTek devices.
++
++Signed-off-by: Vu Dang <vu.dang.te@renesas.com>
++---
++ defconfigs/lwb5p | 2 ++
++ 1 file changed, 2 insertions(+)
++
++diff --git a/defconfigs/lwb5p b/defconfigs/lwb5p
++index a597b2e..7e9c137 100644
++--- a/defconfigs/lwb5p
+++++ b/defconfigs/lwb5p
++@@ -14,3 +14,5 @@ CPTCFG_BT_HCIUART=m
++ CPTCFG_BT_HCIUART_BCM=y
++ CPTCFG_BT_HCIBTUSB=m
++ CPTCFG_BT_HCIBTUSB_BCM=y
+++CPTCFG_BT_HCIBTUSB_RTL=y
+++CPTCFG_BT_HCIBTUSB_MTK=y
++-- 
++2.24.4
++
+diff --git a/meta-summit-radio-pre-3.4/recipes-bsp/summit-backports/kernel-module-lwb5p-backports-summit.bb b/meta-summit-radio-pre-3.4/recipes-bsp/summit-backports/kernel-module-lwb5p-backports-summit.bb
+index ec05ebb..97f7294 100644
+--- a/meta-summit-radio-pre-3.4/recipes-bsp/summit-backports/kernel-module-lwb5p-backports-summit.bb
++++ b/meta-summit-radio-pre-3.4/recipes-bsp/summit-backports/kernel-module-lwb5p-backports-summit.bb
+@@ -1,5 +1,7 @@
+ SUMMARY = "Summit Backports for LWB5+"
+ 
++FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
++
+ BACKPORTS_CONFIG = "${@bb.utils.contains('DISTRO_FEATURES','bluetooth','lwb5p','lwb5p_nbt',d)}"
+ 
+ RCONFLICTS_${PN} = " \
+@@ -7,4 +9,8 @@ RCONFLICTS_${PN} = " \
+         kernel-module-lwb-backports-summit \
+         "
+ 
++SRC_URI_append = " \
++        file://0001-backport-drivers-usb-bt-extend-usb-bt-devices-suppor.patch \
++"
++
+ require summit-backports.inc radio-stack-lwb-version.inc
+-- 
+2.42.0.windows.2
+
