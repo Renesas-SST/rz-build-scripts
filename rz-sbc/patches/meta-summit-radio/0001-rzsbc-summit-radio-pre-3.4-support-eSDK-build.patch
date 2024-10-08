@@ -1,7 +1,7 @@
-From 3653542865467a4b30d0ae01eaf2711cfa2bfbd4 Mon Sep 17 00:00:00 2001
+From fa19e75547e7d19f7cef1fc42b13ba8b0bbcceca Mon Sep 17 00:00:00 2001
 From: Vu Dang <vu.dang.te@renesas.com>
 Date: Tue, 27 Aug 2024 22:30:43 +0700
-Subject: [PATCH] rzsbc: summit-radio-pre-3.4: support eSDK build
+Subject: [PATCH 1/2] rzsbc: summit-radio-pre-3.4: support eSDK build
 
 Change include:
 - Include files and its version control file: these include files
@@ -179,5 +179,5 @@ index 3b46021..dea1978 100644
 -require ../radio-stack-lwb-hashes.inc
 +require radio-stack-lwb-hashes.inc
 -- 
-2.25.1
+2.42.0.windows.2
 
