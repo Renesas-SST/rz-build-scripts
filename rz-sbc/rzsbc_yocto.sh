@@ -24,6 +24,19 @@ TOP_DIR=`pwd`
 JQ="$TOP_DIR/jq-linux-amd64"
 PATCH_FILE="$TOP_DIR/git_patch.json"
 
+# Target image for the build
+# List of supported images
+#  - core-image-minimal
+#  - core-image-bsp
+#  - core-image-weston
+#  - core-image-qt
+#  - renesas-core-image-cli
+#  - renesas-core-image-weston
+#  - renesas-quickboot-cli
+#  - renesas-quickboot-wayland
+# Default is core-image-qt
+: ${IMAGE:=core-image-qt}
+
 # ------------------------------------------------------------------------------
 
 # -----------------------------Global variable------------------------------------
@@ -39,13 +52,26 @@ guideline() {
 	echo ""
 	echo "========="
 	echo "Build yocto"
-	echo " ./rzsbc_yocto.sh <target_build> <target_dir>"
+	echo "$ IMAGE=<target_image> ./rzsbc_yocto.sh <target_build> <target_dir>"
 	echo "--------------------------"
+	echo " - <target_image>: the target Yocto build image. It can be one from the following list of supported images"
+	echo "     1. core-image-minimal"
+	echo "     2. core-image-bsp"
+	echo "     3. core-image-weston"
+	echo "     4. core-image-qt"
+	echo "     5. renesas-core-image-cli"
+	echo "     6. renesas-core-image-weston"
+	echo "     7. renesas-quickboot-cli"
+	echo "     8. renesas-quickboot-wayland"
+	echo "Note: If IMAGE is not set. The default image is core-image-qt"
 	echo " - <target_build>: the build options. It can be an image build (1) or a SDK build (2) as follows"
 	echo "     1. build"
 	echo "     2. build-sdk"
 	echo " - <target_dir>: the build directory"
 	echo "     If not set <target_dir>: current directory will be selected"
+	echo ""
+	echo "For example: "
+	echo "$ IMAGE=renesas-core-image-cli ./rzsbc_yocto.sh build ~/yocto-build"
 	echo "------------------------------------------------------------"
 }
 
@@ -497,7 +523,7 @@ setup_conf(){
 		echo "Local site.conf file not present in this workspace ($WORKSPACE). Assuming developer default build!"
 		# Copy default template overrides file as yocto doesnt copy site.conf.sample
 		cp ../meta-renesas/meta-rzg2l/docs/template/conf/rzpi/site.conf.sample conf/site.conf
-		echo "This build is a common build for rzsbc. It is not based on any release tag."
+		echo "This build is a common build for rzsbc. It is not based on any release tag. Target image: ${IMAGE}"
 	else
 		# Copy local overrides file to yocto build conf folder
 		cp ${WORKSPACE}/site.conf conf/site.conf
@@ -505,7 +531,7 @@ setup_conf(){
 		site_file="conf/site.conf"
 		revision_value=$(grep '^SRCREV_pn-linux-renesas =' "$site_file" | cut -d '=' -f2)
 		revision_value=$(echo "$revision_value" | sed 's/"//g')
-		echo "This build is based on release tag:$revision_value"
+		echo "This build is based on release tag:$revision_value. Target image: ${IMAGE}"
 	fi
 
 
@@ -555,10 +581,10 @@ build_sdk() {
 	fi
 
 	#Initiate build sdk
-	MACHINE=rzpi bitbake core-image-qt -c populate_sdk_ext
+	MACHINE=rzpi bitbake ${IMAGE} -c populate_sdk_ext
 
 	echo
-	echo "Finished the rz yocto sdk build for RZ SBC board"
+	echo "Finished the rz yocto sdk build for RZ SBC board. Target image: ${IMAGE}"
 	echo "========================================================================"
 
 	deploy_build_assets
@@ -572,10 +598,10 @@ build() {
 	setup_conf
 
 	# Initiate build
-	MACHINE=rzpi bitbake core-image-qt
+	MACHINE=rzpi bitbake ${IMAGE}
 
 	echo
-	echo "Finished the rz yocto build for RZ SBC board"
+	echo "Finished the rz yocto build for RZ SBC board. Target image: ${IMAGE}"
 	echo "========================================================================"
 
 	deploy_build_assets
