@@ -17,7 +17,7 @@ This directory holds the automated build scripts that perform the rz yocto repos
 ├── README.md
 ├── rzsbc_yocto.sh
 └── site.conf       /* (optional) */
-3 directories, 6 files
+3 directories, 7 files
 
 ``` 
 
