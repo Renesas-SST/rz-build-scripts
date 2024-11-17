@@ -94,7 +94,8 @@ The final output within your yocto build directory will be under `tmp/deploy/ima
 │   │   ├── README.md
 │   │   ├── patches
 │   │   │   ├── meta-summit-radio
-│   │   │   │   └── 0001-rzsbc-summit-radio-pre-3.4-support-eSDK-build.patch
+│   │   │   │   ├── 0001-rzsbc-summit-radio-pre-3.4-support-eSDK-build.patch
+    │   │   │   └── 0002-rzsbc-summit-radio-pre-3.4-enable-usb-bt-support.patch
 │   │   │   └── poky
 │   │   │       └── 0001-meta-classes-esdk-explicitly-address-the-location-of.patch
 │   │   ├── rzsbc_yocto.sh
