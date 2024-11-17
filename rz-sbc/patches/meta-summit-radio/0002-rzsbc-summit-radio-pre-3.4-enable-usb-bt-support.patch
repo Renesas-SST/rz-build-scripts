@@ -1,4 +1,4 @@
-From e37d1e7abf988ba6512eecfae42e585f7bcf53c1 Mon Sep 17 00:00:00 2001
+From adbe3c86951290a04aaae7c36de43c467bde7f79 Mon Sep 17 00:00:00 2001
 From: Vu Dang <vu.dang.te@renesas.com>
 Date: Tue, 8 Oct 2024 19:00:19 +0700
 Subject: [PATCH 2/2] rzsbc: summit-radio-pre-3.4: enable usb bt support
@@ -66,5 +66,5 @@ index ec05ebb..97f7294 100644
 +
  require summit-backports.inc radio-stack-lwb-version.inc
 -- 
-2.42.0.windows.2
+2.25.1
 
