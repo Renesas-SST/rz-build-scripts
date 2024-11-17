@@ -10,13 +10,14 @@ This directory holds the automated build scripts that perform the rz yocto repos
 ├── jq-linux-amd64
 ├── patches
 │   ├── meta-summit-radio
-│   │   └── 0001-rzsbc-summit-radio-pre-3.4-support-eSDK-build.patch
+|   │   ├── 0001-rzsbc-summit-radio-pre-3.4-support-eSDK-build.patch
+│   │   └── 0002-rzsbc-summit-radio-pre-3.4-enable-usb-bt-support.patch
 │   └── poky
 │       └── 0001-meta-classes-esdk-explicitly-address-the-location-of.patch
 ├── README.md
 ├── rzsbc_yocto.sh
 └── site.conf       /* (optional) */
-3 directories, 6 files
+4 directories, 8 files
 
 ``` 
 
