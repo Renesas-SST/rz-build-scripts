@@ -1,44 +1,48 @@
 {
 	"poky": {
 		"url": "https://git.yoctoproject.org/git/poky",
-		"branch": "",
-		"tag": "dunfell-23.0.26",
+		"branch": "styhead",
+		"tag": "",
 		"commit": "",
-		"patches": ["patches/poky/0001-meta-classes-esdk-explicitly-address-the-location-of.patch"],
-		"type": "git"
+		"patches": [],
+		"type": "git",
+		"enable": "true"
 	},
 	"meta-summit-radio": {
 		"url": "https://github.com/LairdCP/meta-summit-radio.git",
 		"branch": "lrd-11.39.0.x",
 		"tag": "",
 		"commit": "",
-		"patches": ["patches/meta-summit-radio/0001-rzsbc-summit-radio-pre-3.4-support-eSDK-build.patch",
-					"patches/meta-summit-radio/0002-rzsbc-summit-radio-pre-3.4-enable-usb-bt-support.patch"],
-		"type": "git"
+		"patches": ["patches/meta-summit-radio/0001-rz-sbc-Support-build-in-yocto-styhead-release.patch"],
+		"type": "git",
+		"enable": "true"
 	},
 	"meta-renesas": {
 		"url": "https://github.com/Renesas-SST/meta-renesas.git",
-		"branch": "dunfell/rz-sbc",
+		"branch": "styhead/rz-sbc",
 		"tag": "",
 		"commit": "",
 		"patches": [],
-		"type": "git"
+		"type": "git",
+		"enable": "true"
 	},
 	"meta-qt5": {
 		"url": "https://github.com/meta-qt5/meta-qt5.git",
-		"branch": "",
+		"branch": "master",
 		"tag": "",
-		"commit": "c1b0c9f546289b1592d7a895640de103723a0305",
+		"commit": "",
 		"patches": [],
-		"type": "git"
+		"type": "git",
+		"enable": "false"
 	},
 	"meta-openembedded": {
 		"url": "https://github.com/openembedded/meta-openembedded",
-		"branch": "",
+		"branch": "styhead",
 		"tag": "",
-		"commit": "6334241447e461f849035c47f071fa4a2125fee1",
+		"commit": "",
 		"patches": [],
-		"type": "git"
+		"type": "git",
+		"enable": "true"
 	},
 	"meta-virtualization": {
 		"url": "https://git.yoctoproject.org/git/meta-virtualization",
@@ -46,7 +50,8 @@
 		"tag": "",
 		"commit": "521459bf588435e847d981657485bae8d6f003b5",
 		"patches": [],
-		"type": "git"
+		"type": "git",
+		"enable": "false"
 	},
 	"meta-gplv2": {
 		"url": "https://git.yoctoproject.org/git/meta-gplv2",
@@ -54,7 +59,8 @@
 		"tag": "",
 		"commit": "60b251c25ba87e946a0ca4cdc8d17b1cb09292ac",
 		"patches": [],
-		"type": "git"
+		"type": "git",
+		"enable": "false"
 	},
 	"meta-clang": {
 		"url": "https://github.com/kraj/meta-clang",
@@ -62,7 +68,8 @@
 		"tag": "",
 		"commit": "",
 		"patches": [],
-		"type": "git"
+		"type": "git",
+		"enable": "false"
 	},
 	"meta-browser": {
 		"url": "https://github.com/OSSystems/meta-browser.git",
@@ -70,10 +77,12 @@
 		"tag": "",
 		"commit": "f2d5539552b54099893a7339cbb2ab46b42ee754",
 		"patches": [],
-		"type": "git"
+		"type": "git",
+		"enable": "false"
 	},
 	"meta-rz-features": {
-		"patches": [],
-		"type": "local"
+		"patches": ["patches/meta-rz-features/0001-support-codec-for-linux-6.10-and-yocto-styhead.patch"],
+		"type": "local",
+		"enable": "true"
 	}
 }

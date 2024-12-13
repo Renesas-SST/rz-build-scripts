@@ -1,0 +1,1499 @@
+diff --git a/meta-rz-codecs/conf/layer.conf b/meta-rz-codecs/conf/layer.conf
+index b94e264..fddb7b5 100644
+--- a/meta-rz-codecs/conf/layer.conf
++++ b/meta-rz-codecs/conf/layer.conf
+@@ -11,5 +11,4 @@ BBFILES += "${LAYERDIR}/recipes-*/*/*.bb \
+ BBFILE_COLLECTIONS += "rz-codecs"
+ BBFILE_PATTERN_rz-codecs := "^${LAYERDIR}/"
+ 
+-LAYERDEPENDS_rz-codecs = "rz-common"
+-LAYERSERIES_COMPAT_rz-codecs = "dunfell"
++LAYERSERIES_COMPAT_rz-codecs = "styhead"
+diff --git a/meta-rz-codecs/include/rz-plugins.inc b/meta-rz-codecs/include/rz-plugins.inc
+index 64b029f..222a3c9 100644
+--- a/meta-rz-codecs/include/rz-plugins.inc
++++ b/meta-rz-codecs/include/rz-plugins.inc
+@@ -1,14 +1,19 @@
+-DISTRO_FEATURES_append = " hwh264dec hwh264enc hwh265dec"
++DISTRO_FEATURES:append = " hwh264dec hwh264enc hwh265dec"
+ 
+ require omx-control.inc
+ 
+-LICENSE_FLAGS_WHITELIST_append=" \
++LICENSE_FLAGS_ACCEPTED:append=" \
+ 	${@bb.utils.contains("USE_VIDEO_OMX", "1", "commercial_gstreamer1.0-omx", "", d )} \
+ 	${@bb.utils.contains("USE_VIDEO_OMX", "1", "commercial_lib32-libomxil", "", d )} \
+ 	${@bb.utils.contains("USE_VIDEO_OMX", "1", "commercial_libomxil", "", d )} \
+ "
+ 
+-IMAGE_INSTALL_append =" \
++IMAGE_INSTALL:append =" \
+ 	${@bb.utils.contains("USE_VIDEO_OMX", "1", " kernel-module-uvcs-drv ", "", d)} \
+ 	${@bb.utils.contains("USE_VIDEO_OMX", "1", " omx-user-module ", "",d)} \
+ "
++LICENSE_FLAGS_ACCEPTED = " \
++	commercial_gstreamer1.0-plugins-ugly commercial_mpeg2dec \
++	commercial_gst-plugins-bad commercial_faad2 commercial_faac \
++	commercial_gstreamer1.0-libav commercial_ffmpeg commercial_x264 \
++"
+diff --git a/meta-rz-codecs/recipes-kernel/kernel-module-uvcs-drv/files/0001-Fixing-build-error-kernel-module-uvcs.patch b/meta-rz-codecs/recipes-kernel/kernel-module-uvcs-drv/files/0001-Fixing-build-error-kernel-module-uvcs.patch
+index da3fe67..76787b4 100644
+--- a/meta-rz-codecs/recipes-kernel/kernel-module-uvcs-drv/files/0001-Fixing-build-error-kernel-module-uvcs.patch
++++ b/meta-rz-codecs/recipes-kernel/kernel-module-uvcs-drv/files/0001-Fixing-build-error-kernel-module-uvcs.patch
+@@ -2,6 +2,7 @@ From 3f92209bceb83b26a70a9efbee293992a30801d7 Mon Sep 17 00:00:00 2001
+ From: Loc Nguyen <loc.nguyen.ks@renesas.com>
+ Date: Thu, 27 Dec 2018 13:17:35 +0700
+ Subject: [PATCH] Fixing build error kernel module uvcs
++Upstream-Status: Pending
+ 
+ This patch is created due to kernel update
+ -in kernel 4.19, .data is removed from struct timer_list
+diff --git a/meta-rz-codecs/recipes-kernel/kernel-module-uvcs-drv/files/0002-kernel-module-uvcs-drv-fix-built-error-with-kernel-v.patch b/meta-rz-codecs/recipes-kernel/kernel-module-uvcs-drv/files/0002-kernel-module-uvcs-drv-fix-built-error-with-kernel-v.patch
+index bcdf25b..b898d6f 100644
+--- a/meta-rz-codecs/recipes-kernel/kernel-module-uvcs-drv/files/0002-kernel-module-uvcs-drv-fix-built-error-with-kernel-v.patch
++++ b/meta-rz-codecs/recipes-kernel/kernel-module-uvcs-drv/files/0002-kernel-module-uvcs-drv-fix-built-error-with-kernel-v.patch
+@@ -2,6 +2,7 @@ From 8903ed67902e37627523702123e50b0a14c8cbcd Mon Sep 17 00:00:00 2001
+ From: hienhuynh <hien.huynh.px@renesas.com>
+ Date: Mon, 8 Nov 2021 13:14:18 +0700
+ Subject: [PATCH] kernel-module-uvcs-drv: fix built error with kernel v5.10
++Upstream-Status: Pending
+ 
+ This commit is created to fix all compilin errors with kernel v5.10.
+ 
+diff --git a/meta-rz-codecs/recipes-kernel/kernel-module-uvcs-drv/files/0003-Add-SMC-calls-for-uvcs-kernel.patch b/meta-rz-codecs/recipes-kernel/kernel-module-uvcs-drv/files/0003-Add-SMC-calls-for-uvcs-kernel.patch
+index e37e8a0..51ac573 100644
+--- a/meta-rz-codecs/recipes-kernel/kernel-module-uvcs-drv/files/0003-Add-SMC-calls-for-uvcs-kernel.patch
++++ b/meta-rz-codecs/recipes-kernel/kernel-module-uvcs-drv/files/0003-Add-SMC-calls-for-uvcs-kernel.patch
+@@ -2,6 +2,7 @@ From b80871f37d4775503d4d6e84c8ed86c91261e7ec Mon Sep 17 00:00:00 2001
+ From: Kiet Pham <kiet.pham.xb@renesas.com>
+ Date: Mon, 31 Oct 2022 15:10:23 +0700
+ Subject: [PATCH] recipes-codec: Add SMC calls for uvcs kernel
++Upstream-Status: Pending
+ 
+ Add SMC calls for uvcs kernel
+ 
+diff --git a/meta-rz-codecs/recipes-kernel/kernel-module-uvcs-drv/files/0004-rzg2l-sbc-Get-interrupt-number.patch b/meta-rz-codecs/recipes-kernel/kernel-module-uvcs-drv/files/0004-rzg2l-sbc-Get-interrupt-number.patch
+new file mode 100644
+index 0000000..cc4aa10
+--- /dev/null
++++ b/meta-rz-codecs/recipes-kernel/kernel-module-uvcs-drv/files/0004-rzg2l-sbc-Get-interrupt-number.patch
+@@ -0,0 +1,54 @@
++From 9eb7745482d65a7e3aeb4e24b13ea1be341bbc85 Mon Sep 17 00:00:00 2001
++From: Khanh Do Duy <khanh.do.yg@bp.renesas.com>
++Date: Thu, 12 Dec 2024 10:02:26 +0000
++Subject: [PATCH] rzg2l-sbc: Get interrupt number
++Upstream-Status: Pending
++
++Signed-off-by: Khanh Do Duy <khanh.do.yg@bp.renesas.com>
++---
++ src/lkm/uvcs_lkm_uf_io.c | 17 ++++++++++-------
++ 1 file changed, 10 insertions(+), 7 deletions(-)
++
++diff --git a/src/lkm/uvcs_lkm_uf_io.c b/src/lkm/uvcs_lkm_uf_io.c
++index b1a16f1..8b10ddc 100644
++--- a/src/lkm/uvcs_lkm_uf_io.c
+++++ b/src/lkm/uvcs_lkm_uf_io.c
++@@ -864,6 +864,7 @@ int uvcs_get_vcp_resource(
++ 	int result = -EFAULT;
++ 	struct resource *res;
++ 	int ch;
+++	int itr_num;
++ 
++ 
++ 	if ((pdev == NULL) || (vcpinf == NULL))
++@@ -887,19 +888,19 @@ int uvcs_get_vcp_resource(
++ 	}
++ 	vcpinf->pa_ce = (u64)res->start;
++ 
++-	res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
++-	if (res == NULL) {
+++	itr_num = platform_get_irq(pdev, 0);
+++	if (itr_num < 0) {
++ 		dev_err(&pdev->dev, "resource not found (irq_0, %u)\n", iparch);
++ 		goto err_exit_1;
++ 	}
++-	vcpinf->irq_vlc = (int)res->start;
+++	vcpinf->irq_vlc = itr_num;
++ 
++-	res = platform_get_resource(pdev, IORESOURCE_IRQ, 1);
++-	if (res == NULL) {
++-		dev_err(&pdev->dev, "resource not found (irq_1, %u)\n", iparch);
+++	itr_num = platform_get_irq(pdev, 1);
+++	if (itr_num < 0) {
+++		dev_err(&pdev->dev, "resource not found (irq_0, %u)\n", iparch);
++ 		goto err_exit_1;
++ 	}
++-	vcpinf->irq_ce = (int)res->start;
+++	vcpinf->irq_ce = itr_num;
++ 
++ 	if (of_property_read_u32(pdev->dev.of_node, "renesas,#fcp_ch", &ch) < 0) {
++ 		dev_err(&pdev->dev, "of_property_read_u32() failed #%d, %u\n", __LINE__, iparch);
++
++-- 
++2.25.1
++
+diff --git a/meta-rz-codecs/recipes-kernel/kernel-module-uvcs-drv/kernel-module-uvcs-drv.bb b/meta-rz-codecs/recipes-kernel/kernel-module-uvcs-drv/kernel-module-uvcs-drv.bb
+index 2a1b949..bb9895e 100644
+--- a/meta-rz-codecs/recipes-kernel/kernel-module-uvcs-drv/kernel-module-uvcs-drv.bb
++++ b/meta-rz-codecs/recipes-kernel/kernel-module-uvcs-drv/kernel-module-uvcs-drv.bb
+@@ -1,5 +1,5 @@
+ DESCRIPTION = "Kernel module of UVCS"
+-LICENSE = "GPLv2 & MIT"
++LICENSE = "GPL-2.0-only & MIT"
+ LIC_FILES_CHKSUM = " \
+     file://include/GPL-COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263 \
+     file://src/lkm/GPL-COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263 \
+@@ -11,26 +11,22 @@ LIC_FILES_CHKSUM = " \
+     file://src/cmn/MIT-COPYING;md5=fea016ce2bdf2ec10080f69e9381d378 \
+ "
+ inherit module
+-require include/rzg2-modules-common.inc
++require include/rzg2l-sbc-modules-common.inc
+ PR = "r0"
+ 
+-COMPATIBLE_MACHINE_rzg2l = "(r9a07g044l|r9a07g054l)"
+-COMPATIBLE_MACHINE_rzg2h = "(r8a774a1|r8a774b1|r8a774c0|r8a774e1)"
++SRC_URI:rzg2l-sbc = "${@oe.utils.conditional('USE_VIDEO_OMX', '1', 'file://uvcs_kernel_package.tar.bz2', '', d)}"
+ 
+-SRC_URI_rzg2l = "${@oe.utils.conditional('USE_VIDEO_OMX', '1', 'file://uvcs_kernel_package.tar.bz2', '', d)}"
+-SRC_URI_rzg2h = "${@oe.utils.conditional('USE_VIDEO_OMX', '1', 'file://RCG3VUDRL4101ZDO.tar.bz2', '', d)}"
+-
+-SRC_URI_append = " \
++SRC_URI:append = " \
+ 	file://0001-Fixing-build-error-kernel-module-uvcs.patch \
+ 	file://0002-kernel-module-uvcs-drv-fix-built-error-with-kernel-v.patch \
+ "
+ 
+-SRC_URI_append_rzg2l = " \
++SRC_URI:append:rzg2l-sbc = " \
+ 	file://0003-Add-SMC-calls-for-uvcs-kernel.patch \
++    file://0004-rzg2l-sbc-Get-interrupt-number.patch \
+ "
+ 
+-S_rzg2l = "${WORKDIR}/uvcs_kernel_package"
+-S_rzg2h = "${WORKDIR}/RCG3VUDRL4101ZDO"
++S:rzg2l-sbc = "${WORKDIR}/uvcs_kernel_package"
+ 
+ EXTRA_OEMAKE = "KERNELDIR=${STAGING_KERNEL_BUILDDIR}"
+ EXTRA_OEMAKE += "CROSS_COMPILE=${CROSS_COMPILE}"
+@@ -41,7 +37,7 @@ includedir = "${RENESAS_DATADIR}/include"
+ 
+ do_fetch[file-checksums] = ""
+ 
+-do_compile_prepend() {
++do_compile:prepend() {
+     export UVCS_SRC="${S}/src"
+     export UVCS_INC="${S}"
+     export VCP4_SRC="${S}/src"
+@@ -52,11 +48,11 @@ KERNEL_MODULE_PACKAGE_SUFFIX = ""
+ 
+ do_install() {
+     # Create destination directory
+-    install -d ${D}/lib/modules/${KERNEL_VERSION}/extra/
++    install -d ${D}/usr/lib/modules/${KERNEL_VERSION}/extra/
+     install -d ${D}/${includedir}/
+ 
+     # Install kernel module
+-    install -m 644 ${B}/uvcs_drv.ko ${D}/lib/modules/${KERNEL_VERSION}/extra/
++    install -m 644 ${B}/uvcs_drv.ko ${D}/usr/lib/modules/${KERNEL_VERSION}/extra/
+ 
+     # Install module symbol file
+     install -m 644 ${B}/Module.symvers ${STAGING_KERNEL_BUILDDIR}/UVCS.symvers
+@@ -75,12 +71,15 @@ module_clean_symbol() {
+ PACKAGES = " \
+     ${PN} \
+     ${PN}-sstate \
++    ${PN}-dbg \
+ "
+ 
+-FILES_${PN}-sstate = " \
+-    ${includedir}/uvcs_ioctl.h \
++FILES:${PN} = " \
++    /usr/lib/modules/${KERNEL_VERSION}/extra/uvcs_drv.ko \
+ "
+ 
+-# KERNEL_MODULE_AUTOLOAD = "${@oe.utils.conditional('USE_VIDEO_OMX', '1', 'uvcs_drv', '', d)}"
++FILES:${PN}-sstate = " \
++    ${includedir}/uvcs_ioctl.h \
++"
+ 
+-KERNEL_MODULE_AUTOLOAD = "uvcs_drv"
++KERNEL_MODULE_AUTOLOAD += "${@oe.utils.conditional('USE_VIDEO_OMX', '1', 'uvcs_drv', '', d)}"
+diff --git a/meta-rz-codecs/recipes-kernel/linux-yocto/file/0001-rzg2l-sbc-Bring-compat_alloc_user_space-back.patch b/meta-rz-codecs/recipes-kernel/linux-yocto/file/0001-rzg2l-sbc-Bring-compat_alloc_user_space-back.patch
+new file mode 100644
+index 0000000..3f17513
+--- /dev/null
++++ b/meta-rz-codecs/recipes-kernel/linux-yocto/file/0001-rzg2l-sbc-Bring-compat_alloc_user_space-back.patch
+@@ -0,0 +1,80 @@
++From d6a110c325247fb6bf9872760f169139abe7b672 Mon Sep 17 00:00:00 2001
++From: Khanh Do Duy <khanh.do.yg@bp.renesas.com>
++Date: Wed, 4 Dec 2024 10:27:59 +0000
++Subject: [PATCH 1/2] rzg2l-sbc: Bring compat_alloc_user_space back
++Upstream-Status: Pending
++---
++ arch/arm64/include/asm/compat.h |  6 ++++++
++ include/linux/compat.h          |  2 ++
++ kernel/compat.c                 | 21 +++++++++++++++++++++
++ 3 files changed, 29 insertions(+)
++
++diff --git a/arch/arm64/include/asm/compat.h b/arch/arm64/include/asm/compat.h
++index ae904a1ad529..b9e2f6aa7077 100644
++--- a/arch/arm64/include/asm/compat.h
+++++ b/arch/arm64/include/asm/compat.h
++@@ -27,6 +27,7 @@ typedef u16		compat_ipc_pid_t;
++ #include <linux/types.h>
++ #include <linux/sched.h>
++ #include <linux/sched/task_stack.h>
+++#include <linux/uaccess.h>
++ 
++ #ifdef __AARCH64EB__
++ #define COMPAT_UTS_MACHINE	"armv8b\0\0"
++@@ -98,6 +99,11 @@ static inline int is_compat_thread(struct thread_info *thread)
++ 
++ long compat_arm_syscall(struct pt_regs *regs, int scno);
++ 
+++static inline void __user *arch_compat_alloc_user_space(long len)
+++{
+++	return (void __user *)compat_user_stack_pointer() - len;
+++}
+++
++ #else /* !CONFIG_COMPAT */
++ 
++ static inline int is_compat_thread(struct thread_info *thread)
++diff --git a/include/linux/compat.h b/include/linux/compat.h
++index 56cebaff0c91..f30e617cc00b 100644
++--- a/include/linux/compat.h
+++++ b/include/linux/compat.h
++@@ -541,6 +541,8 @@ extern long compat_arch_ptrace(struct task_struct *child, compat_long_t request,
++ 
++ struct epoll_event;	/* fortunately, this one is fixed-layout */
++ 
+++extern void __user *compat_alloc_user_space(unsigned long len);
+++
++ int compat_restore_altstack(const compat_stack_t __user *uss);
++ int __compat_save_altstack(compat_stack_t __user *, unsigned long);
++ #define unsafe_compat_save_altstack(uss, sp, label) do { \
++diff --git a/kernel/compat.c b/kernel/compat.c
++index fb50f29d9b36..f9f7a79e07c5 100644
++--- a/kernel/compat.c
+++++ b/kernel/compat.c
++@@ -269,3 +269,24 @@ get_compat_sigset(sigset_t *set, const compat_sigset_t __user *compat)
++ 	return 0;
++ }
++ EXPORT_SYMBOL_GPL(get_compat_sigset);
+++
+++/*
+++ * Allocate user-space memory for the duration of a single system call,
+++ * in order to marshall parameters inside a compat thunk.
+++ */
+++void __user *compat_alloc_user_space(unsigned long len)
+++{
+++	void __user *ptr;
+++
+++	/* If len would occupy more than half of the entire compat space... */
+++	if (unlikely(len > (((compat_uptr_t)~0) >> 1)))
+++		return NULL;
+++
+++	ptr = arch_compat_alloc_user_space(len);
+++
+++	if (unlikely(!access_ok(ptr, len)))
+++		return NULL;
+++
+++	return ptr;
+++}
+++EXPORT_SYMBOL_GPL(compat_alloc_user_space);
++-- 
++2.25.1
++
+diff --git a/meta-rz-codecs/recipes-kernel/linux-yocto/linux-yocto_6.10.bbappend b/meta-rz-codecs/recipes-kernel/linux-yocto/linux-yocto_6.10.bbappend
+new file mode 100644
+index 0000000..545d799
+--- /dev/null
++++ b/meta-rz-codecs/recipes-kernel/linux-yocto/linux-yocto_6.10.bbappend
+@@ -0,0 +1,3 @@
++FILESEXTRAPATHS:prepend := "${THISDIR}/file:"
++
++SRC_URI:append:rzg2l-sbc = " file://0001-rzg2l-sbc-Bring-compat_alloc_user_space-back.patch"
+diff --git a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-omx/0001-Support-Bypass-mode.patch b/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-omx/0001-Support-Bypass-mode.patch
+deleted file mode 100644
+index 23f9596..0000000
+--- a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-omx/0001-Support-Bypass-mode.patch
++++ /dev/null
+@@ -1,248 +0,0 @@
+-From b02611adff81138dbe29c3d0ee888e74668e4ee9 Mon Sep 17 00:00:00 2001
+-From: Nhat Thieu <nhat.thieu.xr@renesas.com>
+-Date: Thu, 21 Jul 2022 19:12:59 +0700
+-Subject: [PATCH 1/3] Support Bypass mode
+-
+-    In Bypass mode, OMX does not generate reconfigure signal.
+-    However, gstreamer needs reconfigure signal to allocate output buffer pool.
+-    This patch will help gstreamer allocate output buffer pool without reconfigure signal in Bypass mode only.
+-
+-Signed-off-by: Nhat Thieu <nhat.thieu.xr@renesas.com>
+----
+- omx/gstomxvideodec.c | 142 ++++++++++++++++++++++++++++++++++++++++---
+- omx/gstomxvideodec.h |   2 +
+- 2 files changed, 137 insertions(+), 7 deletions(-)
+-
+-diff --git a/omx/gstomxvideodec.c b/omx/gstomxvideodec.c
+-index ec3a1c3..a30e271 100644
+---- a/omx/gstomxvideodec.c
+-+++ b/omx/gstomxvideodec.c
+-@@ -100,7 +100,8 @@ enum
+-   PROP_NO_COPY,
+-   PROP_NO_REORDER,
+-   PROP_LOSSY_COMPRESS,
+--  PROP_ENABLE_CROP
+-+  PROP_ENABLE_CROP,
+-+  PROP_BYPASS
+- };
+- 
+- #define GST_OMX_VIDEO_DEC_INTERNAL_ENTROPY_BUFFERS_DEFAULT (5)
+-@@ -136,15 +137,30 @@ gst_omx_video_dec_set_property (GObject * object, guint prop_id,
+-       self->use_dmabuf = g_value_get_boolean (value);
+-       self->has_set_property = TRUE;
+-       break;
+-+    case PROP_ENABLE_CROP:
+-+      self->enable_crop = g_value_get_boolean (value);
+-+      break;
+-+#ifdef HAVE_VIDEODEC_EXT
+-     case PROP_NO_REORDER:
+-       self->no_reorder = g_value_get_boolean (value);
+-       break;
+-     case PROP_LOSSY_COMPRESS:
+-       self->lossy_compress = g_value_get_boolean (value);
+-       break;
+--    case PROP_ENABLE_CROP:
+--      self->enable_crop = g_value_get_boolean (value);
+-+    case PROP_BYPASS:
+-+      self->bypass = g_value_get_boolean (value);
+-+      break;
+-+#else
+-+    case PROP_NO_REORDER:
+-+      GST_WARNING_OBJECT (self, "HAVE_VIDEODEC_EXT not enabled. Couldn't configure property no-reorder (require vendor specific implement).\n");
+-+      break;
+-+    case PROP_LOSSY_COMPRESS:
+-+      GST_WARNING_OBJECT (self, "HAVE_VIDEODEC_EXT not enabled. Couldn't configure property lossy-compress (require vendor specific implement).\n");
+-+      break;
+-+    case PROP_BYPASS:
+-+      GST_WARNING_OBJECT (self, "HAVE_VIDEODEC_EXT not enabled. Couldn't configure property bypass (require vendor specific implement).\n");
+-       break;
+-+#endif
+-     default:
+-       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+-       break;
+-@@ -178,6 +194,9 @@ gst_omx_video_dec_get_property (GObject * object, guint prop_id,
+-     case PROP_ENABLE_CROP:
+-       g_value_set_boolean (value, self->enable_crop);
+-       break;
+-+    case PROP_BYPASS:
+-+      g_value_set_boolean (value, self->bypass);
+-+      break;
+-     default:
+-       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+-       break;
+-@@ -233,6 +252,12 @@ gst_omx_video_dec_class_init (GstOMXVideoDecClass * klass)
+-           "Whether or not to enable cropping if there is cropping information on SPS",
+-           FALSE, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS |
+-           GST_PARAM_MUTABLE_READY));
+-+  g_object_class_install_property (gobject_class, PROP_BYPASS,
+-+      g_param_spec_boolean ("bypass",
+-+          "Use Bypass function",
+-+          "Whether or not to use Bypass mode in OMX",
+-+          FALSE, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS |
+-+          GST_PARAM_MUTABLE_READY));
+- 
+-   element_class->change_state =
+-       GST_DEBUG_FUNCPTR (gst_omx_video_dec_change_state);
+-@@ -278,6 +303,7 @@ gst_omx_video_dec_init (GstOMXVideoDec * self)
+-   self->lossy_compress = FALSE;
+-   self->has_set_property = FALSE;
+-   self->enable_crop = FALSE;
+-+  self->bypass = FALSE;
+- 
+-   gst_video_decoder_set_packetized (GST_VIDEO_DECODER (self), TRUE);
+-   gst_video_decoder_set_use_default_pad_acceptcaps (GST_VIDEO_DECODER_CAST
+-@@ -1630,7 +1656,74 @@ enable_port:
+-     goto done;
+- 
+- done:
+-+  return err;
+-+}
+-+
+-+/* Allocate and configure output buffers for Bypass mode */
+-+static OMX_ERRORTYPE
+-+gst_omx_video_dec_configure_bypass (GstOMXVideoDec * self)
+-+{
+-+  GstOMXPort *port;
+-+  OMX_ERRORTYPE err;
+-+  GstVideoCodecState *state;
+-+  OMX_PARAM_PORTDEFINITIONTYPE port_def;
+-+  GstVideoFormat format;
+-+  GstOMXVideoDecClass *klass = GST_OMX_VIDEO_DEC_GET_CLASS (self);
+-+
+-+  port = self->dec_out_port;
+-+
+-+  /* Update caps */
+-+  GST_VIDEO_DECODER_STREAM_LOCK (self);
+-+
+-+  gst_omx_port_get_port_definition (port, &port_def);
+-+  g_assert (port_def.format.video.eCompressionFormat == OMX_VIDEO_CodingUnused);
+-+
+-+  format =
+-+      gst_omx_video_get_format_from_omx (port_def.format.video.eColorFormat);
+-+
+-+  if (format == GST_VIDEO_FORMAT_UNKNOWN) {
+-+    GST_ERROR_OBJECT (self, "Unsupported color format: %d",
+-+        port_def.format.video.eColorFormat);
+-+    GST_VIDEO_DECODER_STREAM_UNLOCK (self);
+-+    err = OMX_ErrorUndefined;
+-+    goto done;
+-+  }
+- 
+-+  GST_DEBUG_OBJECT (self,
+-+      "Setting output state: format %s (%d), width %u, height %u",
+-+      gst_video_format_to_string (format),
+-+      port_def.format.video.eColorFormat,
+-+      (guint) port_def.format.video.nFrameWidth,
+-+      (guint) port_def.format.video.nFrameHeight);
+-+
+-+  state = gst_video_decoder_set_output_state (GST_VIDEO_DECODER (self),
+-+      format, port_def.format.video.nFrameWidth,
+-+      port_def.format.video.nFrameHeight, self->input_state);
+-+
+-+  if (klass->cdata.hacks & GST_OMX_HACK_DEFAULT_PIXEL_ASPECT_RATIO) {
+-+    /* Set pixel-aspect-ratio is 1/1. It means that always keep
+-+     * original image when display   */
+-+    state->info.par_d = state->info.par_n;
+-+  }
+-+
+-+  if (!gst_video_decoder_negotiate (GST_VIDEO_DECODER (self))) {
+-+    gst_video_codec_state_unref (state);
+-+    GST_ERROR_OBJECT (self, "Failed to negotiate");
+-+    err = OMX_ErrorUndefined;
+-+    GST_VIDEO_DECODER_STREAM_UNLOCK (self);
+-+    goto done;
+-+  }
+-+
+-+  gst_video_codec_state_unref (state);
+-+
+-+  GST_VIDEO_DECODER_STREAM_UNLOCK (self);
+-+
+-+  err = gst_omx_video_dec_allocate_output_buffers (self);
+-+  if (err != OMX_ErrorNone) {
+-+    goto done;
+-+  }
+-+
+-+done:
+-   return err;
+- }
+- 
+-@@ -2686,8 +2779,16 @@ gst_omx_video_dec_enable (GstOMXVideoDec * self, GstBuffer * input)
+-       /* Need to allocate buffers to reach Idle state */
+-       if (!gst_omx_video_dec_allocate_in_buffers (self))
+-         return FALSE;
+--      if (gst_omx_port_allocate_buffers (self->dec_out_port) != OMX_ErrorNone)
+--        return FALSE;
+-+
+-+      if (self->bypass) {
+-+        /* In G2L Bypass mode, allocate output buffers here instead
+-+         * of waiting for Event PortSettingChanged */
+-+        if (gst_omx_video_dec_configure_bypass(self))
+-+          return FALSE;
+-+      } else {
+-+        if (gst_omx_port_allocate_buffers (self->dec_out_port) != OMX_ErrorNone)
+-+          return FALSE;
+-+      }
+-     }
+- 
+-     if (gst_omx_component_get_state (self->dec,
+-@@ -2917,6 +3018,27 @@ gst_omx_video_dec_set_format (GstVideoDecoder * decoder,
+-     gst_omx_component_set_parameter (self->dec,
+-         OMXR_MC_IndexParamVideoLossyCompression, &sLossy);
+-   }
+-+
+-+  if (!needs_disable) {
+-+    /* Setting bypass mode (output port) */
+-+    OMXR_MC_VIDEO_PARAM_BYPASS_POSTPROCESSINGTYPE sBypass;
+-+    GST_OMX_INIT_STRUCT (&sBypass);
+-+    sBypass.nPortIndex = self->dec_out_port->index;
+-+
+-+    if (self->bypass == TRUE)
+-+      sBypass.bEnable = OMX_TRUE;
+-+    else
+-+      sBypass.bEnable = OMX_FALSE;
+-+
+-+    gst_omx_component_set_parameter (self->dec,
+-+        OMXR_MC_IndexParamVideoBypassPostprocessing, &sBypass);
+-+    gst_omx_component_get_parameter (self->dec,
+-+        OMXR_MC_IndexParamVideoBypassPostprocessing, &sBypass);
+-+    if (self->bypass != sBypass.bEnable) {
+-+      GST_WARNING_OBJECT (self, "Could not set Bypass mode");
+-+      self->bypass = sBypass.bEnable;
+-+    }
+-+  }
+- #else
+-   if (self->no_reorder != FALSE)
+-     GST_ERROR_OBJECT (self,
+-@@ -2940,8 +3062,14 @@ gst_omx_video_dec_set_format (GstVideoDecoder * decoder,
+-       out_port_def.format.video.nStride = 192;
+-       out_port_def.format.video.nSliceHeight = 192;
+-     } else {
+--      out_port_def.format.video.nStride = 128;
+--      out_port_def.format.video.nSliceHeight = 128;
+-+      if (self->bypass) {
+-+        /* In G2L Bypass mode, OMX will not send Event PortSettingChanged
+-+         * so application has to set parameters for output port manually */
+-+        out_port_def.format.video.nFrameWidth =  info->width;
+-+        out_port_def.format.video.nFrameHeight =  info->height;
+-+        out_port_def.format.video.nStride = (info->width+127)/128*128;
+-+        out_port_def.format.video.nSliceHeight = (info->height+15)/16*16;
+-+      }
+-     }
+- 
+-     if (gst_omx_port_update_port_definition (self->dec_out_port,
+-diff --git a/omx/gstomxvideodec.h b/omx/gstomxvideodec.h
+-index 06645ee..4c8010f 100644
+---- a/omx/gstomxvideodec.h
+-+++ b/omx/gstomxvideodec.h
+-@@ -121,6 +121,8 @@ struct _GstOMXVideoDec
+-   gboolean has_set_property;
+-   /* Set TRUE to crop as info of conf_win_left_offset and conf_win_top_offset */
+-   gboolean enable_crop;
+-+  /* Set TRUE to use Bypass mode in OMX */
+-+  gboolean bypass;
+- };
+- 
+- struct _GstOMXVideoDecClass
+--- 
+-2.25.1
+-
+diff --git a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-omx/0002-Fix-error-Resolution-do-not-match-in-running-case-fi.patch b/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-omx/0002-Fix-error-Resolution-do-not-match-in-running-case-fi.patch
+deleted file mode 100644
+index 7ffd368..0000000
+--- a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-omx/0002-Fix-error-Resolution-do-not-match-in-running-case-fi.patch
++++ /dev/null
+@@ -1,71 +0,0 @@
+-From ecdeb8231f40361d229bb6799deb3ad72be3ee36 Mon Sep 17 00:00:00 2001
+-From: Nhat Thieu <nhat.thieu.xr@renesas.com>
+-Date: Thu, 21 Jul 2022 19:17:31 +0700
+-Subject: [PATCH 2/3] Fix error Resolution do not match in running case fill
+- buffer
+-
+-This error can happen because port_def is not updated in gst_omx_video_dec_loop before run gst_omx_video_dec_fill_buffer.
+-This patch fixed that error.
+-
+-Signed-off-by: Nhat Thieu <nhat.thieu.xr@renesas.com>
+----
+- omx/gstomxvideodec.c | 20 ++++++++++----------
+- 1 file changed, 10 insertions(+), 10 deletions(-)
+-
+-diff --git a/omx/gstomxvideodec.c b/omx/gstomxvideodec.c
+-index a30e271..0ff1591 100644
+---- a/omx/gstomxvideodec.c
+-+++ b/omx/gstomxvideodec.c
+-@@ -1930,7 +1930,7 @@ gst_omx_video_dec_loop (GstOMXVideoDec * self)
+-   if (!gst_pad_has_current_caps (GST_VIDEO_DECODER_SRC_PAD (self)) ||
+-       acq_return == GST_OMX_ACQUIRE_BUFFER_RECONFIGURE) {
+-     GstVideoCodecState *state;
+--    OMX_PARAM_PORTDEFINITIONTYPE port_def;
+-+    OMX_PARAM_PORTDEFINITIONTYPE *port_def = &self->dec_out_port->port_def;
+-     GstVideoFormat format;
+- 
+-     GST_DEBUG_OBJECT (self, "Port settings have changed, updating caps");
+-@@ -1963,17 +1963,17 @@ gst_omx_video_dec_loop (GstOMXVideoDec * self)
+-       /* Just update caps */
+-       GST_VIDEO_DECODER_STREAM_LOCK (self);
+- 
+--      gst_omx_port_get_port_definition (port, &port_def);
+--      g_assert (port_def.format.video.eCompressionFormat ==
+-+      gst_omx_port_get_port_definition (port, port_def);
+-+      g_assert (port_def->format.video.eCompressionFormat ==
+-           OMX_VIDEO_CodingUnused);
+- 
+-       format =
+--          gst_omx_video_get_format_from_omx (port_def.format.video.
+-+          gst_omx_video_get_format_from_omx (port_def->format.video.
+-           eColorFormat);
+- 
+-       if (format == GST_VIDEO_FORMAT_UNKNOWN) {
+-         GST_ERROR_OBJECT (self, "Unsupported color format: %d",
+--            port_def.format.video.eColorFormat);
+-+            port_def->format.video.eColorFormat);
+-         if (buf)
+-           gst_omx_port_release_buffer (port, buf);
+-         GST_VIDEO_DECODER_STREAM_UNLOCK (self);
+-@@ -1983,13 +1983,13 @@ gst_omx_video_dec_loop (GstOMXVideoDec * self)
+-       GST_DEBUG_OBJECT (self,
+-           "Setting output state: format %s (%d), width %u, height %u",
+-           gst_video_format_to_string (format),
+--          port_def.format.video.eColorFormat,
+--          (guint) port_def.format.video.nFrameWidth,
+--          (guint) port_def.format.video.nFrameHeight);
+-+          port_def->format.video.eColorFormat,
+-+          (guint) port_def->format.video.nFrameWidth,
+-+          (guint) port_def->format.video.nFrameHeight);
+- 
+-       state = gst_video_decoder_set_output_state (GST_VIDEO_DECODER (self),
+--          format, port_def.format.video.nFrameWidth,
+--          port_def.format.video.nFrameHeight, self->input_state);
+-+          format, port_def->format.video.nFrameWidth,
+-+          port_def->format.video.nFrameHeight, self->input_state);
+- 
+-       /* Take framerate and pixel-aspect-ratio from sinkpad caps */
+-       if (klass->cdata.hacks & GST_OMX_HACK_DEFAULT_PIXEL_ASPECT_RATIO) {
+--- 
+-2.25.1
+-
+diff --git a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-omx/0003-Add-lossy-compress-option-and-bypass-property.patch b/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-omx/0003-Add-lossy-compress-option-and-bypass-property.patch
+deleted file mode 100644
+index 95a89bc..0000000
+--- a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-omx/0003-Add-lossy-compress-option-and-bypass-property.patch
++++ /dev/null
+@@ -1,91 +0,0 @@
+-From 57c38d1e4cbec3c4616b42cf425c4d8cb4ef5336 Mon Sep 17 00:00:00 2001
+-From: Nhat Thieu <nhat.thieu.xr@renesas.com>
+-Date: Thu, 21 Jul 2022 18:05:30 +0700
+-Subject: [PATCH 3/3] Add lossy compress option
+-
+-Lossy compress option: suppporting customer on/off lossy conpress property.
+-
+-Signed-off-by: Nhat Thieu <nhat.thieu.xr@renesas.com>
+----
+- meson.build          | 12 ++++++++++++
+- meson_options.txt    |  2 ++
+- omx/gstomxvideodec.c |  4 ++++
+- 3 files changed, 18 insertions(+)
+-
+-diff --git a/meson.build b/meson.build
+-index c48c19a..c6ca601 100644
+---- a/meson.build
+-+++ b/meson.build
+-@@ -170,6 +170,11 @@ else
+-   omx_inc = include_directories (join_paths ('omx', 'openmax'))
+- endif
+- 
+-+lossy_compress = get_option('with_lossy_compress')
+-+if  lossy_compress == 1
+-+   cdata.set('HAVE_LOSSY_COMPRESS', 1)
+-+endif
+-+
+- default_omx_struct_packing = 0
+- omx_target = get_option ('target')
+- if omx_target == 'generic'
+-@@ -239,6 +244,13 @@ elif omx_target == 'rcar'
+-     cdata.set ('HAVE_VP8ENC_EXT', 1)
+-   endif
+- 
+-+  # check OMXR_Extension_vp8e.h
+-+  if cc.has_header (
+-+    'OMXR_Extension_vdcmn.h',
+-+    args : gst_omx_args)
+-+    cdata.set ('HAVE_VIDEODEC_EXT', 1)
+-+  endif
+-+
+-   # check OMXR_Extension_aapd.h
+-   if cc.has_header (
+-       'OMXR_Extension_aapd.h',
+-diff --git a/meson_options.txt b/meson_options.txt
+-index 0afb142..3716507 100644
+---- a/meson_options.txt
+-+++ b/meson_options.txt
+-@@ -1,5 +1,7 @@
+- option('header_path', type : 'string', value : '',
+-     description : 'An extra include directory to find the OpenMax headers')
+-+option('with_lossy_compress', type : 'boolean', value : false,
+-+    description : 'Whether or not to support lossy compress property')
+- option('target', type : 'combo',
+-     choices : ['none', 'generic', 'rpi', 'bellagio', 'tizonia', 'zynqultrascaleplus', 'rcar'], value : 'none',
+-     description : 'The OMX platform to target')
+-diff --git a/omx/gstomxvideodec.c b/omx/gstomxvideodec.c
+-index 0ff1591..b35dfe1 100644
+---- a/omx/gstomxvideodec.c
+-+++ b/omx/gstomxvideodec.c
+-@@ -144,9 +144,11 @@ gst_omx_video_dec_set_property (GObject * object, guint prop_id,
+-     case PROP_NO_REORDER:
+-       self->no_reorder = g_value_get_boolean (value);
+-       break;
+-+#ifdef HAVE_LOSSY_COMPRESS
+-     case PROP_LOSSY_COMPRESS:
+-       self->lossy_compress = g_value_get_boolean (value);
+-       break;
+-+#endif
+-     case PROP_BYPASS:
+-       self->bypass = g_value_get_boolean (value);
+-       break;
+-@@ -3004,6 +3006,7 @@ gst_omx_video_dec_set_format (GstVideoDecoder * decoder,
+-         &sReorder);
+-   }
+- 
+-+#ifdef HAVE_LOSSY_COMPRESS
+-   if (!needs_disable) {
+-     /* Setting lossy compression mode (output port) */
+-     OMXR_MC_VIDEO_PARAM_LOSSY_COMPRESSIONTYPE sLossy;
+-@@ -3018,6 +3021,7 @@ gst_omx_video_dec_set_format (GstVideoDecoder * decoder,
+-     gst_omx_component_set_parameter (self->dec,
+-         OMXR_MC_IndexParamVideoLossyCompression, &sLossy);
+-   }
+-+#endif
+- 
+-   if (!needs_disable) {
+-     /* Setting bypass mode (output port) */
+--- 
+-2.25.1
+-
+diff --git a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-omx/0004-gst-pipeline-cannot-corectly-decode-with-vspmfilter-.patch b/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-omx/0004-gst-pipeline-cannot-corectly-decode-with-vspmfilter-.patch
+deleted file mode 100644
+index 71556ac..0000000
+--- a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-omx/0004-gst-pipeline-cannot-corectly-decode-with-vspmfilter-.patch
++++ /dev/null
+@@ -1,58 +0,0 @@
+-From 92c7a1700640c87a4220219c916a3117b4cee0fc Mon Sep 17 00:00:00 2001
+-From: trungvanle <trung.le.xk@renesas.com>
+-Date: Thu, 10 Nov 2022 23:59:50 +0700
+-Subject: [PATCH] gst-pipeline cannot corectly decode with vspmfilter and
+- filesink/fakesink
+-
+-The error conditions are that:
+-	1. Videosink is fakesink or filesink
+-	2. Using vspmfilter in dmabuf-use, or outbuf-alloc mode
+-	3. Do not scale
+-	4. Output video format has 2 or 3 planes
+-
+-In above conditions, the API "GST_VIDEO_META_API_TYPE" is not added to query from downstream.
+-This means that omxh264dec will not set "GST_BUFFER_POOL_OPTION_VIDEO_META" config to
+-buffer pool when allocating output buffers. As a result, the buffers are sent to
+-vspmfilter from omxh264dec which maps by buffermap instead of framemap. Hence, if the
+-video format has 2 or 3 planes, the mapping will be incorrect. Because of wrong address,
+-it causes 2 difference phenomena on RZG2L and RZG2 series:
+-	1. RZG2L: Error -412 will be output if use fakesink/filesink
+-	2. RZG2 series: Output file will be wrong if use filesink
+-
+--> Solution: Flag GST_BUFFER_POOL_OPTION_VIDEO_META will be added to the buffer pool as
+-default to ensure that framemap is always being used to map the buffers instead of buffermap
+-in case that framemap is required from downstream. Based on meta information, the buffer is mapped
+-correctly. So the error will be fixed
+-
+-Signed-off-by: trungvanle <trung.le.xk@renesas.com>
+----
+- omx/gstomxvideodec.c | 13 +++++++++----
+- 1 file changed, 9 insertions(+), 4 deletions(-)
+-
+-diff --git a/omx/gstomxvideodec.c b/omx/gstomxvideodec.c
+-index b35dfe1..08a26fd 100644
+---- a/omx/gstomxvideodec.c
+-+++ b/omx/gstomxvideodec.c
+-@@ -3749,10 +3749,15 @@ gst_omx_video_dec_decide_allocation (GstVideoDecoder * bdec, GstQuery * query)
+-   g_assert (pool != NULL);
+- 
+-   config = gst_buffer_pool_get_config (pool);
+--  if (gst_query_find_allocation_meta (query, GST_VIDEO_META_API_TYPE, NULL)) {
+--    gst_buffer_pool_config_add_option (config,
+--        GST_BUFFER_POOL_OPTION_VIDEO_META);
+--  }
+-+
+-+  /* The GST_BUFFER_POOL_OPTION_VIDEO_META config must be set 
+-+   * to buffer pool in order to always add videometa to buffers and then
+-+   * map buffers using frame map. 
+-+   *
+-+   * Frame map should be used instead of buffer map because it will map the
+-+   * buffer correctly based on the meta information.*/
+-+  gst_buffer_pool_config_add_option (config,
+-+      GST_BUFFER_POOL_OPTION_VIDEO_META);
+-   gst_buffer_pool_set_config (pool, config);
+-   gst_object_unref (pool);
+- 
+--- 
+-2.17.1
+-
+diff --git a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-omx/gstomx-rzg2l.conf b/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-omx/gstomx-rzg2l.conf
+deleted file mode 100644
+index a0cedbe..0000000
+--- a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-omx/gstomx-rzg2l.conf
++++ /dev/null
+@@ -1,21 +0,0 @@
+-[omxh264dec]
+-type-name=GstOMXH264Dec
+-core-name=@RENESAS_DATADIR@/lib/libomxr_core.so
+-component-name=OMX.RENESAS.VIDEO.DECODER.H264
+-rank=512
+-in-port-index=0
+-out-port-index=1
+-hacks=no-disable-outport;default-pix-aspect-ratio;no-component-reconfigure
+-sink-template-caps=video/x-h264,alignment=(string)au,stream-format=(string)byte-stream,width=(int)[1, MAX],height=(int)[1, MAX]
+-src-template-caps=video/x-raw,format=(string){NV12,I420},width=(int)[1, MAX],height=(int)[1, MAX]
+-
+-[omxh264enc]
+-type-name=GstOMXH264Enc
+-core-name=@RENESAS_DATADIR@/lib/libomxr_core.so
+-component-name=OMX.RENESAS.VIDEO.ENCODER.H264
+-rank=256
+-in-port-index=0
+-out-port-index=1
+-hacks=no-disable-outport;renesas-encmc-stride-align
+-sink-template-caps=video/x-raw,format=(string){NV12,I420},width=(int)[80,3840],height=(int)[80,2160]
+-src-template-caps=video/x-h264,stream-format=(string)byte-stream,width=(int)[80,3840],height=(int)[80,2160]
+diff --git a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-omx_1.16.3.bbappend b/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-omx_1.16.3.bbappend
+deleted file mode 100644
+index 3e3b3e6..0000000
+--- a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-omx_1.16.3.bbappend
++++ /dev/null
+@@ -1,52 +0,0 @@
+-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}/:"
+-
+-SRC_URI_remove = "https://gstreamer.freedesktop.org/src/gst-omx/gst-omx-${PV}.tar.xz"
+-
+-SRC_URI_append = " \
+-    git://github.com/renesas-rcar/gst-omx.git;branch=RCAR-GEN3e/1.16.3;name=base \
+-    git://anongit.freedesktop.org/gstreamer/common;destsuffix=git/common;name=common \
+-"
+-
+-SRC_URI_append_rzg2l = " \
+-    file://gstomx-rzg2l.conf \
+-    file://0001-Support-Bypass-mode.patch \
+-    file://0002-Fix-error-Resolution-do-not-match-in-running-case-fi.patch \
+-    file://0003-Add-lossy-compress-option-and-bypass-property.patch \
+-    file://0004-gst-pipeline-cannot-corectly-decode-with-vspmfilter-.patch \
+-"
+-
+-SRC_URI_append_rzg2h = " \
+-    file://0001-omxvideodec-don-t-drop-frame-if-it-contains-header-d.patch \
+-    file://gstomx-rzg2h.conf \
+-"
+-
+-require include/rzg2-path-common.inc
+-
+-DEPENDS += "omx-user-module mmngrbuf-user-module"
+-
+-SRCREV_base = "6db86e9434815d27de853b4c8235d098da5500a2"
+-SRCREV_common = "52adcdb89a9eb527df38c569539d95c1c7aeda6e"
+-
+-
+-LIC_FILES_CHKSUM = " \
+-    file://COPYING;md5=4fbd65380cdd255951079008b364516c \
+-    file://omx/gstomx.h;beginline=1;endline=22;md5=4b2e62aace379166f9181a8571a14882 \
+-"
+-
+-S = "${WORKDIR}/git"
+-
+-GSTREAMER_1_0_OMX_TARGET = "rcar"
+-GSTREAMER_1_0_OMX_CORE_NAME = "${libdir}/libomxr_core.so"
+-EXTRA_OEMESON_append = " -Dheader_path=${STAGING_DIR_TARGET}/usr/local/include"
+-EXTRA_OEMESON_append_rzg2l = " -Dwith_lossy_compress=false"
+-
+-do_configure_prepend() {
+-    cd ${S}
+-    install -m 0644 ${WORKDIR}/gstomx-rzg2*.conf ${S}/config/rcar/gstomx.conf
+-    sed -i 's,@RENESAS_DATADIR@,${RENESAS_DATADIR},g' ${S}/config/rcar/gstomx.conf
+-    ./autogen.sh --noconfigure
+-    cd ${B}
+-}
+-
+-RDEPENDS_${PN}_append = " omx-user-module"
+-RDEPENDS_${PN}_remove = "libomxil"
+diff --git a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter.bb b/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter.bb
+index af7a6ad..dad619f 100644
+--- a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter.bb
++++ b/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter.bb
+@@ -1,7 +1,8 @@
+ SUMMARY = "GStreamer VSPM filter plugin"
+ SECTION = "multimedia"
+-LICENSE = "LGPLv2"
+-DEPENDS = "gstreamer1.0 gstreamer1.0-plugins-base pkgconfig vspmif-user-module kernel-module-mmngr kernel-module-mmngrbuf mmngr-user-module mmngrbuf-user-module"
++LICENSE = "LGPL-2.0-only"
++DEPENDS = "gstreamer1.0 gstreamer1.0-plugins-base pkgconfig vspmif-user-module \
++    kernel-module-mmngr kernel-module-mmngrbuf mmngr-user-module mmngrbuf-user-module"
+ LIC_FILES_CHKSUM = "file://COPYING.LIB;md5=6762ed442b3822387a51c92d928ead0d"
+ inherit autotools pkgconfig
+ 
+@@ -9,9 +10,6 @@ SRC_URI = " \
+     file://vspmfilter.tar.xz \
+     file://0001-Update-correct-base-number-of-VTOP-ioctl.patch \
+     file://0002-Fix-issue-vspmfilter-cannot-plugin.patch \
+-"
+-
+-SRC_URI_append_rzg2l = " \
+     file://0003-Support-Resize-and-Color-fomat.patch \
+     file://0004-gstvspmfilter-Fix-ISU-limitation-about-alignment.patch \
+     file://0005-recipes-codec-gstreamer1.0-plugin-vspmfilter-Disable.patch \
+@@ -25,12 +23,12 @@ SRC_URI_append_rzg2l = " \
+ S = "${WORKDIR}/vspmfilter"
+ PV = "1.16.3"
+ 
+-FILES_${PN} = " \
++FILES:${PN} = " \
+     ${libdir}/gstreamer-1.0/libgstvspmfilter.so \
+ "
+ 
+-FILES_${PN}-dev = "${libdir}/gstreamer-1.0/libgstvspmfilter.la"
+-FILES_${PN}-staticdev = "${libdir}/gstreamer-1.0/libgstvspmfilter.a"
+-FILES_${PN}-dbg = " \
++FILES:${PN}-dev = "${libdir}/gstreamer-1.0/libgstvspmfilter.la"
++FILES:${PN}-staticdev = "${libdir}/gstreamer-1.0/libgstvspmfilter.a"
++FILES:${PN}-dbg = " \
+     ${libdir}/gstreamer-1.0/.debug \
+     ${prefix}/src"
+diff --git a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0001-Update-correct-base-number-of-VTOP-ioctl.patch b/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0001-Update-correct-base-number-of-VTOP-ioctl.patch
+index 34c56cd..14467e2 100644
+--- a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0001-Update-correct-base-number-of-VTOP-ioctl.patch
++++ b/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0001-Update-correct-base-number-of-VTOP-ioctl.patch
+@@ -2,6 +2,7 @@ From b5c3a610c367df593433beb417542cc76cd14a49 Mon Sep 17 00:00:00 2001
+ From: hienhuynh <hien.huynh.px@renesas.com>
+ Date: Tue, 8 Mar 2022 15:11:44 +0700
+ Subject: [PATCH] Update correct base number of VTOP ioctl
++Upstream-Status: Pending
+ 
+ mmngr kernel module changed VTOP ioctl base number to 9.
+ So this commit is created to update ect base number of VTOP ioctl.
+diff --git a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0002-Fix-issue-vspmfilter-cannot-plugin.patch b/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0002-Fix-issue-vspmfilter-cannot-plugin.patch
+index 639ef61..aeef483 100644
+--- a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0002-Fix-issue-vspmfilter-cannot-plugin.patch
++++ b/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0002-Fix-issue-vspmfilter-cannot-plugin.patch
+@@ -2,6 +2,7 @@ From c1fec215e1481718469fbd3d33229010c6194ab3 Mon Sep 17 00:00:00 2001
+ From: cuongdoan <cuong.doan.ra@renesas.com>
+ Date: Mon, 5 Jul 2021 23:18:33 +0700
+ Subject: [PATCH] Fix-issue-vspmfilter-cannot-plugin
++Upstream-Status: Pending
+ 
+ ---
+  configure.ac | 4 ++--
+diff --git a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0003-Support-Resize-and-Color-fomat.patch b/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0003-Support-Resize-and-Color-fomat.patch
+index 612711b..cb84542 100644
+--- a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0003-Support-Resize-and-Color-fomat.patch
++++ b/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0003-Support-Resize-and-Color-fomat.patch
+@@ -2,6 +2,7 @@ From 50c9cb24a94429cd35cc87c7582f2a5a48a12868 Mon Sep 17 00:00:00 2001
+ From: cuongdoan <cuong.doan.ra@renesas.com>
+ Date: Mon, 6 Sep 2021 09:23:58 +0700
+ Subject: [PATCH] Support-Resize-and-Color-fomat
++Upstream-Status: Pending
+ 
+ ---
+  gstvspmfilter.c | 430 +++++++++++++++++++++++-------------------------
+diff --git a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0004-gstvspmfilter-Fix-ISU-limitation-about-alignment.patch b/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0004-gstvspmfilter-Fix-ISU-limitation-about-alignment.patch
+index 425dbec..ad6bf5c 100644
+--- a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0004-gstvspmfilter-Fix-ISU-limitation-about-alignment.patch
++++ b/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0004-gstvspmfilter-Fix-ISU-limitation-about-alignment.patch
+@@ -2,6 +2,7 @@ From 7d1f30f4ec1e6a4a1c12c3339dec543f253bdd4c Mon Sep 17 00:00:00 2001
+ From: Cuong Doan <cuong.doan.ra@renesas.com>
+ Date: Tue, 4 Jan 2022 16:18:01 +0700
+ Subject: [PATCH] gstvspmfilter: Fix ISU limitation about stride alignment 32 &
++Upstream-Status: Pending
+  address alignment 512.
+ 
+ ISU driver has limitation (require stride algin 32 & address align 512),
+diff --git a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0005-recipes-codec-gstreamer1.0-plugin-vspmfilter-Disable.patch b/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0005-recipes-codec-gstreamer1.0-plugin-vspmfilter-Disable.patch
+index 8578df1..50ad60e 100644
+--- a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0005-recipes-codec-gstreamer1.0-plugin-vspmfilter-Disable.patch
++++ b/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0005-recipes-codec-gstreamer1.0-plugin-vspmfilter-Disable.patch
+@@ -2,6 +2,7 @@ From a56a868c7018a4ee2acaa757c894872c6f0ab74c Mon Sep 17 00:00:00 2001
+ From: Cuong Doan <cuong.doan.ra@renesas.com>
+ Date: Wed, 23 Mar 2022 13:00:09 +0700
+ Subject: [PATCH] recipes-codec: gstreamer1.0-plugin-vspmfilter: Disable
++Upstream-Status: Pending
+  passthrough mode.
+ 
+ This patch is for disable passthrough mode when same caps, so that
+diff --git a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0006-vspmfilter-Skip-the-frame-if-physical-address-is-NUL.patch b/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0006-vspmfilter-Skip-the-frame-if-physical-address-is-NUL.patch
+index 3537a77..6559c78 100644
+--- a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0006-vspmfilter-Skip-the-frame-if-physical-address-is-NUL.patch
++++ b/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0006-vspmfilter-Skip-the-frame-if-physical-address-is-NUL.patch
+@@ -2,6 +2,7 @@ From 9676046f9885db5f169626d1c3fe1586d628af9b Mon Sep 17 00:00:00 2001
+ From: Huynh Thanh Hung <hung.huynh.wz@renesas.com>
+ Date: Mon, 14 Nov 2022 14:43:15 +0700
+ Subject: [PATCH 6/7] vspmfilter: Skip the frame if physical address is NULL
++Upstream-Status: Pending
+ 
+ When can not get physical address of any planar, we should skip the
+ frame in order not to get the issue with HW processor.
+diff --git a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0007-vspmfilter-Try-to-get-physical-address-from-dmabuf-f.patch b/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0007-vspmfilter-Try-to-get-physical-address-from-dmabuf-f.patch
+index 87aed10..3774171 100644
+--- a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0007-vspmfilter-Try-to-get-physical-address-from-dmabuf-f.patch
++++ b/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0007-vspmfilter-Try-to-get-physical-address-from-dmabuf-f.patch
+@@ -2,6 +2,7 @@ From 89a14c89c876d52ba7f1932d73e9c39f1639c776 Mon Sep 17 00:00:00 2001
+ From: Huynh Thanh Hung <hung.huynh.wz@renesas.com>
+ Date: Tue, 15 Nov 2022 12:41:25 +0700
+ Subject: [PATCH] vspmfilter: Try to get physical address from dmabuf fd
++Upstream-Status: Pending
+ 
+ Sometimes ioctl VTOP of mmngr can not convert virtual address of frame
+ data to physical address. If the memory is dmabuf, we will try to map
+diff --git a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0008-vspmfilter-Handle-release-the-mmngr-import-pid.patch b/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0008-vspmfilter-Handle-release-the-mmngr-import-pid.patch
+index 8a650e0..cc38218 100644
+--- a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0008-vspmfilter-Handle-release-the-mmngr-import-pid.patch
++++ b/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0008-vspmfilter-Handle-release-the-mmngr-import-pid.patch
+@@ -2,6 +2,7 @@ From ef867461490c40a35e408e60262068ccb72b8c2a Mon Sep 17 00:00:00 2001
+ From: Huynh Thanh Hung <hung.huynh.wz@renesas.com>
+ Date: Thu, 24 Nov 2022 19:04:51 +0700
+ Subject: [PATCH] vspmfilter: Handle release the mmngr import pid
++Upstream-Status: Pending
+ 
+ Previous implement may leak the import pid, this commit will prevent it.
+ 
+diff --git a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0009-Change-default-format-to-ISU_YUV420_NV12.patch b/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0009-Change-default-format-to-ISU_YUV420_NV12.patch
+index 014dde5..7aa1ed1 100644
+--- a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0009-Change-default-format-to-ISU_YUV420_NV12.patch
++++ b/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0009-Change-default-format-to-ISU_YUV420_NV12.patch
+@@ -2,6 +2,7 @@ From 6a704f56814408b41bf1569ef6a3fd1b991069dc Mon Sep 17 00:00:00 2001
+ From: Nhat Thieu <nhat.thieu.xr@renesas.com>
+ Date: Fri, 25 Nov 2022 08:55:59 +0700
+ Subject: [PATCH] Change default format to ISU_YUV420_NV12
++Upstream-Status: Pending
+ 
+ ---
+  gstvspmfilter.c | 2 +-
+diff --git a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0010-Meta-rz-codecs-vspmfilter-Fix-miscalculation-of-buff.patch b/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0010-Meta-rz-codecs-vspmfilter-Fix-miscalculation-of-buff.patch
+index 2f65e67..608b267 100644
+--- a/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0010-Meta-rz-codecs-vspmfilter-Fix-miscalculation-of-buff.patch
++++ b/meta-rz-codecs/recipes-multimedia/gstreamer/gstreamer1.0-plugin-vspmfilter/0010-Meta-rz-codecs-vspmfilter-Fix-miscalculation-of-buff.patch
+@@ -2,6 +2,7 @@ From 81358e57043bedcb59de35e9f25983739de730d9 Mon Sep 17 00:00:00 2001
+ From: Kiet Pham <kiet.pham.xb@renesas.com>
+ Date: Tue, 7 Mar 2023 15:58:21 +0700
+ Subject: [PATCH] Meta-rz-codecs: vspmfilter: Fix miscalculation of buffer size
++Upstream-Status: Pending
+ 
+ In normal case, output frame width is equal output stride. vspmfilter
+ running flow will be showed below:
+diff --git a/meta-rz-codecs/recipes-multimedia/omx-module/omx-user-module.bb b/meta-rz-codecs/recipes-multimedia/omx-module/omx-user-module.bb
+index cf15035..d202887 100644
+--- a/meta-rz-codecs/recipes-multimedia/omx-module/omx-user-module.bb
++++ b/meta-rz-codecs/recipes-multimedia/omx-module/omx-user-module.bb
+@@ -1,19 +1,14 @@
+ DESCRIPTION = "OMX Media Components RZG2"
+ LICENSE = "CLOSED"
+-require include/rzg2-modules-common.inc
++require include/rzg2l-sbc-modules-common.inc
+ require omx-package-rzg2l.inc
+ 
+-COMPATIBLE_MACHINE_rzg2l = "(r9a07g044l|r9a07g054l)"
+-COMPATIBLE_MACHINE_rzg2h = "(r8a774a1|r8a774b1|r8a774c0|r8a774e1)"
+-
+ DEPENDS = " \
+     kernel-module-mmngr mmngr-user-module \
+     vspmif-user-module kernel-module-vspmif \
+     kernel-module-vspm \
+ "
+ 
+-DEPENDS_append_rzg2h = " kernel-module-vsp2driver"
+-
+ # Task Control. Compile is not performed when not installing OMX Video and Audio Libs.
+ # Note) dummy-omx-user-module.inc does not exist.
+ INCLUDE_FILE = '${@oe.utils.conditional("USE_OMX_COMMON", "1", "dummy", "deltask", d )}'
+@@ -29,73 +24,15 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
+ 
+ OMX_EVA_PREFIX = '${@oe.utils.conditional("USE_OMX_EVA_PKG", "1", "EVA", "", d )}'
+ 
+-# SRC file name
+-SRC_URI_OMX = '${@oe.utils.conditional("USE_OMX_COMMON", "1", "file://${OMX_EVA_PREFIX}RTM0AC0000XCMCTL30SL41C.tar.bz2;unpack=0", "", d )}'
+-SRC_URI_VCMND = '${@oe.utils.conditional("USE_VIDEO_DEC", "1", "file://${OMX_EVA_PREFIX}RTM0AC0000XVCMND30SL41C.tar.bz2;unpack=0", "", d )}'
+-SRC_URI_VCMNE = '${@oe.utils.conditional("USE_VIDEO_ENC", "1", "file://${OMX_EVA_PREFIX}RTM0AC0000XVCMNE30SL41C.tar.bz2;unpack=0", "", d )}'
+-SRC_URI_H264D = '${@oe.utils.conditional("USE_H264D_OMX", "1", "file://${OMX_EVA_PREFIX}RTM0AC0000XV264D30SL41C.tar.bz2", "", d )}'
+-SRC_URI_H264E = '${@oe.utils.conditional("USE_H264E_OMX", "1", "file://${OMX_EVA_PREFIX}RTM0AC0000XV264E30SL41C.tar.bz2", "", d )}'
+-
+-SRC_URI_H265D = '${@oe.utils.conditional("USE_H265D_OMX", "1", "file://RTM0AC0000XV265D30SL41C.tar.bz2", "", d )}'
+-SRC_URI_DIVXD = '${@oe.utils.conditional("USE_DIVXD_OMX", "1", "file://RTM0AC0000XVDVXD30SL41C.tar.bz2", "", d )}'
+-SRC_URI_RVD = '${@oe.utils.conditional("USE_RVD_OMX", "1", "file://RTM0AC0000XVRLVD30SL41C.tar.bz2", "", d )}'
+-SRC_URI_VP8D = '${@oe.utils.conditional("USE_VP8D_OMX", "1", "file://RTM0AC0000XVVP8D30SL41C.tar.bz2", "", d )}'
+-SRC_URI_VP8E = '${@oe.utils.conditional("USE_VP8E_OMX", "1", "file://RTM0AC0000XVVP8E30SL41C.tar.bz2", "", d )}'
+-SRC_URI_VP9D = '${@oe.utils.conditional("USE_VP9D_OMX", "1", "file://RTM0AC0000XVVP9D30SL41C.tar.bz2", "", d )}'
+-SRC_URI_ACMND = '${@oe.utils.conditional("USE_AUDIO_OMX", "1", "file://RTM0AC0000XACMND30SL41C.tar.gz", "", d )}'
+-SRC_URI_AACPV2 = '${@oe.utils.conditional("USE_AACPV2D_OMX", "1", "file://RTM0AC0000XAAAPD30SL41C.tar.gz", "", d )}'
+-SRC_URI_MP3 = '${@oe.utils.conditional("USE_MP3D_OMX", "1", "file://RTM0AC0000XAMP3D30SL41C.tar.gz", "", d )}'
+-SRC_URI_WMA = '${@oe.utils.conditional("USE_WMAD_OMX", "1", "file://RTM0AC0000XAWMAD30SL41C.tar.gz", "", d )}'
+-SRC_URI_DDD = '${@oe.utils.conditional("USE_DDD_OMX", "1", "file://RTM0AC0000XADD5D30SL41C.tar.gz", "", d )}'
+-SRC_URI_AACPV2MZ = '${@oe.utils.conditional("USE_AACPV2_MDW", "1", "file://RTM0AC0000ADAAPMZ1SL41C.tar.gz", "", d )}'
+-SRC_URI_MP3MZ = '${@oe.utils.conditional("USE_MP3_MDW", "1", "file://RTM0AC0000ADMP3MZ1SL41C.tar.gz", "", d )}'
+-SRC_URI_WMAMZ = '${@oe.utils.conditional("USE_WMA_MDW", "1", "file://RTM0AC0000ADWMAMZ1SL41C.tar.gz", "", d )}'
+-SRC_URI_DDMZ = '${@oe.utils.conditional("USE_DD_MDW", "1", "file://RTM0AC0000ADDD5MZ1SL41C.tar.gz", "", d )}'
+-
+-SRC_URI_rzg2h = " \
+-	${SRC_URI_OMX} \
+-	${SRC_URI_VCMND} \
+-	${SRC_URI_VCMNE} \
+-	${SRC_URI_H264D} \
+-	${SRC_URI_H264E} \
+-	${SRC_URI_H265D} \
+-	${SRC_URI_DIVXD} \
+-	${SRC_URI_RVD} \
+-	${SRC_URI_ACMND} \
+-	${SRC_URI_AACPV2} \
+-	${SRC_URI_MP3} \
+-	${SRC_URI_WMA} \
+-	${SRC_URI_DDD} \
+-	${SRC_URI_AACPV2MZ} \
+-	${SRC_URI_MP3MZ} \
+-	${SRC_URI_WMAMZ} \
+-	${SRC_URI_DDMZ} \
+-	${SRC_URI_VP8D} \
+-	${SRC_URI_VP8E} \
+-	${SRC_URI_VP9D} \
+-"
+-
+-SRC_URI_rzg2l = " \
++SRC_URI:rzg2l-sbc = " \
+ 	file://${OMX_PKG_TAR} "
+ 
+ # SRC directory name
+-OMX_COMMON_SRC_rzg2l = '${@oe.utils.conditional("USE_OMX_COMMON", "1", "${OMX_EVA_PREFIX}omx_common_lib_package", "", d )}'
+-OMX_VIDEO_DEC_COMMON_SRC_rzg2l = '${@oe.utils.conditional("USE_VIDEO_DEC", "1", "${OMX_EVA_PREFIX}video_dec_common_package", "", d )}'
+-OMX_VIDEO_ENC_COMMON_SRC_rzg2l = '${@oe.utils.conditional("USE_VIDEO_ENC", "1", "${OMX_EVA_PREFIX}video_enc_common_package", "", d )}'
+-OMX_H264_DEC_SRC_rzg2l = '${@oe.utils.conditional("USE_H264D_OMX", "1", "${OMX_EVA_PREFIX}h264_decoder_package", "", d )}'
+-OMX_H264_ENC_SRC_rzg2l = '${@oe.utils.conditional("USE_H264E_OMX", "1", "${OMX_EVA_PREFIX}h264_encoder_package", "", d )}'
+-
+-OMX_COMMON_SRC_rzg2h = '${@oe.utils.conditional("USE_OMX_COMMON", "1", "${OMX_EVA_PREFIX}RTM0AC0000XCMCTL30SL41C", "", d )}'
+-OMX_VIDEO_DEC_COMMON_SRC_rzg2h = '${@oe.utils.conditional("USE_VIDEO_DEC", "1", "${OMX_EVA_PREFIX}RTM0AC0000XVCMND30SL41C", "", d )}'
+-OMX_VIDEO_ENC_COMMON_SRC_rzg2h = '${@oe.utils.conditional("USE_VIDEO_ENC", "1", "${OMX_EVA_PREFIX}RTM0AC0000XVCMNE30SL41C", "", d )}'
+-OMX_H264_DEC_SRC_rzg2h = '${@oe.utils.conditional("USE_H264D_OMX", "1", "${OMX_EVA_PREFIX}RTM0AC0000XV264D30SL41C", "", d )}'
+-OMX_H264_ENC_SRC_rzg2h = '${@oe.utils.conditional("USE_H264E_OMX", "1", "${OMX_EVA_PREFIX}RTM0AC0000XV264E30SL41C", "", d )}'
+-OMX_H265_DEC_SRC_rzg2h = '${@oe.utils.conditional("USE_H265D_OMX", "1", "RTM0AC0000XV265D30SL41C", "", d )}'
+-OMX_DIVX_DEC_SRC_rzg2h = '${@oe.utils.conditional("USE_DIVXD_OMX", "1", "RTM0AC0000XVDVXD30SL41C", "", d )}'
+-OMX_RV_DEC_SRC_rzg2h = '${@oe.utils.conditional("USE_RVD_OMX", "1", "RTM0AC0000XVRLVD30SL41C", "", d )}'
+-OMX_VP8_DEC_SRC_rzg2h = '${@oe.utils.conditional("USE_VP8D_OMX", "1", "RTM0AC0000XVVP8D30SL41C", "", d )}'
+-OMX_VP8_ENC_SRC_rzg2h = '${@oe.utils.conditional("USE_VP8E_OMX", "1", "RTM0AC0000XVVP8E30SL41C", "", d )}'
+-OMX_VP9_DEC_SRC_rzg2h = '${@oe.utils.conditional("USE_VP9D_OMX", "1", "RTM0AC0000XVVP9D30SL41C", "", d )}'
++OMX_COMMON_SRC:rzg2l-sbc = '${@oe.utils.conditional("USE_OMX_COMMON", "1", "${OMX_EVA_PREFIX}omx_common_lib_package", "", d )}'
++OMX_VIDEO_DEC_COMMON_SRC:rzg2l-sbc = '${@oe.utils.conditional("USE_VIDEO_DEC", "1", "${OMX_EVA_PREFIX}video_dec_common_package", "", d )}'
++OMX_VIDEO_ENC_COMMON_SRC:rzg2l-sbc = '${@oe.utils.conditional("USE_VIDEO_ENC", "1", "${OMX_EVA_PREFIX}video_enc_common_package", "", d )}'
++OMX_H264_DEC_SRC:rzg2l-sbc = '${@oe.utils.conditional("USE_H264D_OMX", "1", "${OMX_EVA_PREFIX}h264_decoder_package", "", d )}'
++OMX_H264_ENC_SRC:rzg2l-sbc = '${@oe.utils.conditional("USE_H264E_OMX", "1", "${OMX_EVA_PREFIX}h264_encoder_package", "", d )}'
+ 
+ 
+ OMX_VIDEO_SRC_LIST = " \
+@@ -105,50 +42,12 @@ OMX_VIDEO_SRC_LIST = " \
+     ${OMX_H264_DEC_SRC} \
+     ${OMX_H264_ENC_SRC} \
+ "
+-
+-OMX_VIDEO_SRC_LIST_append_rzg2h = " \
+-    ${OMX_H265_DEC_SRC} \
+-    ${OMX_DIVX_DEC_SRC} \
+-    ${OMX_RV_DEC_SRC} \
+-    ${OMX_VP8_DEC_SRC} \
+-    ${OMX_VP8_ENC_SRC} \
+-    ${OMX_VP9_DEC_SRC} \
+-"
+-
+-AACPV2_MIDDLEWARE_SRC_rzg2h = "RTM0AC0000ADAAPMZ1SL41C"
+-MP3_MIDDLEWARE_SRC_rzg2h = "RTM0AC0000ADMP3MZ1SL41C"
+-WMA_MIDDLEWARE_SRC_rzg2h = "RTM0AC0000ADWMAMZ1SL41C"
+-DD_MIDDLEWARE_SRC_rzg2h = "RTM0AC0000ADDD5MZ1SL41C"
+-
+-OMX_AUDIO_COMMON_SRC_rzg2h = '${@oe.utils.conditional("USE_AUDIO_OMX", "1", "RTM0AC0000XACMND30SL41C", "", d )}'
+-OMX_AACPV2_DEC_SRC_rzg2h = '${@oe.utils.conditional("USE_AACPV2D_OMX", "1", "RTM0AC0000XAAAPD30SL41C", "", d )}'
+-OMX_MP3_DEC_SRC_rzg2h = '${@oe.utils.conditional("USE_MP3D_OMX", "1", "RTM0AC0000XAMP3D30SL41C", "", d )}'
+-OMX_WMA_DEC_SRC_rzg2h = '${@oe.utils.conditional("USE_WMAD_OMX", "1", "RTM0AC0000XAWMAD30SL41C", "", d )}'
+-OMX_DD_DEC_SRC_rzg2h = '${@oe.utils.conditional("USE_DDD_OMX", "1", "RTM0AC0000XADD5D30SL41C", "", d )}'
+-
+-OMX_AUDIO_SRC_LIST_rzg2h = " \
+-    ${OMX_AUDIO_COMMON_SRC} \
+-    ${OMX_AACPV2_DEC_SRC} \
+-    ${OMX_MP3_DEC_SRC} \
+-    ${OMX_WMA_DEC_SRC} \
+-    ${OMX_DD_DEC_SRC} \
+-"
+-
+-S_rzg2h = "${WORKDIR}/omx/"
+-S_rzg2l = "${WORKDIR}/${OMX_PKG}/"
++S:rzg2l-sbc = "${WORKDIR}/${OMX_PKG}"
+ 
+ do_fetch[file-checksums] = ""
+ do_compile[noexec] = "1"
+ do_package_qa[noexec] = "1"
+ 
+-# Create ${S} directory
+-do_unpack_prepend() {
+-    os.system("install -d ${S}")
+-}
+-
+-do_unpack_append_rzg2l() {
+-    bb.build.exec_func('do_unpack_omx_module', d)
+-}
+ do_unpack_omx_module() {
+     cd ${S}
+     for omxmc in ${OMX_VIDEO_SRC_LIST}
+@@ -157,48 +56,13 @@ do_unpack_omx_module() {
+     done
+ }
+ 
+-do_unpack_append_rzg2h() {
+-    bb.build.exec_func('setup_build_tree', d)
+-}
+-
+-setup_omx_package(){
+-    tar xf ${WORKDIR}/omx_pkg*.tar.bz2 --strip=2 -C ${WORKDIR}
+-    tar xf ${WORKDIR}/h264_decoder_package.tar.bz2 -C ${WORKDIR}
+-    tar xf ${WORKDIR}/h264_encoder_package.tar.bz2 -C ${WORKDIR}
+-}
+-
+-setup_build_tree() {
+-    for omxmc in ${OMX_COMMON_SRC} ${OMX_VIDEO_DEC_COMMON_SRC} ${OMX_VIDEO_ENC_COMMON_SRC}
+-    do
+-        tar xf ${WORKDIR}/${omxmc}.tar.bz2 -C ${WORKDIR}
+-        tar xf ${WORKDIR}/${omxmc}.tar.bz2 -C ${S} ${omxmc}/src --strip=2
+-        tar xf ${WORKDIR}/${omxmc}.tar.bz2 -C ${S} ${omxmc}/include --strip=1
+-    done
++do_unpack:append:rzg2l-sbc() {
++    bb.build.exec_func('do_unpack_omx_module', d)
+ }
+ 
+-B = "${S}"
+-
+ EXTRA_OECONF = "OMXR_DEFAULT_CONFIG_FILE_NAME=${sysconfdir}/omxr/omxr_config_base.txt"
+ 
+-do_configure_rzg2h() {
+-    export uvcsdrv_dir="${INCSHARED}"
+-    chmod u+x autogen.sh
+-    ./autogen.sh
+-    oe_runconf
+-}
+-
+-do_install_omx_video_prepend_rzg2h() {
+-    cd ${D}/${libdir}
+-    for omxmc in ${OMX_VIDEO_SRC_LIST}
+-    do
+-        src="${WORKDIR}/${omxmc}"
+-        install -m 755 ${src}/lib/lib*.so.* ${D}/${libdir}
+-        install -m 644 ${src}/include/*.h ${D}/${includedir}
+-        install -m 644 ${src}/config/*.txt ${D}/${sysconfdir}/omxr
+-    done
+-}
+-
+-do_install_omx_video_prepend_rzg2l() {
++do_install_omx_video() {
+     cd ${S}
+     for omxmc in ${OMX_VIDEO_SRC_LIST}
+     do
+@@ -206,9 +70,7 @@ do_install_omx_video_prepend_rzg2l() {
+         install -m 644 ${S}/${omxmc}/include/*.h ${D}/${includedir}
+         install -m 644 ${S}/${omxmc}/config/*.txt ${D}/${sysconfdir}/omxr
+     done
+-}
+ 
+-do_install_omx_video() {
+     cd ${D}/${libdir}
+     if [ "X${USE_OMX_COMMON}" = "X1" ] ; then
+         ln -s libomxr_core.so.3.0.0 libomxr_core.so.3
+@@ -255,11 +117,9 @@ do_install_omx_video() {
+         ln -s libuvcs_avce.so.3 libuvcs_avce.so
+     fi
+ 
+-}
+-
+-do_install_omx_video_append_rzg2l() {
+     if [ "X${USE_OMX_COMMON}" = "X1" ] ; then
+-        ln -s libomxr_uvcs_udf.so.0.0.0 libomxr_uvcs_udf.so
++        ln -s libomxr_uvcs_udf.so.0.0.0 libomxr_uvcs_udf.so.0
++        ln -s libomxr_uvcs_udf.so.0 libomxr_uvcs_udf.so
+         ln -s libomxr_videoconverter.so.3.0.0 libomxr_videoconverter.so.3
+         ln -s libomxr_videoconverter.so.3 libomxr_videoconverter.so
+         ln -s libomxr_utility.so.3.0.0 libomxr_utility.so.3
+@@ -268,152 +128,8 @@ do_install_omx_video_append_rzg2l() {
+ 
+     if [ "X${USE_VIDEO_DEC}" = "X1" ] ; then
+         ln -s libomxr_cnvpisu.so.0.0.0 libomxr_cnvpisu.so
+-    fi
+-}
+-
+-do_install_omx_video_append_rzg2h() {
+-    if [ "X${USE_H265D_OMX}" = "X1" ]; then
+-        ln -s libomxr_mc_hevd.so.3.0.0 libomxr_mc_hevd.so.3
+-        ln -s libomxr_mc_hevd.so.3 libomxr_mc_hevd.so
+-
+-        ln -s libuvcs_hevd.so.3.0.0 libuvcs_hevd.so.3
+-        ln -s libuvcs_hevd.so.3 libuvcs_hevd.so
+-    fi
+-
+-    if [ "X${USE_DIVXD_OMX}" = "X1" ]; then
+-        ln -s libomxr_mc_divxd.so.3.0.0 libomxr_mc_divxd.so.3
+-        ln -s libomxr_mc_divxd.so.3 libomxr_mc_divxd.so
+-
+-        ln -s libuvcs_dvxd.so.3.0.0 libuvcs_dvxd.so.3
+-        ln -s libuvcs_dvxd.so.3 libuvcs_dvxd.so
+-    fi
+-
+-    if [ "X${USE_RVD_OMX}" = "X1" ]; then
+-        ln -s libomxr_mc_rlvd.so.3.0.0 libomxr_mc_rlvd.so.3
+-        ln -s libomxr_mc_rlvd.so.3 libomxr_mc_rlvd.so
+-
+-        ln -s libuvcs_rlvd.so.3.0.0 libuvcs_rlvd.so.3
+-        ln -s libuvcs_rlvd.so.3 libuvcs_rlvd.so
+-    fi
+-
+-    if [ "X${USE_VP8D_OMX}" = "X1" ]; then
+-        ln -s libomxr_mc_vp8d.so.3.0.0 libomxr_mc_vp8d.so.3
+-        ln -s libomxr_mc_vp8d.so.3 libomxr_mc_vp8d.so
+-
+-        ln -s libuvcs_vp8d.so.3.0.0 libuvcs_vp8d.so.3
+-        ln -s libuvcs_vp8d.so.3 libuvcs_vp8d.so
+-    fi
+-
+-    if [ "X${USE_VP8E_OMX}" = "X1" ]; then
+-        ln -s libomxr_mc_vp8e.so.3.0.0 libomxr_mc_vp8e.so.3
+-        ln -s libomxr_mc_vp8e.so.3 libomxr_mc_vp8e.so
+-
+-        ln -s libuvcs_vp8e.so.3.0.0 libuvcs_vp8e.so.3
+-        ln -s libuvcs_vp8e.so.3 libuvcs_vp8e.so
+-    fi
+-
+-    if [ "X${USE_VP9D_OMX}" = "X1" ]; then
+-        ln -s libomxr_mc_vp9d.so.3.0.0 libomxr_mc_vp9d.so.3
+-        ln -s libomxr_mc_vp9d.so.3 libomxr_mc_vp9d.so
+-
+-        ln -s libuvcs_vp9d.so.3.0.0 libuvcs_vp9d.so.3
+-        ln -s libuvcs_vp9d.so.3 libuvcs_vp9d.so
+-    fi
+-}
+-
+-do_install_audio_middleware() {
+-	:
+-}
+-
+-do_install_audio_middleware_append_rzg2h() {
+-    cd ${D}/${libdir}
+-
+-    if [ "X${USE_AACPV2_MDW}" = "X1" ]; then
+-        install -m 755 ${WORKDIR}/${AACPV2_MIDDLEWARE_SRC}/lib/libRSACPDLA_L.so.2.0 \
+-            ${D}/${libdir}
+-        install -m 644 ${WORKDIR}/${AACPV2_MIDDLEWARE_SRC}/include/*.h ${D}/${includedir}
+-
+-        ln -s libRSACPDLA_L.so.2.0 libRSACPDLA_L.so.2
+-        ln -s libRSACPDLA_L.so.2 libRSACPDLA_L.so
+-    fi
+-
+-    if [ "X${USE_MP3_MDW}" = "X1" ]; then
+-        install -m 755 ${WORKDIR}/${MP3_MIDDLEWARE_SRC}/lib/libMP3DLA_L.so.2.0 \
+-            ${D}/${libdir}
+-        install -m 644 ${WORKDIR}/${MP3_MIDDLEWARE_SRC}/include/*.h ${D}/${includedir}
+-
+-        ln -s libMP3DLA_L.so.2.0 libMP3DLA_L.so.2
+-        ln -s libMP3DLA_L.so.2 libMP3DLA_L.so
+-    fi
+-
+-    if [ "X${USE_WMA_MDW}" = "X1" ]; then
+-        install -m 755 ${WORKDIR}/${WMA_MIDDLEWARE_SRC}/lib/libWMASTDLA_L.so.2.0 \
+-            ${D}/${libdir}
+-        install -m 644 ${WORKDIR}/${WMA_MIDDLEWARE_SRC}/include/*.h ${D}/${includedir}
+-
+-        ln -s libWMASTDLA_L.so.2.0 libWMASTDLA_L.so.2
+-        ln -s libWMASTDLA_L.so.2 libWMASTDLA_L.so
+-    fi
+-
+-    if [ "X${USE_DD_MDW}" = "X1" ]; then
+-        install -m 755 ${WORKDIR}/${DD_MIDDLEWARE_SRC}/lib/libRSDACDLA_L.so.2.0 \
+-            ${D}/${libdir}
+-        install -m 644 ${WORKDIR}/${DD_MIDDLEWARE_SRC}/include/*.h ${D}/${includedir}
+-
+-        ln -s libRSDACDLA_L.so.2.0 libRSDACDLA_L.so.2
+-        ln -s libRSDACDLA_L.so.2 libRSDACDLA_L.so
+-    fi
+-}
+-
+-do_install_omx_audio() {
+-	:
+-}
+-
+-do_install_omx_audio_append_rzg2h() {
+-    cd ${D}/${libdir}
+-    for omxmc in ${OMX_AUDIO_SRC_LIST}
+-    do
+-        src="${WORKDIR}/${omxmc}/"
+-        install -m 755 ${src}/lib/lib*.so.* ${D}/${libdir}
+-        if [ -d ${src}/include ]; then
+-            install -m 644 ${src}/include/*.h ${D}/${includedir}
+-        fi
+-        install -m 644 ${src}/config/*.txt ${D}/${sysconfdir}/omxr
+-    done
+-
+-    if [ "X${USE_AUDIO_OMX}" = "X1" ]; then
+-        ln -s libomxr_mc_acmn.so.3.0.0 libomxr_mc_acmn.so.3
+-        ln -s libomxr_mc_acmn.so.3 libomxr_mc_acmn.so
+-    fi
+-
+-    if [ "X${USE_AACPV2D_OMX}" = "X1" ]; then
+-        ln -s libomxr_mc_aapd.so.3.0.0 libomxr_mc_aapd.so.3
+-        ln -s libomxr_mc_aapd.so.3 libomxr_mc_aapd.so
+-    fi
+-
+-    if [ "X${USE_MP3D_OMX}" = "X1" ]; then
+-        ln -s libomxr_mc_mp3d.so.3.0.0 libomxr_mc_mp3d.so.3
+-        ln -s libomxr_mc_mp3d.so.3 libomxr_mc_mp3d.so
+-    fi
+-
+-    if [ "X${USE_WMAD_OMX}" = "X1" ]; then
+-        ln -s libomxr_mc_wmad.so.3.0.0 libomxr_mc_wmad.so.3
+-        ln -s libomxr_mc_wmad.so.3 libomxr_mc_wmad.so
+-    fi
+-
+-    if [ "X${USE_DDD_OMX}" = "X1" ]; then
+-        ln -s libomxr_mc_ddd.so.3.0.0 libomxr_mc_ddd.so.3
+-        ln -s libomxr_mc_ddd.so.3 libomxr_mc_ddd.so
+-    fi
+-}
+-
+-do_install_prepend_rzg2h() {
+-    if [ "X${USE_OMX_COMMON}" = "X1" ]; then
+-        oe_runmake 'DESTDIR=${D}' install
+-        # Info dir listing isn't interesting at this point so remove it if it exists.
+-        if [ -e "${D}/${infodir}/dir" ]; then
+-            rm -f ${D}/${infodir}/dir
+-        fi
++        ln -s libomxr_cnvosdep.so.3.0.0 libomxr_cnvosdep.so.3
++        ln -s libomxr_cnvosdep.so.3 libomxr_cnvosdep.so
+     fi
+ }
+ 
+@@ -429,28 +145,21 @@ do_install() {
+     do_install_omx_video
+ }
+ 
+-do_install_append_rzg2h() {
+-    # Copy audio middleware library
+-    do_install_audio_middleware
+-    # Copy omx audio library
+-    do_install_omx_audio
+-}
+-
+-INSANE_SKIP_${PN} = "dev-so"
++INSANE_SKIP:${PN} = "dev-so"
+ 
+-FILES_${PN} += " \
++FILES:${PN} += " \
+     ${libdir}/*.so \
+ "
+ 
+-FILES_${PN}-dev = " \
++FILES:${PN}-dev = " \
+     ${includedir} \
+     ${libdir}/*.la \
+ "
+ 
+-RDEPENDS_${PN} += "mmngr-user-module vspmif-user-module"
++RDEPENDS:${PN} += "mmngr-user-module vspmif-user-module"
+ 
+ #To avoid already-stripped errors and not stripped libs from packages
+-INSANE_SKIP_${PN} += "already-stripped"
++INSANE_SKIP:${PN} += "already-stripped"
+ 
+ # Skip debug split and strip of do_package()
+ INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
+diff --git a/meta-rz-codecs/recipes-multimedia/packagegroups/packagegroup-gstreamer1.0-plugins.bbappend b/meta-rz-codecs/recipes-multimedia/packagegroups/packagegroup-gstreamer1.0-plugins.bbappend
+index d8694ad..38d2dfb 100644
+--- a/meta-rz-codecs/recipes-multimedia/packagegroups/packagegroup-gstreamer1.0-plugins.bbappend
++++ b/meta-rz-codecs/recipes-multimedia/packagegroups/packagegroup-gstreamer1.0-plugins.bbappend
+@@ -1,10 +1,9 @@
+-DEPENDS += "${@bb.utils.contains("USE_OMX_COMMON", "1", "gstreamer1.0-omx", "", d)}"
++DEPENDS += "gstreamer1.0-plugin-vspmfilter"
+ 
+-RDEPENDS_packagegroup-gstreamer1.0-plugins += " \
+-	gstreamer1.0-plugin-vspmfilter \
+-	${@bb.utils.contains("USE_OMX_COMMON", "1", "gstreamer1.0-omx", "", d)} \
++PACKAGES:append = " \
++    packagegroup-vspfilter-init \
+ "
+ 
+-RDEPENDS_packagegroup-gstreamer1.0-plugins_append_rzg2h = " \
+-	${@bb.utils.contains("USE_OMX_COMMON", "1", "gstreamer1.0-plugin-vspfilter vspfilter-init", "", d)} \
+-"
++RDEPENDS:packagegroup-gstreamer1.0-plugins:append = " \
++    gstreamer1.0-plugin-vspmfilter \
++"
+\ No newline at end of file
