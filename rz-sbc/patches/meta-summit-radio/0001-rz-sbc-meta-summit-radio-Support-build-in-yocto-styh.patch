@@ -1,7 +1,8 @@
-From 0baefa4d015a60b0d0cb0560df251fe25769b13f Mon Sep 17 00:00:00 2001
+From aa9403a7df755326f6b83355f11725679e3d93ea Mon Sep 17 00:00:00 2001
 From: Nam Vo Khac RVC <nam.vo.yb@bp.renesas.com>
 Date: Mon, 2 Dec 2024 04:29:56 +0000
-Subject: [PATCH] rz-sbc: meta-summit-radio: Support build in yocto styhead release
+Subject: [PATCH 1/2] rz-sbc: meta-summit-radio: Support build in yocto styhead
+ release
 
 Change the source variable S to suit Yocto Styhead. Since a recipe has S
 set to WORKDIR, this is no longer supported and will result in an error.
@@ -95,7 +96,7 @@ index 0000000..27c5ca2
 + 							aptr[3], alen[3]);
 + 			}
 diff --git a/meta-summit-radio/recipes-packages/summit-supplicant/summit-supplicant.inc b/meta-summit-radio/recipes-packages/summit-supplicant/summit-supplicant.inc
-index 2028e36..d57a017 100644
+index 2028e36..82aef8c 100644
 --- a/meta-summit-radio/recipes-packages/summit-supplicant/summit-supplicant.inc
 +++ b/meta-summit-radio/recipes-packages/summit-supplicant/summit-supplicant.inc
 @@ -24,6 +24,8 @@ SRC_URI += "${SUMMIT_URI}/summit_supplicant-src-${PV}.tar.gz;name=summit-supplic
@@ -121,5 +122,5 @@ index 2028e36..d57a017 100644
  
  do_compile () {
 -- 
-2.25.1
+2.43.0
 

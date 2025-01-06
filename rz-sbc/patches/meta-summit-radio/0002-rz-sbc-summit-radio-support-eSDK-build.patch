@@ -1,0 +1,183 @@
+From 7c764b54fb7b6aefca75172abead2e93b8601a6b Mon Sep 17 00:00:00 2001
+From: Tien Nguyen <tien.nguyen.uh@renesas.com>
+Date: Sun, 29 Dec 2024 13:23:08 +0000
+Subject: [PATCH 2/2] rz-sbc: summit-radio: support eSDK build
+
+Change include:
+    - Include files and its version control file: these include files
+      need to be copied into the meta-layer as do_populate_sdk_ext task does
+      not aware any location out of the layer settings.
+    - Update version control files to point to the new file locations within the meta-layer.
+
+Signed-off-by: Tien Nguyen <tien.nguyen.uh@renesas.com>
+---
+ meta-summit-radio/radio-stack-4550-hashes.inc | 14 ++++++
+ .../radio-stack-4550-version.inc              |  2 +-
+ meta-summit-radio/radio-stack-60-hashes.inc   | 46 ++++++++++++++++++
+ meta-summit-radio/radio-stack-60-version.inc  |  2 +-
+ meta-summit-radio/radio-stack-lwb-hashes.inc  | 48 +++++++++++++++++++
+ meta-summit-radio/radio-stack-lwb-version.inc |  2 +-
+ 6 files changed, 111 insertions(+), 3 deletions(-)
+ create mode 100644 meta-summit-radio/radio-stack-4550-hashes.inc
+ create mode 100644 meta-summit-radio/radio-stack-60-hashes.inc
+ create mode 100644 meta-summit-radio/radio-stack-lwb-hashes.inc
+
+diff --git a/meta-summit-radio/radio-stack-4550-hashes.inc b/meta-summit-radio/radio-stack-4550-hashes.inc
+new file mode 100644
+index 0000000..37b43cd
+--- /dev/null
++++ b/meta-summit-radio/radio-stack-4550-hashes.inc
+@@ -0,0 +1,14 @@
++PV = "11.39.0.13"
++
++SRC_URI[summit-supplicant-libs-legacy-arm-eabi.md5sum] = "d13057f2906fec9e10ce7f92d2bff045"
++SRC_URI[summit-supplicant-libs-legacy-arm-eabi.sha256sum] = "7e5a45af6fc9e3f8f04ab1f09164d1798916d4a7c3d268d10f9924586372dd85"
++SRC_URI[summit-supplicant-libs-legacy-arm-eabihf.md5sum] = "b571879f6d693292b6b2d493df8356a4"
++SRC_URI[summit-supplicant-libs-legacy-arm-eabihf.sha256sum] = "dd153414d4015c705668a712b54d2895e476a14bfb6cca1003e0ef8417bfd23c"
++SRC_URI[summit-supplicant-src.md5sum] = "174c40073b69b54bc4aaac9a441a5e84"
++SRC_URI[summit-supplicant-src.sha256sum] = "c42bda542743e0977d5d8b182522e5987af47c499205c4c9c6174e3e9ff7a83c"
++SRC_URI[summit-backports.md5sum] = "83d77f39770f298dae9b89774828d595"
++SRC_URI[summit-backports.sha256sum] = "728acc841f9741e565806aca13be19df47f8bdd9e576ab4f3084ae054d55b90f"
++SRC_URI[ath6k-6003-firmware.md5sum] = "0b19ed1d6b113c621c1e0a87efe087d6"
++SRC_URI[ath6k-6003-firmware.sha256sum] = "c7d6b644a3c77bd5a2f6dfab43ce91897adc349d49720cb7a5267c387d9cd96d"
++SRC_URI[ath6k-6004-firmware.md5sum] = "0acaac77e1292aa80b080d215704a8fb"
++SRC_URI[ath6k-6004-firmware.sha256sum] = "87fc258967493ba6b4950d4344043aa6b306b318941120f7144b90b51548bc11"
+diff --git a/meta-summit-radio/radio-stack-4550-version.inc b/meta-summit-radio/radio-stack-4550-version.inc
+index 1c9c341..b5b355c 100644
+--- a/meta-summit-radio/radio-stack-4550-version.inc
++++ b/meta-summit-radio/radio-stack-4550-version.inc
+@@ -7,4 +7,4 @@ SUMMIT_URI_LOCAL = "file://${TOPDIR}/../release"
+ SUMMIT_URI_BASE = "https://github.com/LairdCP/Sterling-LWB-and-LWB5-Release-Packages/releases/download/LRD-REL-${PV}"
+ SUMMIT_URI_BASE:summit-internal = "https://${RFPROS_FILESHARE_AUTH}files.devops.rfpros.com/builds/linux"
+ 
+-require ../radio-stack-4550-hashes.inc
++require radio-stack-4550-hashes.inc
+diff --git a/meta-summit-radio/radio-stack-60-hashes.inc b/meta-summit-radio/radio-stack-60-hashes.inc
+new file mode 100644
+index 0000000..6e1bc50
+--- /dev/null
++++ b/meta-summit-radio/radio-stack-60-hashes.inc
+@@ -0,0 +1,46 @@
++PV = "11.39.0.23"
++
++SRC_URI[adaptive-ww-x86.md5sum] = "d57c7199bc81c90bd51b88f3eb960780"
++SRC_URI[adaptive-ww-x86.sha256sum] = "87da96163549d6e72ebdd706055400552372d9cd353d96871817e20100dee424"
++SRC_URI[summit-supplicant-libs-x86.md5sum] = "432cef79f7f8df6984a9bfa8f397e890"
++SRC_URI[summit-supplicant-libs-x86.sha256sum] = "7adf29bc9df816dbea7531f569c004fee51d24dbcd42a9b00ba6898842db7a77"
++SRC_URI[adaptive-ww-x86_64.md5sum] = "a9518609fa877b0f3cb341b2d0ac27d8"
++SRC_URI[adaptive-ww-x86_64.sha256sum] = "da9e872faf8c06927d632a31811ea9550837a0061a59416a6822d3f09807574d"
++SRC_URI[summit-supplicant-libs-x86_64.md5sum] = "896d00a39e735a5b5522ceee98f09cad"
++SRC_URI[summit-supplicant-libs-x86_64.sha256sum] = "001776b280634a9e0bdf91ca0bfaef83dfadf1237ce8f4f6e8890a71ccd4235f"
++SRC_URI[adaptive-ww-arm-eabi.md5sum] = "087a9582f86922fc3f49129e399cb944"
++SRC_URI[adaptive-ww-arm-eabi.sha256sum] = "e725a12c200609e48afb88d46da41914e7fd4cc36c7e4407ce904f3bbbdf0c43"
++SRC_URI[summit-supplicant-libs-arm-eabi.md5sum] = "8773d6a9308234a87c40873663350cbf"
++SRC_URI[summit-supplicant-libs-arm-eabi.sha256sum] = "93735d2837d4d76d5c4068b79c15406184d8c464149464ff85f0854480a3e641"
++SRC_URI[adaptive-ww-arm-eabihf.md5sum] = "c3f1eafd89894524f0c52480a2e239df"
++SRC_URI[adaptive-ww-arm-eabihf.sha256sum] = "05fc6a5d51119723177dddd59ead62dfbc045ae66296a3c186b1d0dca638a13f"
++SRC_URI[summit-supplicant-libs-arm-eabihf.md5sum] = "0d6de43e4be6530d18814fa0aea242a8"
++SRC_URI[summit-supplicant-libs-arm-eabihf.sha256sum] = "2920290476f67242ffbd86a49f0f21b92129b9a4161a40d58095c6805e47f48b"
++SRC_URI[adaptive-ww-aarch64.md5sum] = "b90c8deae9c1848f9d7e0ee49cf2a37d"
++SRC_URI[adaptive-ww-aarch64.sha256sum] = "7f9547cf8e2e074e549bca5d6d9c71d815dd49da96f4a436b2032d49c3b753b1"
++SRC_URI[summit-supplicant-libs-aarch64.md5sum] = "1b1db80544b8a857de00bc4094e62c06"
++SRC_URI[summit-supplicant-libs-aarch64.sha256sum] = "71f2e9f01b2340b682255a52dde4b36dabc3355b0111a28685e1550f8ae6d988"
++SRC_URI[adaptive-ww-powerpc64-e5500.md5sum] = "fee60c5ec4a7267b40e624b3d805dd09"
++SRC_URI[adaptive-ww-powerpc64-e5500.sha256sum] = "c875ca351cc3fc06c1c582afbf608f7587df98b65ccdbd4cd264fa429abb6660"
++SRC_URI[summit-supplicant-libs-powerpc64-e5500.md5sum] = "f98e2a583bbc76cdd0a3c4b3b041f5e6"
++SRC_URI[summit-supplicant-libs-powerpc64-e5500.sha256sum] = "c60d66106f417c332c9d4e9b2d1c94953d76a967211d3ebb0cf01ce514aa1759"
++SRC_URI[summit-supplicant-src.md5sum] = "99a47f3115f2c3c08712c7fbda93730a"
++SRC_URI[summit-supplicant-src.sha256sum] = "432c30467d889c338d0e8ef5b8ef07c7e484bffb97f4384f7971c4559e0cdd1d"
++SRC_URI[adaptive-bt.md5sum] = "0789152582823292a362d0d0241b868f"
++SRC_URI[adaptive-bt.sha256sum] = "d3fbc89ce9bb9064c07ab1bc7e5697b17b9bf35a4fc7fb3e4a11a3548e75c9aa"
++SRC_URI[summit-network-manager.md5sum] = "df23025ace32637687b57c9f0707044e"
++SRC_URI[summit-network-manager.sha256sum] = "ac37493fa1d178edfe9ba3be1ebab4715b3ba012c16fccf1c6f453c31e4d4ce2"
++SRC_URI[summit-backports.md5sum] = "53b39658e9c36d6985be0eece013ba51"
++SRC_URI[summit-backports.sha256sum] = "5dbf736d2815150d0d5df1c04498acda8e530463f4498c38e31bb9ad23b1397a"
++SRC_URI[60-radio-firmware-pcie-uart.md5sum] = "6401700ebc0a14174a44402f6e1f4b4b"
++SRC_URI[60-radio-firmware-pcie-uart.sha256sum] = "41c089307b6827c81149c9634f0be5830917069c573f4b4eec0609219a29a8ea"
++SRC_URI[60-radio-firmware-pcie-usb.md5sum] = "cc82c21cf15fdbc074627c403d2b25d9"
++SRC_URI[60-radio-firmware-pcie-usb.sha256sum] = "70eaa393ec0de39bf898a8665c9ca60ce99f142cdeeb2eaeaa50a271174ee168"
++SRC_URI[60-radio-firmware-sdio-uart.md5sum] = "ed646c3833bd5917c8ac258cfcd49941"
++SRC_URI[60-radio-firmware-sdio-uart.sha256sum] = "1eaa821e06ee0d8cf5b40b433edd2fd48c85a3bf96e453c9bd42dc5a7e12562f"
++SRC_URI[60-radio-firmware-sdio-sdio.md5sum] = "ed3dc782297e5a6d294b54fed1df0e23"
++SRC_URI[60-radio-firmware-sdio-sdio.sha256sum] = "38f54dac0ef94ff9165798d4bbe3cd7b0efb25cce43b2acb5949094e9fd942c3"
++SRC_URI[60-radio-firmware-usb-usb.md5sum] = "27080f17505ec86605ccde20ab239119"
++SRC_URI[60-radio-firmware-usb-usb.sha256sum] = "3d4b8310011e5747f1fe7344a17f01709765422d77a0086aa58c3357d2eb5349"
++SRC_URI[60-radio-firmware-usb-uart.md5sum] = "45a4ecde0eba9681d608e91fee426c2c"
++SRC_URI[60-radio-firmware-usb-uart.sha256sum] = "085d68c8e39fb549547afaacb995d758e77aabb7a8451f820178543558cfefb0"
+diff --git a/meta-summit-radio/radio-stack-60-version.inc b/meta-summit-radio/radio-stack-60-version.inc
+index f92b5b1..6de461d 100644
+--- a/meta-summit-radio/radio-stack-60-version.inc
++++ b/meta-summit-radio/radio-stack-60-version.inc
+@@ -7,4 +7,4 @@ SUMMIT_URI_LOCAL = "file://${TOPDIR}/../release"
+ SUMMIT_URI_BASE = "https://github.com/LairdCP/Sterling-60-Release-Packages/releases/download/LRD-REL-${PV}"
+ SUMMIT_URI_BASE:summit-internal = "https://${RFPROS_FILESHARE_AUTH}files.devops.rfpros.com/builds/linux"
+ 
+-require ../radio-stack-60-hashes.inc
++require radio-stack-60-hashes.inc
+diff --git a/meta-summit-radio/radio-stack-lwb-hashes.inc b/meta-summit-radio/radio-stack-lwb-hashes.inc
+new file mode 100644
+index 0000000..f7f3baa
+--- /dev/null
++++ b/meta-summit-radio/radio-stack-lwb-hashes.inc
+@@ -0,0 +1,48 @@
++PV = "11.39.0.18"
++
++SRC_URI[summit-supplicant-libs-x86.md5sum] = "5a06918314ff7f993b1e18459fa28bd5"
++SRC_URI[summit-supplicant-libs-x86.sha256sum] = "e2911a52737a4164d2b6831d13049546fccf43f89d6b2db6bc8290adff0c6413"
++SRC_URI[summit-supplicant-libs-x86_64.md5sum] = "5471a69a0fa3119966af831035b7d3c5"
++SRC_URI[summit-supplicant-libs-x86_64.sha256sum] = "398030fcb6254b34c75e0669ea1a37e056636b456819df2aa47165487ae77099"
++SRC_URI[summit-supplicant-libs-arm-eabi.md5sum] = "a7ae6b113910fca6ce2655f86217b801"
++SRC_URI[summit-supplicant-libs-arm-eabi.sha256sum] = "455cf9b866d76d221117a9bca87de0664bdccb2a6f76248ec33ac20d7b02fc01"
++SRC_URI[summit-supplicant-libs-arm-eabihf.md5sum] = "d6b807cf89b0ea4e94215873953c8f71"
++SRC_URI[summit-supplicant-libs-arm-eabihf.sha256sum] = "a7960fbf71bc1e4a0e5eb013566e2d054e07781d8228406b0067cb34e02d8457"
++SRC_URI[summit-supplicant-libs-aarch64.md5sum] = "582e7ed49ec578b3fb9d297f1e23d16e"
++SRC_URI[summit-supplicant-libs-aarch64.sha256sum] = "e5bc6c368a147d56de7065a4c58f7c3df232cad51ff30da81c13cbbf71c8fed1"
++SRC_URI[summit-supplicant-libs-powerpc64-e5500.md5sum] = "b36caa596a91a829e81853e750fce8cf"
++SRC_URI[summit-supplicant-libs-powerpc64-e5500.sha256sum] = "24d65b79697216881e672c49ab9a61b02f944931fee3b66c14a43d4b088ca3f8"
++SRC_URI[summit-supplicant-src.md5sum] = "8c66769a8741fe7d5242049b57a23083"
++SRC_URI[summit-supplicant-src.sha256sum] = "3aba503a23735ed7912237e8499f67a8752946c387b76dcfc096a01770185052"
++SRC_URI[summit-network-manager.md5sum] = "4e7184c97739fc8fb452ae9ab25ac91e"
++SRC_URI[summit-network-manager.sha256sum] = "753a42f6f436bd286612b6b966167b3eece9bdda78be5f57014e0b5a66743b22"
++SRC_URI[summit-backports.md5sum] = "12d182f8d11a2f423bfba5180d4fbf63"
++SRC_URI[summit-backports.sha256sum] = "c70c17c3c471695f91ee832dd0a0ece8417bb2de8630867c32459eb709bf1b7f"
++SRC_URI[lwbplus-firmware.md5sum] = "b9c39294658202cfeb52d28d9b5d8cba"
++SRC_URI[lwbplus-firmware.sha256sum] = "1ec8cc3308441c63b74fae88f59a7a22facc5dd5420f54daa4f50c122186b296"
++SRC_URI[lwb-etsi-firmware.md5sum] = "18de016cd6476bb0fca487384c249c43"
++SRC_URI[lwb-etsi-firmware.sha256sum] = "ac545b0d096cf60a267e43e24abdf4a7f5f0e57e8a64151b1161f67a05234240"
++SRC_URI[lwb-fcc-firmware.md5sum] = "5d43f5cfca0bcd617ae2fd244a453a8d"
++SRC_URI[lwb-fcc-firmware.sha256sum] = "f076de39385368849184036a4828051ea0ed4129c1ec115a45b05cd66605c337"
++SRC_URI[lwb-jp-firmware.md5sum] = "75adefedc824242af58dc46e76a8c7f2"
++SRC_URI[lwb-jp-firmware.sha256sum] = "6476a653c0aac228ae890d7218ee3bcafe3ffbbb175de33bf98eb93d6f0424c2"
++SRC_URI[lwb5-etsi-firmware.md5sum] = "6c3fc00954cb35d0fca612783cbc4602"
++SRC_URI[lwb5-etsi-firmware.sha256sum] = "502a985391b99fdec9335c001e59b9fb1cd678142ad7214d6c3b21c8dded8190"
++SRC_URI[lwb5-fcc-firmware.md5sum] = "40107050c54dc9fdb42c6160b60dc31d"
++SRC_URI[lwb5-fcc-firmware.sha256sum] = "a9731660ea05bc7625e37314d7f3fd3f70b266aa21a07536baea82213cdfeec2"
++SRC_URI[lwb5-ic-firmware.md5sum] = "28ec745b44981cdf49917adc896a7763"
++SRC_URI[lwb5-ic-firmware.sha256sum] = "d007709d00f76f33cf26edef82a587eb314684e019e587eb4e45df37db0e301d"
++SRC_URI[lwb5-jp-firmware.md5sum] = "d96b869958bb505a9d1f3b736996f75a"
++SRC_URI[lwb5-jp-firmware.sha256sum] = "80105f17848d717f638bdced232ee8b2cd543f7f196a9034dbe5b811dae9bb0b"
++SRC_URI[lwb5plus-sdio-div-firmware.md5sum] = "7bc1c14d067c238132306622a6f71b64"
++SRC_URI[lwb5plus-sdio-div-firmware.sha256sum] = "a90d2105faad269cd89fc2cbe8125c7b2dcf4e13d3e99e4a424690e2f39fa63a"
++SRC_URI[lwb5plus-sdio-sa-firmware.md5sum] = "910a00c5ad647a25c80a57f6f1404ce8"
++SRC_URI[lwb5plus-sdio-sa-firmware.sha256sum] = "8f15168f0141233f9f907097634f211d4376d51130b244a896c7acd7f30a70ea"
++SRC_URI[lwb5plus-sdio-sa-m2-firmware.md5sum] = "1729733d5a929ba243ceee769566d8b5"
++SRC_URI[lwb5plus-sdio-sa-m2-firmware.sha256sum] = "d9cf5a6a86e7dfae9039e3dc038a978b00a5ba0fead6d7f3ef8e872d651dd260"
++SRC_URI[lwb5plus-usb-div-firmware.md5sum] = "238773e82e49a35aeb2dfdaa2f3d4050"
++SRC_URI[lwb5plus-usb-div-firmware.sha256sum] = "8c7f99d08ac52a22d65ff7079e1802f0601b9b47951099ca540d9b9f79975383"
++SRC_URI[lwb5plus-usb-sa-firmware.md5sum] = "66895929cda95ef22decc3e7f42ec6d3"
++SRC_URI[lwb5plus-usb-sa-firmware.sha256sum] = "24bc22b3bf215c7cb787dbfa9955dcf4d3beb4994bb41244f077f4343351f9c3"
++SRC_URI[lwb5plus-usb-sa-m2-firmware.md5sum] = "c0e8f682ce5020ec5e082874c841f401"
++SRC_URI[lwb5plus-usb-sa-m2-firmware.sha256sum] = "48cd311ffc66bd62320a8d1b90e12977e465f1dd4503a70cd263f04695bd1704"
+diff --git a/meta-summit-radio/radio-stack-lwb-version.inc b/meta-summit-radio/radio-stack-lwb-version.inc
+index be2da71..dd32a8b 100644
+--- a/meta-summit-radio/radio-stack-lwb-version.inc
++++ b/meta-summit-radio/radio-stack-lwb-version.inc
+@@ -7,4 +7,4 @@ SUMMIT_URI_LOCAL = "file://${TOPDIR}/../release"
+ SUMMIT_URI_BASE = "https://github.com/LairdCP/Sterling-LWB-and-LWB5-Release-Packages/releases/download/LRD-REL-${PV}"
+ SUMMIT_URI_BASE:summit-internal = "https://${RFPROS_FILESHARE_AUTH}files.devops.rfpros.com/builds/linux"
+ 
+-require ../radio-stack-lwb-hashes.inc
++require radio-stack-lwb-hashes.inc
+-- 
+2.43.0
+

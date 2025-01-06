@@ -13,7 +13,8 @@
 		"branch": "lrd-11.39.0.x",
 		"tag": "",
 		"commit": "",
-		"patches": ["patches/meta-summit-radio/0001-rz-sbc-Support-build-in-yocto-styhead-release.patch"],
+		"patches": ["patches/meta-summit-radio/0001-rz-sbc-meta-summit-radio-Support-build-in-yocto-styh.patch",
+				"patches/meta-summit-radio/0002-rz-sbc-summit-radio-support-eSDK-build.patch"],
 		"type": "git",
 		"enable": "true"
 	},
