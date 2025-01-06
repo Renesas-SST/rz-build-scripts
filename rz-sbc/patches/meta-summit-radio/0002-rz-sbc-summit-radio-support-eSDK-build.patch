@@ -1,7 +1,7 @@
-From 7614d0be15ab07e6e84ded9526998ac921737200 Mon Sep 17 00:00:00 2001
+From 7c764b54fb7b6aefca75172abead2e93b8601a6b Mon Sep 17 00:00:00 2001
 From: Tien Nguyen <tien.nguyen.uh@renesas.com>
-Date: Tue, 5 Nov 2024 07:57:18 +0000
-Subject: [PATCH 1/2] rzsbc: summit-radio-pre-3.4: support eSDK build
+Date: Sun, 29 Dec 2024 13:23:08 +0000
+Subject: [PATCH 2/2] rz-sbc: summit-radio: support eSDK build
 
 Change include:
     - Include files and its version control file: these include files
@@ -9,25 +9,24 @@ Change include:
       not aware any location out of the layer settings.
     - Update version control files to point to the new file locations within the meta-layer.
 
-Signed-off-by: Vu Dang <vu.dang.te@renesas.com>
 Signed-off-by: Tien Nguyen <tien.nguyen.uh@renesas.com>
 ---
- .../radio-stack-4550-hashes.inc               | 14 ++++++
+ meta-summit-radio/radio-stack-4550-hashes.inc | 14 ++++++
  .../radio-stack-4550-version.inc              |  2 +-
- .../radio-stack-60-hashes.inc                 | 46 ++++++++++++++++++
- .../radio-stack-60-version.inc                |  2 +-
- .../radio-stack-lwb-hashes.inc                | 48 +++++++++++++++++++
- .../radio-stack-lwb-version.inc               |  2 +-
+ meta-summit-radio/radio-stack-60-hashes.inc   | 46 ++++++++++++++++++
+ meta-summit-radio/radio-stack-60-version.inc  |  2 +-
+ meta-summit-radio/radio-stack-lwb-hashes.inc  | 48 +++++++++++++++++++
+ meta-summit-radio/radio-stack-lwb-version.inc |  2 +-
  6 files changed, 111 insertions(+), 3 deletions(-)
- create mode 100644 meta-summit-radio-pre-3.4/radio-stack-4550-hashes.inc
- create mode 100644 meta-summit-radio-pre-3.4/radio-stack-60-hashes.inc
- create mode 100644 meta-summit-radio-pre-3.4/radio-stack-lwb-hashes.inc
+ create mode 100644 meta-summit-radio/radio-stack-4550-hashes.inc
+ create mode 100644 meta-summit-radio/radio-stack-60-hashes.inc
+ create mode 100644 meta-summit-radio/radio-stack-lwb-hashes.inc
 
-diff --git a/meta-summit-radio-pre-3.4/radio-stack-4550-hashes.inc b/meta-summit-radio-pre-3.4/radio-stack-4550-hashes.inc
+diff --git a/meta-summit-radio/radio-stack-4550-hashes.inc b/meta-summit-radio/radio-stack-4550-hashes.inc
 new file mode 100644
 index 0000000..37b43cd
 --- /dev/null
-+++ b/meta-summit-radio-pre-3.4/radio-stack-4550-hashes.inc
++++ b/meta-summit-radio/radio-stack-4550-hashes.inc
 @@ -0,0 +1,14 @@
 +PV = "11.39.0.13"
 +
@@ -43,21 +42,21 @@ index 0000000..37b43cd
 +SRC_URI[ath6k-6003-firmware.sha256sum] = "c7d6b644a3c77bd5a2f6dfab43ce91897adc349d49720cb7a5267c387d9cd96d"
 +SRC_URI[ath6k-6004-firmware.md5sum] = "0acaac77e1292aa80b080d215704a8fb"
 +SRC_URI[ath6k-6004-firmware.sha256sum] = "87fc258967493ba6b4950d4344043aa6b306b318941120f7144b90b51548bc11"
-diff --git a/meta-summit-radio-pre-3.4/radio-stack-4550-version.inc b/meta-summit-radio-pre-3.4/radio-stack-4550-version.inc
-index d152904..7c74dee 100644
---- a/meta-summit-radio-pre-3.4/radio-stack-4550-version.inc
-+++ b/meta-summit-radio-pre-3.4/radio-stack-4550-version.inc
+diff --git a/meta-summit-radio/radio-stack-4550-version.inc b/meta-summit-radio/radio-stack-4550-version.inc
+index 1c9c341..b5b355c 100644
+--- a/meta-summit-radio/radio-stack-4550-version.inc
++++ b/meta-summit-radio/radio-stack-4550-version.inc
 @@ -7,4 +7,4 @@ SUMMIT_URI_LOCAL = "file://${TOPDIR}/../release"
- SUMMIT_URI_BASE = "${SUMMIT_URI_LOCAL}"
- SUMMIT_URI_BASE_summit-internal = "https://${RFPROS_FILESHARE_AUTH}files.devops.rfpros.com/builds/linux"
+ SUMMIT_URI_BASE = "https://github.com/LairdCP/Sterling-LWB-and-LWB5-Release-Packages/releases/download/LRD-REL-${PV}"
+ SUMMIT_URI_BASE:summit-internal = "https://${RFPROS_FILESHARE_AUTH}files.devops.rfpros.com/builds/linux"
  
 -require ../radio-stack-4550-hashes.inc
 +require radio-stack-4550-hashes.inc
-diff --git a/meta-summit-radio-pre-3.4/radio-stack-60-hashes.inc b/meta-summit-radio-pre-3.4/radio-stack-60-hashes.inc
+diff --git a/meta-summit-radio/radio-stack-60-hashes.inc b/meta-summit-radio/radio-stack-60-hashes.inc
 new file mode 100644
 index 0000000..6e1bc50
 --- /dev/null
-+++ b/meta-summit-radio-pre-3.4/radio-stack-60-hashes.inc
++++ b/meta-summit-radio/radio-stack-60-hashes.inc
 @@ -0,0 +1,46 @@
 +PV = "11.39.0.23"
 +
@@ -105,21 +104,21 @@ index 0000000..6e1bc50
 +SRC_URI[60-radio-firmware-usb-usb.sha256sum] = "3d4b8310011e5747f1fe7344a17f01709765422d77a0086aa58c3357d2eb5349"
 +SRC_URI[60-radio-firmware-usb-uart.md5sum] = "45a4ecde0eba9681d608e91fee426c2c"
 +SRC_URI[60-radio-firmware-usb-uart.sha256sum] = "085d68c8e39fb549547afaacb995d758e77aabb7a8451f820178543558cfefb0"
-diff --git a/meta-summit-radio-pre-3.4/radio-stack-60-version.inc b/meta-summit-radio-pre-3.4/radio-stack-60-version.inc
-index 36bd223..a807c70 100644
---- a/meta-summit-radio-pre-3.4/radio-stack-60-version.inc
-+++ b/meta-summit-radio-pre-3.4/radio-stack-60-version.inc
+diff --git a/meta-summit-radio/radio-stack-60-version.inc b/meta-summit-radio/radio-stack-60-version.inc
+index f92b5b1..6de461d 100644
+--- a/meta-summit-radio/radio-stack-60-version.inc
++++ b/meta-summit-radio/radio-stack-60-version.inc
 @@ -7,4 +7,4 @@ SUMMIT_URI_LOCAL = "file://${TOPDIR}/../release"
  SUMMIT_URI_BASE = "https://github.com/LairdCP/Sterling-60-Release-Packages/releases/download/LRD-REL-${PV}"
- SUMMIT_URI_BASE_summit-internal = "https://${RFPROS_FILESHARE_AUTH}files.devops.rfpros.com/builds/linux"
+ SUMMIT_URI_BASE:summit-internal = "https://${RFPROS_FILESHARE_AUTH}files.devops.rfpros.com/builds/linux"
  
 -require ../radio-stack-60-hashes.inc
 +require radio-stack-60-hashes.inc
-diff --git a/meta-summit-radio-pre-3.4/radio-stack-lwb-hashes.inc b/meta-summit-radio-pre-3.4/radio-stack-lwb-hashes.inc
+diff --git a/meta-summit-radio/radio-stack-lwb-hashes.inc b/meta-summit-radio/radio-stack-lwb-hashes.inc
 new file mode 100644
 index 0000000..f7f3baa
 --- /dev/null
-+++ b/meta-summit-radio-pre-3.4/radio-stack-lwb-hashes.inc
++++ b/meta-summit-radio/radio-stack-lwb-hashes.inc
 @@ -0,0 +1,48 @@
 +PV = "11.39.0.18"
 +
@@ -169,16 +168,16 @@ index 0000000..f7f3baa
 +SRC_URI[lwb5plus-usb-sa-firmware.sha256sum] = "24bc22b3bf215c7cb787dbfa9955dcf4d3beb4994bb41244f077f4343351f9c3"
 +SRC_URI[lwb5plus-usb-sa-m2-firmware.md5sum] = "c0e8f682ce5020ec5e082874c841f401"
 +SRC_URI[lwb5plus-usb-sa-m2-firmware.sha256sum] = "48cd311ffc66bd62320a8d1b90e12977e465f1dd4503a70cd263f04695bd1704"
-diff --git a/meta-summit-radio-pre-3.4/radio-stack-lwb-version.inc b/meta-summit-radio-pre-3.4/radio-stack-lwb-version.inc
-index 666f840..a5ee648 100644
---- a/meta-summit-radio-pre-3.4/radio-stack-lwb-version.inc
-+++ b/meta-summit-radio-pre-3.4/radio-stack-lwb-version.inc
+diff --git a/meta-summit-radio/radio-stack-lwb-version.inc b/meta-summit-radio/radio-stack-lwb-version.inc
+index be2da71..dd32a8b 100644
+--- a/meta-summit-radio/radio-stack-lwb-version.inc
++++ b/meta-summit-radio/radio-stack-lwb-version.inc
 @@ -7,4 +7,4 @@ SUMMIT_URI_LOCAL = "file://${TOPDIR}/../release"
  SUMMIT_URI_BASE = "https://github.com/LairdCP/Sterling-LWB-and-LWB5-Release-Packages/releases/download/LRD-REL-${PV}"
- SUMMIT_URI_BASE_summit-internal = "https://${RFPROS_FILESHARE_AUTH}files.devops.rfpros.com/builds/linux"
+ SUMMIT_URI_BASE:summit-internal = "https://${RFPROS_FILESHARE_AUTH}files.devops.rfpros.com/builds/linux"
  
 -require ../radio-stack-lwb-hashes.inc
 +require radio-stack-lwb-hashes.inc
 -- 
-2.25.1
+2.43.0
 
