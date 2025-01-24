@@ -1,0 +1,126 @@
+From aa9403a7df755326f6b83355f11725679e3d93ea Mon Sep 17 00:00:00 2001
+From: Nam Vo Khac RVC <nam.vo.yb@bp.renesas.com>
+Date: Mon, 2 Dec 2024 04:29:56 +0000
+Subject: [PATCH 1/2] rz-sbc: meta-summit-radio: Support build in yocto styhead
+ release
+
+Change the source variable S to suit Yocto Styhead. Since a recipe has S
+set to WORKDIR, this is no longer supported and will result in an error.
+
+Upstream-Status: Pending
+
+Signed-off-by: Nam Vo Khac RVC <nam.vo.yb@bp.renesas.com>
+---
+ .../radio-firmware/radio-firmware.inc         |  3 +-
+ .../bt-uart-scripts/bt-uart-scripts_1.0.bb    |  3 +-
+ .../summit-supplicant-libs.inc                |  3 +-
+ ...-Fix-pointer-type-casting-for-CCX-IE.patch | 28 +++++++++++++++++++
+ .../summit-supplicant/summit-supplicant.inc   |  8 ++++++
+ 5 files changed, 42 insertions(+), 3 deletions(-)
+ create mode 100644 meta-summit-radio/recipes-packages/summit-supplicant/files/0001-drivers-nl80211-Fix-pointer-type-casting-for-CCX-IE.patch
+
+diff --git a/meta-summit-radio/recipes-bsp/radio-firmware/radio-firmware.inc b/meta-summit-radio/recipes-bsp/radio-firmware/radio-firmware.inc
+index 77ca4c2..8864b5f 100644
+--- a/meta-summit-radio/recipes-bsp/radio-firmware/radio-firmware.inc
++++ b/meta-summit-radio/recipes-bsp/radio-firmware/radio-firmware.inc
+@@ -12,7 +12,8 @@ do_compile[noexec] = "1"
+ 
+ FILES:${PN} += "${nonarch_base_libdir}"
+ 
+-S = "${WORKDIR}"
++S = "${WORKDIR}/sources"
++UNPACKDIR = "${S}"
+ 
+ ALLOW_EMPTY:${PN}-dev = "0"
+ ALLOW_EMPTY:${PN}-dbg = "0"
+diff --git a/meta-summit-radio/recipes-packages/bt-uart-scripts/bt-uart-scripts_1.0.bb b/meta-summit-radio/recipes-packages/bt-uart-scripts/bt-uart-scripts_1.0.bb
+index b60bf8c..7963787 100644
+--- a/meta-summit-radio/recipes-packages/bt-uart-scripts/bt-uart-scripts_1.0.bb
++++ b/meta-summit-radio/recipes-packages/bt-uart-scripts/bt-uart-scripts_1.0.bb
+@@ -14,7 +14,8 @@ SRC_URI = " \
+     file://btattach.service \
+     "
+ 
+-S = "${WORKDIR}"
++S = "${WORKDIR}/sources"
++UNPACKDIR = "${S}"
+ 
+ FILES:${PN} += "${systemd_unitdir}/system ${sysconfdir}"
+ 
+diff --git a/meta-summit-radio/recipes-packages/summit-supplicant-libs/summit-supplicant-libs.inc b/meta-summit-radio/recipes-packages/summit-supplicant-libs/summit-supplicant-libs.inc
+index e99e66a..e24b131 100644
+--- a/meta-summit-radio/recipes-packages/summit-supplicant-libs/summit-supplicant-libs.inc
++++ b/meta-summit-radio/recipes-packages/summit-supplicant-libs/summit-supplicant-libs.inc
+@@ -17,7 +17,8 @@ SUPP_ARCH:aarch64 = "-aarch64"
+ do_configure[noexec] = "1"
+ do_compile[noexec] = "1"
+ 
+-S = "${WORKDIR}"
++S = "${WORKDIR}/sources"
++UNPACKDIR = "${S}"
+ 
+ INSANE_SKIP:${PN} = "ldflags already-stripped"
+ INSANE_SKIP:${PN}-passphrase = "ldflags already-stripped"
+diff --git a/meta-summit-radio/recipes-packages/summit-supplicant/files/0001-drivers-nl80211-Fix-pointer-type-casting-for-CCX-IE.patch b/meta-summit-radio/recipes-packages/summit-supplicant/files/0001-drivers-nl80211-Fix-pointer-type-casting-for-CCX-IE.patch
+new file mode 100644
+index 0000000..27c5ca2
+--- /dev/null
++++ b/meta-summit-radio/recipes-packages/summit-supplicant/files/0001-drivers-nl80211-Fix-pointer-type-casting-for-CCX-IE.patch
+@@ -0,0 +1,28 @@
++From caa5e939471ede7c7ae980cd98b3edbab8a05f35 Mon Sep 17 00:00:00 2001
++From: Nam Vo Khac RVC <nam.vo.yb@bp.renesas.com>
++Date: Wed, 27 Nov 2024 04:35:23 +0000
++Subject: [PATCH] drivers:nl80211: Fix pointer type casting for CCX IE
++ 
++ Changes includes:
++    - Changes pointer type to suit parameter of libsdc_ccxie2_get
++
++Upstream-Status: Pending
++
++Signed-off-by: Nam Vo Khac RVC <nam.vo.yb@bp.renesas.com>
++---
++ src/drivers/driver_nl80211.c | 2 +-
++ 1 file changed, 1 insertion(+), 1 deletion(-)
++
++diff --git a/src/drivers/driver_nl80211.c b/src/drivers/driver_nl80211.c
++index 43f7f1e..8d177e9 100644
++--- a/src/drivers/driver_nl80211.c
+++++ b/src/drivers/driver_nl80211.c
++@@ -6435,7 +6435,7 @@ static int nl80211_connect_common(struct wpa_driver_nl80211_data *drv,
++ 			// SD60 needs additional CCX IE
++ 			if (params->laird.ccx_ie &&
++ 					(libsdc_init() >= 0)) {
++-				alen[3] = libsdc_ccxie2_get(&aptr[3]);
+++				alen[3] = libsdc_ccxie2_get((unsigned char **)(&aptr[3]));
++ 				wpa_hexdump(MSG_DEBUG, "  * CCX VER IE",
++ 							aptr[3], alen[3]);
++ 			}
+diff --git a/meta-summit-radio/recipes-packages/summit-supplicant/summit-supplicant.inc b/meta-summit-radio/recipes-packages/summit-supplicant/summit-supplicant.inc
+index 2028e36..82aef8c 100644
+--- a/meta-summit-radio/recipes-packages/summit-supplicant/summit-supplicant.inc
++++ b/meta-summit-radio/recipes-packages/summit-supplicant/summit-supplicant.inc
+@@ -24,6 +24,8 @@ SRC_URI += "${SUMMIT_URI}/summit_supplicant-src-${PV}.tar.gz;name=summit-supplic
+ 
+ S = "${WORKDIR}/summit_supplicant-${PV}"
+ 
++FILESEXTRAPATHS:prepend := "${THISDIR}:"
++
+ RPROVIDES:${PN} += "wpa-supplicant"
+ RREPLACES:${PN} += "wpa-supplicant"
+ RCONFLICTS:${PN} += "wpa-supplicant"
+@@ -67,6 +69,12 @@ do_configure () {
+ export EXTRA_CFLAGS = "${CFLAGS}"
+ export BINDIR = "${sbindir}"
+ 
++# Apply patch for driver nl80211 to fix pointer casting
++SRC_URI:append = "\
++	     file://0001-drivers-nl80211-Fix-pointer-type-casting-for-CCX-IE.patch \
++	   "
++	
++	
+ EXTRA_OEMAKE = "CONFIG_SDC_RADIO_QCA45N=y CONFIG_DRIVER_NL80211=y"
+ 
+ do_compile () {
+-- 
+2.43.0
+

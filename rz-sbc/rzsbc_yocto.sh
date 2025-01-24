@@ -217,12 +217,18 @@ bsp_checkout_verification() {
 	bsp_layers=$("${JQ}" -r 'keys[]' "$PATCH_FILE")
 
 	for bsp_layer in $bsp_layers; do
-		cd "$bsp_layer"
-
-		local expected_branch expected_commit expected_tags
+		local expected_branch expected_commit expected_tags is_layer_enabled
 		expected_branch=$("${JQ}" -r --arg repo "$bsp_layer" '.[$repo].branch // empty' "$PATCH_FILE")
 		expected_commit=$("${JQ}" -r --arg repo "$bsp_layer" '.[$repo].commit // empty' "$PATCH_FILE")
 		expected_tags=$("${JQ}" -r --arg repo "$bsp_layer" '.[$repo].tag // empty' "$PATCH_FILE")
+		is_layer_enabled=$("${JQ}" -r --arg repo "$bsp_layer" '.[$repo].enable // empty' "$PATCH_FILE")
+
+		# Only verify the git repositories that have 'enabled: true' setting in the JSON file
+		if [ "$is_layer_enabled" = "false" ]; then
+			continue
+		fi
+
+		cd "$bsp_layer"
 
 		# Check if the directory is a Git repository
 		if [ ! -d ".git" ]; then
@@ -324,17 +330,22 @@ check_and_clone_missing_layers() {
 
 	# Clone missing meta-layer repositories
 	for missing_layer in $missing_layers; do
-		local repo_url repo_branch repo_commit repo_type
+		local repo_url repo_branch repo_commit repo_type is_layer_enabled
 		repo_url=$("${JQ}" -r --arg repo "$missing_layer" '.[$repo].url // empty' "$PATCH_FILE")
 		repo_branch=$("${JQ}" -r --arg repo "$missing_layer" '.[$repo].branch // empty' "$PATCH_FILE")
 		repo_commit=$("${JQ}" -r --arg repo "$missing_layer" '.[$repo].commit // empty' "$PATCH_FILE")
 		repo_tag=$("${JQ}" -r --arg repo "$missing_layer" '.[$repo].tag // empty' "$PATCH_FILE")
 		repo_type=$("${JQ}" -r --arg repo "$missing_layer" '.[$repo].type // empty' "$PATCH_FILE")
+		is_layer_enabled=$("${JQ}" -r --arg repo "$missing_layer" '.[$repo].enable // empty' "$PATCH_FILE")
+
+		# Only clone the git repositories that have 'enabled: true' setting in the JSON file
+		if [ "$is_layer_enabled" = "false" ]; then
+			continue
+		fi
 
 		# If the missing repos is local
 		if [ "$repo_type" = "local" ]; then
-			unpack_gpu
-			unpack_codec
+			unpack_local_repo
 			cd "${RZ_TARGET_DIR}/$missing_layer"
 		elif [ "$repo_type" = "git" ]; then
 			if [ -z "$repo_url" ] || [ "$repo_url" = "null" ]; then
@@ -439,38 +450,44 @@ get_bsp() {
 
 	# Clone and set up each repository
 	for repo_name in $repo_names; do
-		local repo_url repo_branch repo_commit repo_type
+		local repo_url repo_branch repo_commit repo_type is_layer_enabled
 		repo_url=$("${JQ}" -r --arg repo "$repo_name" '.[$repo].url // empty' "$PATCH_FILE")
 		repo_branch=$("${JQ}" -r --arg repo "$repo_name" '.[$repo].branch // empty' "$PATCH_FILE")
 		repo_commit=$("${JQ}" -r --arg repo "$repo_name" '.[$repo].commit // empty' "$PATCH_FILE")
 		repo_tag=$("${JQ}" -r --arg repo "$repo_name" '.[$repo].tag // empty' "$PATCH_FILE")
 		repo_type=$("${JQ}" -r --arg repo "$repo_name" '.[$repo].type // empty' "$PATCH_FILE")
+		is_layer_enabled=$("${JQ}" -r --arg repo "$repo_name" '.[$repo].enable // empty' "$PATCH_FILE")
 
-		# Only clone the git repositories
-		if [ "$repo_type" = "local" ]; then
+		# Only clone the git repositories that have 'enabled: true' setting in the JSON file
+		if [ "$is_layer_enabled" = "false" ]; then
 			continue
 		fi
 
-		# Raise an error when a git repo doesn't have the 'url' field set
-		if [ -z "$repo_url" ] || [ "$repo_url" = "null" ]; then
-			log_error "Error: No URL specified for $repo_name. Cannot clone repository. Please verify the 'url' key in $PATCH_FILE."
-			exit 1
-		fi
+		# Only clone the git repositories
+		if [ "$repo_type" = "local" ]; then
+			unpack_local_repo
+			cd "${RZ_TARGET_DIR}/$repo_name"
+		else # Raise an error when a git repo doesn't have the 'url' field set
+			if [ -z "$repo_url" ] || [ "$repo_url" = "null" ]; then
+				log_error "Error: No URL specified for $repo_name. Cannot clone repository. Please verify the 'url' key in $PATCH_FILE."
+				exit 1
+			fi
 
-		echo "Cloning and setting up $repo_name from $url"
+			echo "Cloning and setting up $repo_name from $url"
 
-		clone_repo_with_retries "$repo_url"
-		cd "$repo_name"
+			clone_repo_with_retries "$repo_url"
+			cd "$repo_name"
 
-		# Checkout tag, commit or branch if specified
-		if [ -n "$repo_tag" ]; then
-			git checkout "$repo_tag"
-		elif [ -n "$repo_commit" ]; then
-			git checkout "$repo_commit"
-		elif [ -n "$repo_branch" ]; then
-			git checkout "$repo_branch"
-		else
-			echo "Please define a tag, commit, or branch for $repo_name in the $PATCH_FILE or this layer will use default branch"
+			# Checkout tag, commit or branch if specified
+			if [ -n "$repo_tag" ]; then
+				git checkout "$repo_tag"
+			elif [ -n "$repo_commit" ]; then
+				git checkout "$repo_commit"
+			elif [ -n "$repo_branch" ]; then
+				git checkout "$repo_branch"
+			else
+				echo "Please define a tag, commit, or branch for $repo_name in the $PATCH_FILE or this layer will use default branch"
+			fi
 		fi
 
 		# Apply patches
@@ -479,6 +496,11 @@ get_bsp() {
 	done
 
 	echo "---------------------- Download completed --------------------------------------"
+}
+
+unpack_local_repo() {
+	unpack_gpu
+	unpack_codec
 }
 
 unpack_gpu() {
@@ -509,11 +531,11 @@ setup_conf(){
 	echo "Env setup completed. pwd = ${PWD}"
 
 	# Legacy style
-	#cp ../meta-renesas/docs/template/conf/rzpi/* conf/
+	#cp ../meta-renesas/docs/template/conf/rzg2l-sbc/* conf/
 	#bitbake core-image-qt
 
 	# New style
-	TEMPLATECONF=$PWD/meta-renesas/meta-rzg2l/docs/template/conf/rzpi . ./poky/oe-init-build-env build
+	TEMPLATECONF=$PWD/meta-renesas/conf/templates/rzg2l-sbc/ . ./poky/oe-init-build-env build
 
 	# Remove templateconf.cfg as it will reference the old workspace directory when installing the eSDK on another host PC
 	rm -f "conf/templateconf.cfg"
@@ -522,7 +544,7 @@ setup_conf(){
 	if [ ! -e "$WORKSPACE/site.conf" ]; then
 		echo "Local site.conf file not present in this workspace ($WORKSPACE). Assuming developer default build!"
 		# Copy default template overrides file as yocto doesnt copy site.conf.sample
-		cp ../meta-renesas/meta-rzg2l/docs/template/conf/rzpi/site.conf.sample conf/site.conf
+		cp ../meta-renesas/conf/templates/rzg2l-sbc/site.conf.sample conf/site.conf
 		echo "This build is a common build for rzsbc. It is not based on any release tag. Target image: ${IMAGE}"
 	else
 		# Copy local overrides file to yocto build conf folder
@@ -553,8 +575,6 @@ setup() {
 		mkdir -p ${RZ_TARGET_DIR}
 		#unpack_bsp
 		get_bsp
-		unpack_gpu
-		unpack_codec
 	else
 		echo "${RZ_TARGET_DIR} already exists! Checking for any missing layers..."
 		check_and_clone_missing_layers
@@ -581,7 +601,7 @@ build_sdk() {
 	fi
 
 	#Initiate build sdk
-	MACHINE=rzpi bitbake ${IMAGE} -c populate_sdk_ext
+	MACHINE=rzg2l-sbc bitbake ${IMAGE} -c populate_sdk_ext
 
 	echo
 	echo "Finished the rz yocto sdk build for RZ SBC board. Target image: ${IMAGE}"
@@ -598,7 +618,7 @@ build() {
 	setup_conf
 
 	# Initiate build
-	MACHINE=rzpi bitbake ${IMAGE}
+	MACHINE=rzg2l-sbc bitbake ${IMAGE}
 
 	echo
 	echo "Finished the rz yocto build for RZ SBC board. Target image: ${IMAGE}"
@@ -609,7 +629,7 @@ build() {
 }
 
 deploy_build_assets() {
-	local target_dir="${RZ_TARGET_DIR}/build/tmp/deploy/images/rzpi/host/src"
+	local target_dir="${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/host/src"
 
 	# Check if the src directory already exists
 	if [ ! -d ${target_dir} ];then
@@ -637,15 +657,14 @@ output() {
 
 	# Collect final output
 	cd ${OUTPUT}
-	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzpi/fip-rzpi.srec $OUTPUT
-	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzpi/rzpi.dtb $OUTPUT
-	cp -r ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzpi/overlays $OUTPUT
-	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzpi/readme.txt $OUTPUT
-	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzpi/uEnv.txt $OUTPUT
-	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzpi/Image $OUTPUT
-	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzpi/bl2_bp-rzpi.srec $OUTPUT
-	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzpi/Flash_Writer_SCIF_rzpi.mot $OUTPUT
-	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzpi/core-image-qt-rzpi.tar.bz2 $OUTPUT
+	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/target/images/fip-rzg2l-sbc.srec $OUTPUT
+	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/target/images/dtbs/rzpi.dtb $OUTPUT
+	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/README.md $OUTPUT
+	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/target/env/uEnv.txt $OUTPUT
+	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/target/images/Image $OUTPUT
+	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/target/images/bl2_bp-rzg2l-sbc.srec $OUTPUT
+	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/target/images/Flash_Writer_SCIF_rzg2l-sbc.mot $OUTPUT
+	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/${IMAGE}-rzg2l-sbc.tar.bz2 $OUTPUT
 
 	echo "The output located at: $OUTPUT"
 	ls -la $OUTPUT
