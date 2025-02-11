@@ -18,7 +18,7 @@
 	},
 	"meta-renesas": {
 		"url": "https://github.com/Renesas-SST/meta-renesas.git",
-		"branch": "dunfell/rz-sbc",
+		"branch": "dunfell/rz-sbc-apt-fixes",
 		"tag": "",
 		"commit": "",
 		"patches": [],
