@@ -60,7 +60,7 @@ guideline() {
 	echo ""
 	echo "========="
 	echo "Build yocto"
-	echo "$ IMAGE=<target_image> ./rzsbc_yocto.sh <target_build> <target_dir>"
+	echo "$ IMAGE=<target_image> DISTRO=<target_distro> ./rzsbc_yocto.sh <target_build> <target_dir>"
 	echo "--------------------------"
 	echo " - <target_image>: the target Yocto build image. It can be one from the following list of supported images"
 	echo "     1. core-image-minimal"
@@ -79,6 +79,10 @@ guideline() {
 	echo "     2. build-sdk"
 	echo " - <target_dir>: the build directory"
 	echo "     If not set <target_dir>: current directory will be selected"
+	echo " - <target_distro>: the target Yocto distribution. Common options include:"
+	echo "     1. poky"
+	echo "     2. ubuntu-tiny"
+	echo "Note: If DISTRO is not set, 'poky' will be selected by default."
 	echo ""
 	echo "For example: "
 	echo "$ IMAGE=renesas-core-image-cli ./rzsbc_yocto.sh build ~/yocto-build"
@@ -639,8 +643,12 @@ build() {
 	else
 		# Build the specific image if IMAGE is set to a single value
 		echo "Building the specific image: ${IMAGE}"
-		MACHINE=rzpi bitbake ${IMAGE}
-
+		if [ -z "$DISTRO" ]; then
+			MACHINE=rzpi bitbake "${IMAGE}"
+		else
+			echo MACHINE=rzpi DISTRO="${DISTRO}" bitbake "${IMAGE}"
+			MACHINE=rzpi DISTRO="${DISTRO}" bitbake "${IMAGE}"
+		fi
 		echo
 		echo "Finished the Yocto build for RZ SBC board. Target image: ${IMAGE}"
 		echo "========================================================================"
