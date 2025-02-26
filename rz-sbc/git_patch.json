@@ -36,6 +36,15 @@
 		"type": "git",
 		"enable": "false"
 	},
+	"meta-qt6": {
+		"url": "git://code.qt.io/yocto/meta-qt6.git",
+		"branch": "6.9",
+		"tag": "",
+		"commit": "",
+		"patches": [],
+		"type": "git",
+		"enable": "true"
+	},
 	"meta-openembedded": {
 		"url": "https://github.com/openembedded/meta-openembedded",
 		"branch": "styhead",
