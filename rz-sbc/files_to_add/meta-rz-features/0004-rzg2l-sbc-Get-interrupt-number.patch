@@ -1,0 +1,54 @@
+From 9eb7745482d65a7e3aeb4e24b13ea1be341bbc85 Mon Sep 17 00:00:00 2001
+From: Khanh Do Duy <khanh.do.yg@bp.renesas.com>
+Date: Thu, 12 Dec 2024 10:02:26 +0000
+Subject: [PATCH] rzg2l-sbc: Get interrupt number
+Upstream-Status: Pending
+
+Signed-off-by: Khanh Do Duy <khanh.do.yg@bp.renesas.com>
+---
+ src/lkm/uvcs_lkm_uf_io.c | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
+
+diff --git a/src/lkm/uvcs_lkm_uf_io.c b/src/lkm/uvcs_lkm_uf_io.c
+index b1a16f1..8b10ddc 100644
+--- a/src/lkm/uvcs_lkm_uf_io.c
++++ b/src/lkm/uvcs_lkm_uf_io.c
+@@ -864,6 +864,7 @@ int uvcs_get_vcp_resource(
+ 	int result = -EFAULT;
+ 	struct resource *res;
+ 	int ch;
++	int itr_num;
+ 
+ 
+ 	if ((pdev == NULL) || (vcpinf == NULL))
+@@ -887,19 +888,19 @@ int uvcs_get_vcp_resource(
+ 	}
+ 	vcpinf->pa_ce = (u64)res->start;
+ 
+-	res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+-	if (res == NULL) {
++	itr_num = platform_get_irq(pdev, 0);
++	if (itr_num < 0) {
+ 		dev_err(&pdev->dev, "resource not found (irq_0, %u)\n", iparch);
+ 		goto err_exit_1;
+ 	}
+-	vcpinf->irq_vlc = (int)res->start;
++	vcpinf->irq_vlc = itr_num;
+ 
+-	res = platform_get_resource(pdev, IORESOURCE_IRQ, 1);
+-	if (res == NULL) {
+-		dev_err(&pdev->dev, "resource not found (irq_1, %u)\n", iparch);
++	itr_num = platform_get_irq(pdev, 1);
++	if (itr_num < 0) {
++		dev_err(&pdev->dev, "resource not found (irq_0, %u)\n", iparch);
+ 		goto err_exit_1;
+ 	}
+-	vcpinf->irq_ce = (int)res->start;
++	vcpinf->irq_ce = itr_num;
+ 
+ 	if (of_property_read_u32(pdev->dev.of_node, "renesas,#fcp_ch", &ch) < 0) {
+ 		dev_err(&pdev->dev, "of_property_read_u32() failed #%d, %u\n", __LINE__, iparch);
+
+-- 
+2.25.1
+

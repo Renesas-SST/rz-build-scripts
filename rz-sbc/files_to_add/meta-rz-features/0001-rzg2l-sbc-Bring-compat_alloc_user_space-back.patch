@@ -1,0 +1,80 @@
+From d6a110c325247fb6bf9872760f169139abe7b672 Mon Sep 17 00:00:00 2001
+From: Khanh Do Duy <khanh.do.yg@bp.renesas.com>
+Date: Wed, 4 Dec 2024 10:27:59 +0000
+Subject: [PATCH 1/2] rzg2l-sbc: Bring compat_alloc_user_space back
+Upstream-Status: Pending
+---
+ arch/arm64/include/asm/compat.h |  6 ++++++
+ include/linux/compat.h          |  2 ++
+ kernel/compat.c                 | 21 +++++++++++++++++++++
+ 3 files changed, 29 insertions(+)
+
+diff --git a/arch/arm64/include/asm/compat.h b/arch/arm64/include/asm/compat.h
+index ae904a1ad529..b9e2f6aa7077 100644
+--- a/arch/arm64/include/asm/compat.h
++++ b/arch/arm64/include/asm/compat.h
+@@ -27,6 +27,7 @@ typedef u16		compat_ipc_pid_t;
+ #include <linux/types.h>
+ #include <linux/sched.h>
+ #include <linux/sched/task_stack.h>
++#include <linux/uaccess.h>
+ 
+ #ifdef __AARCH64EB__
+ #define COMPAT_UTS_MACHINE	"armv8b\0\0"
+@@ -98,6 +99,11 @@ static inline int is_compat_thread(struct thread_info *thread)
+ 
+ long compat_arm_syscall(struct pt_regs *regs, int scno);
+ 
++static inline void __user *arch_compat_alloc_user_space(long len)
++{
++	return (void __user *)compat_user_stack_pointer() - len;
++}
++
+ #else /* !CONFIG_COMPAT */
+ 
+ static inline int is_compat_thread(struct thread_info *thread)
+diff --git a/include/linux/compat.h b/include/linux/compat.h
+index 56cebaff0c91..f30e617cc00b 100644
+--- a/include/linux/compat.h
++++ b/include/linux/compat.h
+@@ -541,6 +541,8 @@ extern long compat_arch_ptrace(struct task_struct *child, compat_long_t request,
+ 
+ struct epoll_event;	/* fortunately, this one is fixed-layout */
+ 
++extern void __user *compat_alloc_user_space(unsigned long len);
++
+ int compat_restore_altstack(const compat_stack_t __user *uss);
+ int __compat_save_altstack(compat_stack_t __user *, unsigned long);
+ #define unsafe_compat_save_altstack(uss, sp, label) do { \
+diff --git a/kernel/compat.c b/kernel/compat.c
+index fb50f29d9b36..f9f7a79e07c5 100644
+--- a/kernel/compat.c
++++ b/kernel/compat.c
+@@ -269,3 +269,24 @@ get_compat_sigset(sigset_t *set, const compat_sigset_t __user *compat)
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(get_compat_sigset);
++
++/*
++ * Allocate user-space memory for the duration of a single system call,
++ * in order to marshall parameters inside a compat thunk.
++ */
++void __user *compat_alloc_user_space(unsigned long len)
++{
++	void __user *ptr;
++
++	/* If len would occupy more than half of the entire compat space... */
++	if (unlikely(len > (((compat_uptr_t)~0) >> 1)))
++		return NULL;
++
++	ptr = arch_compat_alloc_user_space(len);
++
++	if (unlikely(!access_ok(ptr, len)))
++		return NULL;
++
++	return ptr;
++}
++EXPORT_SYMBOL_GPL(compat_alloc_user_space);
+-- 
+2.25.1
+
