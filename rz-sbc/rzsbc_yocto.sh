@@ -83,6 +83,62 @@ clean_repository() {
 	fi
 }
 
+add_files() {
+	local key=$1
+
+	# Get the add_files data from JSON
+	local add_files
+	add_files=$("${JQ}" -r --arg key "$key" '.[$key].add_files' "$PATCH_FILE")
+
+	if [ $? -ne 0 ]; then
+		echo "Error: Failed to parse JSON file for files."
+		exit 1
+	fi
+
+	# Check if add_files is empty or null
+	if [ -z "$add_files" ] || [ "$add_files" == "null" ]; then
+		echo "No files to add for $key (add_files is empty)"
+		return 0
+	fi
+
+	# Check if any of the add_files entries have empty source and target fields
+	invalid_entries=$(echo "$add_files" | grep -E '"source": ""| "target": ""')
+
+	if [ -n "$invalid_entries" ]; then
+		echo "No files to add for $key (invalid source/target entries found)"
+		return 0
+	fi
+
+	echo "Files to add in $key: $add_files"
+
+	# Loop through the add_files list
+	while IFS= read -r file_info; do
+		local source target
+		source=""
+		target=""
+
+		# Extract the source and target from add_files lists
+		source=${TOP_DIR}/$(echo "$file_info" | ${JQ} -r '.source')
+		target=${RZ_TARGET_DIR}/$(echo "$file_info" | ${JQ} -r '.target')
+
+		# Create target folder if it's missing
+		if [ ! -d "$target" ]; then
+			echo "Missing $target, creating directory..."
+			mkdir -p "$target"
+		fi
+
+		echo "Processing: $source -> $target"
+
+		# Check if the source file actually exists before copying
+		if [ -f "$source" ]; then
+			echo "Copying file from $source to $target"
+			cp "$source" "$target"
+		else
+			echo "Source file does not exist: $source"
+		fi
+	done <<< "$("${JQ}" -c '.[]' <<< "$add_files")"
+}
+
 apply_patches() {
 	local key="$1"
 
@@ -259,6 +315,9 @@ bsp_checkout_verification() {
 
 				# Need to apply the necessary patches
 				apply_patches "$bsp_layer"
+
+				# Add addtion files after apply the patches
+				add_files "$bsp_layer"
 			fi
 
 			cd ..
@@ -280,6 +339,10 @@ bsp_checkout_verification() {
 
 				# Need to apply the neccessary patches
 				apply_patches $bsp_layer
+
+				# Add addtion files after apply the patches
+				add_files $bsp_layer
+
 				cd ..
 				continue
 			fi
@@ -300,6 +363,10 @@ bsp_checkout_verification() {
 
 				# Need to apply the neccessary patches
 				apply_patches $bsp_layer
+
+				# Add addtion files after apply the patches
+				add_files $bsp_layer
+
 				cd ..
 				continue
 			fi
@@ -378,6 +445,10 @@ check_and_clone_missing_layers() {
 
 		# Apply necessary patches
 		apply_patches $missing_layer
+
+		# Add addtion files after apply the patches
+		add_files $missing_layer
+
 		cd ..
 	done
 
@@ -492,6 +563,10 @@ get_bsp() {
 
 		# Apply patches
 		apply_patches "$repo_name"
+
+		# Add addtion files after apply the patches
+		add_files "$repo_name"
+
 		cd ..
 	done
 
