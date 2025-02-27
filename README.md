@@ -23,16 +23,20 @@ The build script includes functionality to detect and apply new patches as they 
 ```
 ├── README.md
 └── rz-sbc
+    ├── files_to_add
+    │   └── meta-rz-features
+    │       ├── 0001-rzg2l-sbc-Bring-compat_alloc_user_space-back.patch
+    │       └── 0004-rzg2l-sbc-Get-interrupt-number.patch
     ├── git_patch.json
     ├── jq-linux-amd64
     ├── patches
-    │   ├── meta-summit-radio
-    │   │   ├── 0001-rzsbc-summit-radio-pre-3.4-support-eSDK-build.patch
-    │   │   └── 0002-rzsbc-summit-radio-pre-3.4-enable-usb-bt-support.patch
-    │   └── poky
-    │       └── 0001-meta-classes-esdk-explicitly-address-the-location-of.patch
+    │   ├── meta-rz-features
+    │   │   └── 0001-support-codec-for-linux-6.10-and-yocto-styhead.patch
+    │   └── meta-summit-radio
+    │       ├── 0001-rz-sbc-meta-summit-radio-Support-build-in-yocto-styh.patch
+    │       └── 0002-rz-sbc-summit-radio-support-eSDK-build.patch
     ├── README.md
     └── rzsbc_yocto.sh
 
-4 directories, 8 files
+6 directories, 10 files
 ```
