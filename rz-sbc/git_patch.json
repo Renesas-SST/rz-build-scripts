@@ -6,6 +6,12 @@
 		"commit": "",
 		"patches": [],
 		"type": "git",
+		"add_files": [
+			{
+				"source": "",
+				"target": ""
+			}
+		],
 		"enable": "true"
 	},
 	"meta-summit-radio": {
@@ -16,6 +22,12 @@
 		"patches": ["patches/meta-summit-radio/0001-rz-sbc-meta-summit-radio-Support-build-in-yocto-styh.patch",
 				"patches/meta-summit-radio/0002-rz-sbc-summit-radio-support-eSDK-build.patch"],
 		"type": "git",
+		"add_files": [
+			{
+				"source": "",
+				"target": ""
+			}
+		],
 		"enable": "true"
 	},
 	"meta-renesas": {
@@ -25,6 +37,12 @@
 		"commit": "",
 		"patches": [],
 		"type": "git",
+		"add_files": [
+			{
+				"source": "",
+				"target": ""
+			}
+		],
 		"enable": "true"
 	},
 	"meta-qt5": {
@@ -34,6 +52,27 @@
 		"commit": "",
 		"patches": [],
 		"type": "git",
+		"add_files": [
+			{
+				"source": "",
+				"target": ""
+			}
+		],
+		"enable": "false"
+	},
+	"meta-qt6": {
+		"url": "git://code.qt.io/yocto/meta-qt6.git",
+		"branch": "6.9",
+		"tag": "",
+		"commit": "",
+		"patches": [],
+		"type": "git",
+		"add_files": [
+			{
+				"source": "",
+				"target": ""
+			}
+		],
 		"enable": "false"
 	},
 	"meta-openembedded": {
@@ -43,6 +82,12 @@
 		"commit": "",
 		"patches": [],
 		"type": "git",
+		"add_files": [
+			{
+				"source": "",
+				"target": ""
+			}
+		],
 		"enable": "true"
 	},
 	"meta-virtualization": {
@@ -52,6 +97,12 @@
 		"commit": "521459bf588435e847d981657485bae8d6f003b5",
 		"patches": [],
 		"type": "git",
+		"add_files": [
+			{
+				"source": "",
+				"target": ""
+			}
+		],
 		"enable": "false"
 	},
 	"meta-gplv2": {
@@ -61,6 +112,12 @@
 		"commit": "60b251c25ba87e946a0ca4cdc8d17b1cb09292ac",
 		"patches": [],
 		"type": "git",
+		"add_files": [
+			{
+				"source": "",
+				"target": ""
+			}
+		],
 		"enable": "false"
 	},
 	"meta-clang": {
@@ -70,6 +127,12 @@
 		"commit": "",
 		"patches": [],
 		"type": "git",
+		"add_files": [
+			{
+				"source": "",
+				"target": ""
+			}
+		],
 		"enable": "false"
 	},
 	"meta-browser": {
@@ -79,11 +142,27 @@
 		"commit": "f2d5539552b54099893a7339cbb2ab46b42ee754",
 		"patches": [],
 		"type": "git",
+		"add_files": [
+			{
+				"source": "",
+				"target": ""
+			}
+		],
 		"enable": "false"
 	},
 	"meta-rz-features": {
 		"patches": ["patches/meta-rz-features/0001-support-codec-for-linux-6.10-and-yocto-styhead.patch"],
 		"type": "local",
+		"add_files": [
+			{
+				"source": "files_to_add/meta-rz-features/0001-rzg2l-sbc-Bring-compat_alloc_user_space-back.patch",
+				"target": "meta-rz-features/meta-rz-codecs/recipes-kernel/linux-yocto/files"
+			},
+			{
+				"source": "files_to_add/meta-rz-features/0004-rzg2l-sbc-Get-interrupt-number.patch",
+				"target": "meta-rz-features/meta-rz-codecs/recipes-kernel/kernel-module-uvcs-drv/files"
+			}
+		],
 		"enable": "true"
 	}
 }
