@@ -6,17 +6,24 @@ This directory holds the automated build scripts that perform the rz yocto repos
 
 ```
 .
+├── files_to_add
+│   └── meta-rz-features
+│       ├── 0001-rzg2l-sbc-Bring-compat_alloc_user_space-back.patch
+│       └── 0004-rzg2l-sbc-Get-interrupt-number.patch
 ├── git_patch.json
 ├── jq-linux-amd64
 ├── patches
-│   └── meta-summit-radio
-│       └── 0001-rz-sbc-Support-build-in-yocto-styhead-release.patch
+│   ├── meta-rz-features
+│   │   └── 0001-support-codec-for-linux-6.10-and-yocto-styhead.patch
+│   └── meta-summit-radio
+│       ├── 0001-rz-sbc-meta-summit-radio-Support-build-in-yocto-styh.patch
+│       └── 0002-rz-sbc-summit-radio-support-eSDK-build.patch
 ├── README.md
-├── rzsbc_yocto.sh
-└── site.conf       /* (optional) */
-2 directories, 5 files
+├── site.conf       /* (optional) */
+└── rzsbc_yocto.sh
 
-``` 
+5 directories, 10 files
+```
 
 ## Organization:
 
@@ -25,6 +32,7 @@ This directory holds the automated build scripts that perform the rz yocto repos
 | git_patch.json       | contains json keys and repository configuration such as: url, branch, tag, commit, repo type and patch paths to apply.                                          |
 | jq-linux-amd64       | json querry oss binary to perform reads of git_patch.json from shell script.                                                                                    |
 | patches/             | folder containing patches. This should ideally be organized into sub directories named after the json key.                                                      |
+| files_to_add/        | folder containing additional files that need to be added to the meta layer. These files are specified in the add_files field of git_patch.json, which defines their source locations and target destinations.                                                      |
 | rzsbc_yocto.sh       | main build script that performs setup, configure and build operations.                                                                                          |
 | site.conf [optional] | An optional overrride site.conf. If present, this will be used as the override file. If not, the template conf site.conf will be used from meta-renesas layer.  |
 | README.md            | This document. This document provides an overview of the rz-sbc build package. It serves as a guide for users to understand how to set up and execute the Yocto build process, as well as how to manage and utilize the build artifacts and patches.|
@@ -39,7 +47,9 @@ The `git_patch.json` contains the following fields for each repository:
 - url: The URL to clone the repository.
 - branch/tag/commit: Specifies the branch, tag, or commit to check out.
 - patches: Lists the patches that need to be applied to this repository.
+- add_files: Lists of additional files that should be copied into the meta layer, specifying their source and target locations.
 - type: Defines whether the repository is hosted remotely (e.g., "git") or is local (e.g., "local").
+- enable: A flag indicating whether the repository should be cloned and included in the Yocto build process. A value of true enables the repository, while false excludes it.
 
 ### Note
 
