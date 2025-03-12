@@ -74,7 +74,7 @@
 	},
 	"meta-clang": {
 		"url": "https://github.com/kraj/meta-clang",
-		"branch": "dunfell-clang12",
+		"branch": "styhead",
 		"tag": "",
 		"commit": "",
 		"patches": [],
@@ -83,9 +83,9 @@
 	},
 	"meta-browser": {
 		"url": "https://github.com/OSSystems/meta-browser.git",
-		"branch": "",
+		"branch": "master",
 		"tag": "",
-		"commit": "f2d5539552b54099893a7339cbb2ab46b42ee754",
+		"commit": "",
 		"patches": [],
 		"type": "git",
 		"enable": "false"
