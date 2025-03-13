@@ -29,13 +29,12 @@ PATCH_FILE="$TOP_DIR/git_patch.json"
 #  - core-image-minimal
 #  - core-image-bsp
 #  - core-image-weston
-#  - core-image-qt
 #  - renesas-core-image-cli
 #  - renesas-core-image-weston
 #  - renesas-quickboot-cli
 #  - renesas-quickboot-wayland
-# Default is core-image-qt
-: ${IMAGE:=core-image-qt}
+# Default is core-image-weston
+: ${IMAGE:=core-image-weston}
 
 # ------------------------------------------------------------------------------
 
@@ -58,12 +57,11 @@ guideline() {
 	echo "     1. core-image-minimal"
 	echo "     2. core-image-bsp"
 	echo "     3. core-image-weston"
-	echo "     4. core-image-qt"
-	echo "     5. renesas-core-image-cli"
-	echo "     6. renesas-core-image-weston"
-	echo "     7. renesas-quickboot-cli"
-	echo "     8. renesas-quickboot-wayland"
-	echo "Note: If IMAGE is not set. The default image is core-image-qt"
+	echo "     4. renesas-core-image-cli"
+	echo "     5. renesas-core-image-weston"
+	echo "     6. renesas-quickboot-cli"
+	echo "     7. renesas-quickboot-wayland"
+	echo "Note: If IMAGE is not set. The default image is core-image-weston"
 	echo " - <target_build>: the build options. It can be an image build (1) or a SDK build (2) as follows"
 	echo "     1. build"
 	echo "     2. build-sdk"
