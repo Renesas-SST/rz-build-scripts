@@ -26,15 +26,13 @@ The build script includes functionality to detect and apply new patches as they 
     ├── git_patch.json
     ├── jq-linux-amd64
     ├── patches
-    │   ├── meta-summit-radio
+    │   ├── meta-summit-radio
     │   │   ├── 0001-rzsbc-summit-radio-pre-3.4-support-eSDK-build.patch
     │   │   └── 0002-rzsbc-summit-radio-pre-3.4-enable-usb-bt-support.patch
-    │   └── poky
-    │       └── 0001-meta-classes-esdk-explicitly-address-the-location-of.patch
+    │   └── poky
+    │       └── 0001-meta-classes-esdk-explicitly-address-the-location-of.patch
     ├── README.md
-    ├── rzsbc_yocto.sh
-    └── site.conf
+    └── rzsbc_yocto.sh
 
 4 directories, 8 files
 ```
-

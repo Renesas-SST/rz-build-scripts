@@ -10,14 +10,14 @@ This directory holds the automated build scripts that perform the rz yocto repos
 ├── jq-linux-amd64
 ├── patches
 │   ├── meta-summit-radio
-|   │   ├── 0001-rzsbc-summit-radio-pre-3.4-support-eSDK-build.patch
+│   │   ├── 0001-rzsbc-summit-radio-pre-3.4-support-eSDK-build.patch
 │   │   └── 0002-rzsbc-summit-radio-pre-3.4-enable-usb-bt-support.patch
 │   └── poky
 │       └── 0001-meta-classes-esdk-explicitly-address-the-location-of.patch
 ├── README.md
 ├── rzsbc_yocto.sh
 └── site.conf       /* (optional) */
-4 directories, 8 files
+3 directories, 7 files
 
 ``` 
 
@@ -29,7 +29,7 @@ This directory holds the automated build scripts that perform the rz yocto repos
 | jq-linux-amd64       | json querry oss binary to perform reads of git_patch.json from shell script.                                                                                    |
 | patches/             | folder containing patches. This should ideally be organized into sub directories named after the json key.                                                      |
 | rzsbc_yocto.sh       | main build script that performs setup, configure and build operations.                                                                                          |
-| site.conf            | In this branch, this is a mandatory overrride site.conf. If present, this will be used as the override file. If not, the template conf site.conf will be used from meta-renesas layer.  |
+| site.conf [optional] | An optional overrride site.conf. If present, this will be used as the override file. If not, the template conf site.conf will be used from meta-renesas layer.  |
 | README.md            | This document. This document provides an overview of the rz-sbc build package. It serves as a guide for users to understand how to set up and execute the Yocto build process, as well as how to manage and utilize the build artifacts and patches.|
 
 ## Managing Repositories and Applying Patches
@@ -80,89 +80,83 @@ The final output within your yocto build directory will be under `tmp/deploy/ima
 ```
 .
 ├── host
-│   ├── build
-│   │   ├── core-image-qt-rzpi-20240914083354.rootfs.manifest
-│   │   ├── core-image-qt-rzpi-20240914083354.testdata.json
-│   │   ├── core-image-qt-rzpi.manifest -> core-image-qt-rzpi-20240914083354.rootfs.manifest
-│   │   └── core-image-qt-rzpi.testdata.json -> core-image-qt-rzpi-20240914083354.testdata.json
-│   ├── env
-│   │   ├── core-image-qt.env
-│   │   └── Readme.md
-│   ├── Readme.md
-│   ├── src
-│   │   ├── git_patch.json
-│   │   ├── jq-linux-amd64
-│   │   ├── README.md
-│   │   ├── patches
-│   │   │   ├── meta-summit-radio
-│   │   │   │   ├── 0001-rzsbc-summit-radio-pre-3.4-support-eSDK-build.patch
-    │   │   │   └── 0002-rzsbc-summit-radio-pre-3.4-enable-usb-bt-support.patch
-│   │   │   └── poky
-│   │   │       └── 0001-meta-classes-esdk-explicitly-address-the-location-of.patch
-│   │   ├── rzsbc_yocto.sh
-│   │   └── site.conf
-│   └── tools
-│       ├── bootloader-flasher
-│       │   ├── linux
-│       │   │   ├── bootloader_flash.py
-│       │   │   └── Readme.md
-│       │   ├── Readme.md
-│       │   └── windows
-│       │       ├── config.ini
-│       │       ├── flash_bootloader.bat
-│       │       ├── Readme.md
-│       │       └── tools
-│       │           ├── cygterm.cfg
-│       │           ├── flash_bootloader.ttl
-│       │           ├── TERATERM.INI
-│       │           ├── ttermpro.exe
-│       │           ├── ttpcmn.dll
-│       │           ├── ttpfile.dll
-│       │           ├── ttpmacro.exe
-│       │           ├── ttpset.dll
-│       │           └── ttxssh.dll
-│       ├── Readme.md
-│       ├── sd-creator
-│       │   ├── linux
-│       │   │   ├── Readme.md
-│       │   │   └── sd_flash.sh
-│       │   ├── Readme.md
-│       │   └── windows
-│       │       ├── config.ini
-│       │       ├── flash_filesystem.bat
-│       │       ├── Readme.md
-│       │       └── tools
-│       │           ├── AdbWinApi.dll
-│       │           ├── cygterm.cfg
-│       │           ├── fastboot.bat
-│       │           ├── fastboot.exe
-│       │           ├── flash_system_image.ttl
-│       │           ├── TERATERM.INI
-│       │           ├── ttermpro.exe
-│       │           ├── ttpcmn.dll
-│       │           ├── ttpfile.dll
-│       │           ├── ttpmacro.exe
-│       │           ├── ttpset.dll
-│       │           └── ttxssh.dll
-│       └── uload-bootloader
-│           ├── linux
-│           │   ├── Readme.md
-│           │   └── uload_bootloader_flash.py
-│           ├── Readme.md
-│           └── windows
-│               ├── config.ini
-│               ├── Readme.md
-│               ├── tools
-│               │   ├── cygterm.cfg
-│               │   ├── TERATERM.INI
-│               │   ├── ttermpro.exe
-│               │   ├── ttpcmn.dll
-│               │   ├── ttpfile.dll
-│               │   ├── ttpmacro.exe
-│               │   ├── ttpset.dll
-│               │   ├── ttxssh.dll
-│               │   └── uload-flash_bootloader.ttl
-│               └── uload-flash_bootloader.bat
+│   ├── build
+│   │   ├── core-image-qt-rzpi-20240914083354.rootfs.manifest
+│   │   ├── core-image-qt-rzpi-20240914083354.testdata.json
+│   │   ├── core-image-qt-rzpi.manifest -> core-image-qt-rzpi-20240914083354.rootfs.manifest
+│   │   └── core-image-qt-rzpi.testdata.json -> core-image-qt-rzpi-20240914083354.testdata.json
+│   ├── Readme.md
+│   ├── src
+│   │   ├── git_patch.json
+│   │   ├── jq-linux-amd64
+│   │   ├── README.md
+│   │   ├── patches
+│   │   │   ├── 0001-meta-classes-esdk-explicitly-address-the-location-of.patch
+│   │   │   ├── 0001-rzsbc-summit-radio-pre-3.4-support-eSDK-build.patch
+│   │   │   └── 0002-rzsbc-summit-radio-pre-3.4-enable-usb-bt-support.patch
+│   │   └── rzsbc_yocto.sh
+│   └── tools
+│       ├── bootloader-flasher
+│       │   ├── linux
+│       │   │   ├── bootloader_flash.py
+│       │   │   └── Readme.md
+│       │   ├── Readme.md
+│       │   └── windows
+│       │       ├── config.ini
+│       │       ├── flash_bootloader.bat
+│       │       ├── Readme.md
+│       │       └── tools
+│       │           ├── cygterm.cfg
+│       │           ├── flash_bootloader.ttl
+│       │           ├── TERATERM.INI
+│       │           ├── ttermpro.exe
+│       │           ├── ttpcmn.dll
+│       │           ├── ttpfile.dll
+│       │           ├── ttpmacro.exe
+│       │           ├── ttpset.dll
+│       │           └── ttxssh.dll
+│       ├── Readme.md
+│       ├── sd-creator
+│       │   ├── linux
+│       │   │   ├── Readme.md
+│       │   │   └── sd_flash.sh
+│       │   ├── Readme.md
+│       │   └── windows
+│       │       ├── config.ini
+│       │       ├── flash_filesystem.bat
+│       │       ├── Readme.md
+│       │       └── tools
+│       │           ├── AdbWinApi.dll
+│       │           ├── cygterm.cfg
+│       │           ├── fastboot.bat
+│       │           ├── fastboot.exe
+│       │           ├── flash_system_image.ttl
+│       │           ├── TERATERM.INI
+│       │           ├── ttermpro.exe
+│       │           ├── ttpcmn.dll
+│       │           ├── ttpfile.dll
+│       │           ├── ttpmacro.exe
+│       │           ├── ttpset.dll
+│       │           └── ttxssh.dll
+│       └── uload-bootloader
+│           ├── linux
+│           │   ├── Readme.md
+│           │   └── uload_bootloader_flash.py
+│           ├── Readme.md
+│           └── windows
+│               ├── config.ini
+│               ├── Readme.md
+│               ├── tools
+│               │   ├── cygterm.cfg
+│               │   ├── TERATERM.INI
+│               │   ├── ttermpro.exe
+│               │   ├── ttpcmn.dll
+│               │   ├── ttpfile.dll
+│               │   ├── ttpmacro.exe
+│               │   ├── ttpset.dll
+│               │   ├── ttxssh.dll
+│               │   └── uload-flash_bootloader.ttl
+│               └── uload-flash_bootloader.bat
 ├── license
 │   ├── Disclaimer051.pdf
 │   └── Disclaimer052.pdf
@@ -171,8 +165,9 @@ The final output within your yocto build directory will be under `tmp/deploy/ima
 ├── RZG2L-SBC_Evaluation_license.pdf
 └── target
     ├── env
-    │   ├── Readme.md
-    │   └── uEnv.txt
+    │   ├── core-image-qt.env
+    │   ├── Readme.md
+    │   └── uEnv.txt
     ├── images
     │   ├── bl2_bp-rzpi.bin
     │   ├── bl2_bp-rzpi.srec
@@ -200,7 +195,7 @@ The final output within your yocto build directory will be under `tmp/deploy/ima
     │       └── Readme.md
     └── Readme.md
 
-28 directories, 92 files
+25 directories, 90 files
 ```
 ## User Manual
 

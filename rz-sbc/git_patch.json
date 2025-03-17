@@ -13,7 +13,7 @@
 		"tag": "",
 		"commit": "",
 		"patches": ["patches/meta-summit-radio/0001-rzsbc-summit-radio-pre-3.4-support-eSDK-build.patch",
-			"patches/meta-summit-radio/0002-rzsbc-summit-radio-pre-3.4-enable-usb-bt-support.patch"],
+					"patches/meta-summit-radio/0002-rzsbc-summit-radio-pre-3.4-enable-usb-bt-support.patch"],
 		"type": "git"
 	},
 	"meta-renesas": {
