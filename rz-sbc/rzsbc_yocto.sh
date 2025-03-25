@@ -25,7 +25,7 @@ JQ="$TOP_DIR/jq-linux-amd64"
 PATCH_FILE="$TOP_DIR/git_patch.json"
 
 # Target image for the build
-# List of supported images
+# List of supported images:
 #  - core-image-minimal
 #  - core-image-bsp
 #  - core-image-weston
@@ -33,9 +33,17 @@ PATCH_FILE="$TOP_DIR/git_patch.json"
 #  - renesas-core-image-weston
 #  - renesas-quickboot-cli
 #  - renesas-quickboot-wayland
+
+# Special case:
+#  - all-supported-images (build all images listed above)
+
 # Default is core-image-weston
 : ${IMAGE:=core-image-weston}
 
+# List of all supported images
+supported_images=("core-image-minimal" "core-image-bsp" "core-image-weston" \
+					"renesas-core-image-cli" "renesas-core-image-weston" "renesas-quickboot-cli" \
+					"renesas-quickboot-wayland")
 # ------------------------------------------------------------------------------
 
 # -----------------------------Global variable------------------------------------
@@ -61,7 +69,9 @@ guideline() {
 	echo "     5. renesas-core-image-weston"
 	echo "     6. renesas-quickboot-cli"
 	echo "     7. renesas-quickboot-wayland"
-	echo "Note: If IMAGE is not set. The default image is core-image-weston"
+	echo "     9. all-supported-images"
+	echo "Note: If IMAGE is not set, the default image is core-image-qt."
+	echo "      Special case: If IMAGE is set to 'all-supported-images', all the images listed above will be built."
 	echo " - <target_build>: the build options. It can be an image build (1) or a SDK build (2) as follows"
 	echo "     1. build"
 	echo "     2. build-sdk"
@@ -673,12 +683,28 @@ build_sdk() {
 		echo "This SDK build will start from scratch."
 	fi
 
-	#Initiate build sdk
-	MACHINE=rzg2l-sbc bitbake ${IMAGE} -c populate_sdk_ext
+	# If IMAGE is set to 'all-supported-images', build SDK for all supported images
+	if [ "$IMAGE" == "all-supported-images" ]; then
+		echo "Building SDK for all supported images..."
 
-	echo
-	echo "Finished the rz yocto sdk build for RZ SBC board. Target image: ${IMAGE}"
-	echo "========================================================================"
+		for img in "${supported_images[@]}"; do
+			echo "Building SDK for ${img}..."
+			MACHINE=rzg2l-sbc bitbake ${img}  -c populate_sdk_ext
+			echo "Finished building SDK for ${img}"
+		done
+
+		echo
+		echo "Finished the rz yocto SDK build for RZ SBC board with all supported images."
+		echo "========================================================================"
+	else
+		# Build SDK for the specific image if IMAGE is set to a single value
+		echo "Building SDK for the specific image: ${IMAGE}"
+		MACHINE=rzg2l-sbc bitbake ${IMAGE} -c populate_sdk_ext
+
+		echo
+		echo "Finished the rz yocto SDK build for RZ SBC board. Target image: ${IMAGE}"
+		echo "========================================================================"
+	fi
 
 	deploy_build_assets
 	#output
@@ -690,12 +716,28 @@ build() {
 
 	setup_conf
 
-	# Initiate build
-	MACHINE=rzg2l-sbc bitbake ${IMAGE}
+	# If IMAGE is set to 'all-supported-images', build all images
+	if [ "$IMAGE" == "all-supported-images" ]; then
+		echo "Building all supported images..."
 
-	echo
-	echo "Finished the rz yocto build for RZ SBC board. Target image: ${IMAGE}"
-	echo "========================================================================"
+		for img in "${supported_images[@]}"; do
+			echo "Building ${img}..."
+			MACHINE=rzg2l-sbc bitbake ${img}
+			echo "Finished building ${img}"
+		done
+
+		echo
+		echo "Finished building all supported images."
+		echo "========================================================================"
+	else
+		# Build the specific image if IMAGE is set to a single value
+		echo "Building the specific image: ${IMAGE}"
+		MACHINE=rzg2l-sbc bitbake ${IMAGE}
+
+		echo
+		echo "Finished the Yocto build for RZ SBC board. Target image: ${IMAGE}"
+		echo "========================================================================"
+	fi
 
 	deploy_build_assets
 	#output
