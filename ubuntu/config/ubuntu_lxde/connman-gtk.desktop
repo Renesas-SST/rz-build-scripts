@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Exec=/usr/bin/connman-gtk
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name=ConnMan
+Comment=ConnMan GTK for managing network connections
