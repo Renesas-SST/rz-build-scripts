@@ -125,6 +125,26 @@ function set_network_config() {
 	return 0
 }
 
+# cp_ros2_ws is used to test the ROS2 installation, not used in the final image
+cp_ros2_ws() {
+	echo "Copying ROS2 workspace..."
+
+	# Change dir WORK_DIR
+	echo "Current working directory is: $WORK_DIR"
+	cd "$WORK_DIR" || { echo "Failed to change to WORK_DIR"; return 1; }
+
+	# Check if ROS2 workspace exists
+	if [[ ! -d "./include/ubuntu_core/ros2_ws" ]]; then
+		echo "ROS2 workspace not found."
+		return 1
+	fi
+
+	# Copy ROS2 workspace to rootfs
+	cp -r "./include/ubuntu_core/ros2_ws" "$ROOTFS/home" || { echo "Failed to copy ROS2 workspace"; return 1; }
+	echo "ROS2 workspace copied successfully."
+	return 0
+}
+
 # --------------------------------------------------------------------------#
 # function set_config use to copy config file to ubuntu os.
 # function set_config contain steps:
@@ -167,6 +187,13 @@ function set_config() {
 	set_network_config
 	if [[ $? -eq 1 ]]; then
 		echo "Failed to configure network interfaces. Exiting."
+		return 1
+	fi
+
+	# Call Function to set up ROS2 workspace
+	cp_ros2_ws
+	if [[ $? -eq 1 ]]; then
+		echo "Failed to copy ROS2 workspace. Exiting."
 		return 1
 	fi
 

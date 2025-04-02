@@ -102,11 +102,11 @@ do_build_yocto(){
 # main function for ubuntu core
 main_ubuntu_core(){
 	# Prepare the environment by checking for required files and directories
-	prepare_env
-	if [ $? -eq 1 ]; then
-		echo "prepare_env failed."
-		exit 1
-	fi
+	# prepare_env
+	# if [ $? -eq 1 ]; then
+	# 	echo "prepare_env failed."
+	# 	exit 1
+	# fi
 
 	# Prepare the Ubuntu base system (install necessary binaries and setup rootfs)
 	ubuntu_base_prepare
@@ -116,11 +116,11 @@ main_ubuntu_core(){
 	fi
 
 	# Prepare qt_rootfs_source by copying relevant binaries and folders to the Ubuntu OS
-	rootfs_qt
-	if [ $? -eq 1 ]; then
-		echo "rootfs_qt failed."
-		exit 1
-	fi
+	# rootfs_qt
+	# if [ $? -eq 1 ]; then
+	# 	echo "rootfs_qt failed."
+	# 	exit 1
+	# fi
 
 	# Set configuration files
 	set_config
@@ -150,19 +150,26 @@ main_ubuntu_core(){
 		exit 1
 	fi
 
-	# Install gstreamer to ubuntu
-	install_gstreamer "rootfs" "qt_rootfs_source"
+	# Install ROS2 Jazzy packages
+	chroot_run_1_script "apt_install_ros2.sh"
 	if [ $? -eq 1 ]; then
-		echo "install_gstreamer failed."
+		echo "apt_install_ros2 failed."
 		exit 1
 	fi
 
+	# Install gstreamer to ubuntu
+	# install_gstreamer "rootfs" "qt_rootfs_source"
+	# if [ $? -eq 1 ]; then
+	# 	echo "install_gstreamer failed."
+	# 	exit 1
+	# fi
+
 	# Install weston to ubuntu
-	install_weston "rootfs" "qt_rootfs_source"
-	if [ $? -eq 1 ]; then
-		echo "install_weston failed."
-		exit 1
-	fi
+	# install_weston "rootfs" "qt_rootfs_source"
+	# if [ $? -eq 1 ]; then
+	# 	echo "install_weston failed."
+	# 	exit 1
+	# fi
 
 	# Package the root filesystem into a compressed archive (tarball)
 	package_rootfs
@@ -172,18 +179,18 @@ main_ubuntu_core(){
 	fi
 
 	# Create a WIC image from the rootfs
-	create_wic
-	if [ $? -eq 1 ]; then
-		echo "create_wic failed."
-		exit 1
-	fi
+	# create_wic
+	# if [ $? -eq 1 ]; then
+	# 	echo "create_wic failed."
+	# 	exit 1
+	# fi
 
 	# Move WIC output to output yocto folder
-	move_ubuntu_to_yocto_output
-	if [ $? -eq 1 ]; then
-		echo "move_ubuntu_to_yocto_output failed."
-		exit 1
-	fi
+	# move_ubuntu_to_yocto_output
+	# if [ $? -eq 1 ]; then
+	# 	echo "move_ubuntu_to_yocto_output failed."
+	# 	exit 1
+	# fi
 }
 
 #######################################
@@ -345,7 +352,7 @@ fi
 case "$UBUNTU_TYPE" in
 	CORE)
 		source_env
-		do_build_yocto
+		# do_build_yocto
 		main_ubuntu_core
 		;;
 	LXDE)
