@@ -36,6 +36,15 @@
 		"type": "git",
 		"enable": "false"
 	},
+	"meta-qt6": {
+		"url": "git://code.qt.io/yocto/meta-qt6.git",
+		"branch": "6.9",
+		"tag": "",
+		"commit": "",
+		"patches": [],
+		"type": "git",
+		"enable": "true"
+	},
 	"meta-openembedded": {
 		"url": "https://github.com/openembedded/meta-openembedded",
 		"branch": "styhead",
@@ -65,7 +74,7 @@
 	},
 	"meta-clang": {
 		"url": "https://github.com/kraj/meta-clang",
-		"branch": "dunfell-clang12",
+		"branch": "styhead",
 		"tag": "",
 		"commit": "",
 		"patches": [],
@@ -74,9 +83,9 @@
 	},
 	"meta-browser": {
 		"url": "https://github.com/OSSystems/meta-browser.git",
-		"branch": "",
+		"branch": "master",
 		"tag": "",
-		"commit": "f2d5539552b54099893a7339cbb2ab46b42ee754",
+		"commit": "",
 		"patches": [],
 		"type": "git",
 		"enable": "false"
@@ -84,6 +93,16 @@
 	"meta-rz-features": {
 		"patches": ["patches/meta-rz-features/0001-support-codec-for-linux-6.10-and-yocto-styhead.patch"],
 		"type": "local",
+		"add_files": [
+			{
+				"source": "files_to_add/meta-rz-features/0001-rzg2l-sbc-Bring-compat_alloc_user_space-back.patch",
+				"target": "meta-rz-features/meta-rz-codecs/recipes-kernel/linux-yocto/files"
+			},
+			{
+				"source": "files_to_add/meta-rz-features/0004-rzg2l-sbc-Get-interrupt-number.patch",
+				"target": "meta-rz-features/meta-rz-codecs/recipes-kernel/kernel-module-uvcs-drv/files"
+			}
+		],
 		"enable": "true"
 	}
 }

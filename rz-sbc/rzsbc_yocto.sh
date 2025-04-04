@@ -18,7 +18,7 @@ SUFFIX_ZIP=".zip"
 SUFFIX_TAR=".tar.gz"
 
 LSB_ID_OK="Ubuntu"
-LSB_REL_OK="20.04"
+LSB_REL_OK="24.04"
 
 TOP_DIR=`pwd`
 JQ="$TOP_DIR/jq-linux-amd64"
@@ -29,13 +29,12 @@ PATCH_FILE="$TOP_DIR/git_patch.json"
 #  - core-image-minimal
 #  - core-image-bsp
 #  - core-image-weston
-#  - core-image-qt
 #  - renesas-core-image-cli
 #  - renesas-core-image-weston
 #  - renesas-quickboot-cli
 #  - renesas-quickboot-wayland
-# Default is core-image-qt
-: ${IMAGE:=core-image-qt}
+# Default is core-image-weston
+: ${IMAGE:=core-image-weston}
 
 # ------------------------------------------------------------------------------
 
@@ -58,12 +57,11 @@ guideline() {
 	echo "     1. core-image-minimal"
 	echo "     2. core-image-bsp"
 	echo "     3. core-image-weston"
-	echo "     4. core-image-qt"
-	echo "     5. renesas-core-image-cli"
-	echo "     6. renesas-core-image-weston"
-	echo "     7. renesas-quickboot-cli"
-	echo "     8. renesas-quickboot-wayland"
-	echo "Note: If IMAGE is not set. The default image is core-image-qt"
+	echo "     4. renesas-core-image-cli"
+	echo "     5. renesas-core-image-weston"
+	echo "     6. renesas-quickboot-cli"
+	echo "     7. renesas-quickboot-wayland"
+	echo "Note: If IMAGE is not set. The default image is core-image-weston"
 	echo " - <target_build>: the build options. It can be an image build (1) or a SDK build (2) as follows"
 	echo "     1. build"
 	echo "     2. build-sdk"
@@ -81,6 +79,62 @@ clean_repository() {
 		git checkout .
 		git clean -fdx
 	fi
+}
+
+add_files() {
+	local key=$1
+
+	# Get the add_files data from JSON
+	local add_files
+	add_files=$("${JQ}" -r --arg key "$key" '.[$key].add_files' "$PATCH_FILE")
+
+	if [ $? -ne 0 ]; then
+		echo "Error: Failed to parse JSON file for files."
+		exit 1
+	fi
+
+	# Check if add_files is empty or null
+	if [ -z "$add_files" ] || [ "$add_files" == "null" ]; then
+		echo "No files to add for $key (add_files is empty)"
+		return 0
+	fi
+
+	# Check if any of the add_files entries have empty source and target fields
+	invalid_entries=$(echo "$add_files" | grep -E '"source": ""| "target": ""')
+
+	if [ -n "$invalid_entries" ]; then
+		echo "No files to add for $key (invalid source/target entries found)"
+		return 0
+	fi
+
+	echo "Files to add in $key: $add_files"
+
+	# Loop through the add_files list
+	while IFS= read -r file_info; do
+		local source target
+		source=""
+		target=""
+
+		# Extract the source and target from add_files lists
+		source=${TOP_DIR}/$(echo "$file_info" | ${JQ} -r '.source')
+		target=${RZ_TARGET_DIR}/$(echo "$file_info" | ${JQ} -r '.target')
+
+		# Create target folder if it's missing
+		if [ ! -d "$target" ]; then
+			echo "Missing $target, creating directory..."
+			mkdir -p "$target"
+		fi
+
+		echo "Processing: $source -> $target"
+
+		# Check if the source file actually exists before copying
+		if [ -f "$source" ]; then
+			echo "Copying file from $source to $target"
+			cp "$source" "$target"
+		else
+			echo "Source file does not exist: $source"
+		fi
+	done <<< "$("${JQ}" -c '.[]' <<< "$add_files")"
 }
 
 apply_patches() {
@@ -156,7 +210,7 @@ check_pkg_require(){
 	lsb_rel=`lsb_release -r | cut -f2`
 
 	if [ ${lsb_id} != ${LSB_ID_OK} ] || [ ${lsb_rel} != ${LSB_REL_OK} ]; then
-		echo "Only known working OS is ${LSB_OK}. Kindly ensure this script is run on a supported OS or docker container"
+		echo "Only known working OS is ${LSB_REL_OK}. Kindly ensure this script is run on a supported OS or docker container"
 		exit 0
 	fi
 
@@ -259,6 +313,9 @@ bsp_checkout_verification() {
 
 				# Need to apply the necessary patches
 				apply_patches "$bsp_layer"
+
+				# Add addtion files after apply the patches
+				add_files "$bsp_layer"
 			fi
 
 			cd ..
@@ -280,6 +337,10 @@ bsp_checkout_verification() {
 
 				# Need to apply the neccessary patches
 				apply_patches $bsp_layer
+
+				# Add addtion files after apply the patches
+				add_files $bsp_layer
+
 				cd ..
 				continue
 			fi
@@ -300,6 +361,10 @@ bsp_checkout_verification() {
 
 				# Need to apply the neccessary patches
 				apply_patches $bsp_layer
+
+				# Add addtion files after apply the patches
+				add_files $bsp_layer
+
 				cd ..
 				continue
 			fi
@@ -378,6 +443,10 @@ check_and_clone_missing_layers() {
 
 		# Apply necessary patches
 		apply_patches $missing_layer
+
+		# Add addtion files after apply the patches
+		add_files $missing_layer
+
 		cd ..
 	done
 
@@ -492,6 +561,10 @@ get_bsp() {
 
 		# Apply patches
 		apply_patches "$repo_name"
+
+		# Add addtion files after apply the patches
+		add_files "$repo_name"
+
 		cd ..
 	done
 
