@@ -1,4 +1,4 @@
-# Ubuntu Core System development on RZG2L SBC board #
+# Ubuntu LXDE System development on RZG2L SBC board #
 This is the quick startup guide for RZG2L SBC board (hereinafter referred to as `RZG2L-SBC`) to develop on Ubuntu LXDE (with Desktop environment support).
 
 The following sections will describe how to build this custom Ubuntu Core image and set up the development environment for the RZG2L-SBC.
@@ -59,6 +59,7 @@ The `config.ini` file is used for configuring the script that builds an Ubuntu i
 - **TIME_ZONE_CITY**: The time zone city (e.g., "Ho_Chi_Minh").
 - **IS_WESTON_ENABLE**: Set to 0 to disable Weston compositor.
 > :memo: **Note:** Host PC with Ubuntu 20.04 is recommended for the build. Prepare environment for building package and local build environment.
+> :memo: **Note:** GNOME display manager will not work when using the root user.
 
 Then we can execute the script as follows:
 ```
