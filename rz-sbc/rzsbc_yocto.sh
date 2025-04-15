@@ -22,7 +22,7 @@ SUFFIX_ZIP=".zip"
 SUFFIX_TAR=".tar.gz"
 
 LSB_ID_OK="Ubuntu"
-LSB_REL_OK="20.04"
+LSB_REL_OK=("20.04" "24.04")
 
 TOP_DIR=`pwd`
 JQ="$TOP_DIR/jq-linux-amd64"
@@ -160,8 +160,12 @@ check_pkg_require(){
 	lsb_id=`lsb_release -i | cut -f2`
 	lsb_rel=`lsb_release -r | cut -f2`
 
-	if [ ${lsb_id} != ${LSB_ID_OK} ] || [ ${lsb_rel} != ${LSB_REL_OK} ]; then
-		echo "Only known working OS is ${LSB_OK}. Kindly ensure this script is run on a supported OS or docker container"
+	if [ ${lsb_id} == ${LSB_ID_OK} ] && [[ " ${LSB_REL_OK[*]} " == *" $lsb_rel "* ]]; then
+		echo "${lsb_id} ${lsb_rel}"
+	else
+		printf -v VERSION_LIST '%s, ' "${LSB_REL_OK[@]}"
+		echo "Unsupported ${lsb_id} ${lsb_rel}!"
+		echo "Only known working OS is ${LSB_ID_OK}, version ${VERSION_LIST%, }. Kindly ensure this script is run on a supported OS or docker container"
 		exit 0
 	fi
 
