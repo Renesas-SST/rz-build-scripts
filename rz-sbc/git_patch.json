@@ -19,8 +19,8 @@
 		"enable": "true"
 	},
 	"meta-renesas": {
-		"url": "https://github.com/Renesas-SST/meta-renesas.git",
-		"branch": "styhead/rz-sbc",
+		"url": "https://github.com/congnguyenzn/meta-renesas.git",
+		"branch": "styhead/rzv2h-evk-ver1",
 		"tag": "",
 		"commit": "",
 		"patches": [],
@@ -65,7 +65,7 @@
 	},
 	"meta-clang": {
 		"url": "https://github.com/kraj/meta-clang",
-		"branch": "dunfell-clang12",
+		"branch": "styhead",
 		"tag": "",
 		"commit": "",
 		"patches": [],

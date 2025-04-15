@@ -11,8 +11,12 @@ REN_GPU_MALI_LIB_PKG="RTK0EF0045Z13001ZJ-v1.1.2_EN"
 REN_GPU_MALI_LIB_META_FEATURE="meta-rz-features_graphics_v1.1.2"
 
 # RZ MPU Codec Library Evaluation Version V1.1.0
-REN_VEDIO_CODEC_LIB_PKG="RTK0EF0045Z15001ZJ-v1.1.0_EN"
-REN_VEDIO_CODEC_LIB_META_FEATURE="meta-rz-features_codec_v1.1.0"
+# REN_VEDIO_CODEC_LIB_PKG="RTK0EF0045Z15001ZJ-v1.1.0_EN"
+# REN_VEDIO_CODEC_LIB_META_FEATURE="meta-rz-features_codec_v1.1.0"
+
+# RZ/V2H Codec Library Evaluation
+REN_VEDIO_CODEC_LIB_PKG="RTK0EF0192Z00001ZJ"
+REN_VEDIO_CODEC_LIB_META_FEATURE="meta-rz-features"
 
 SUFFIX_ZIP=".zip"
 SUFFIX_TAR=".tar.gz"
@@ -36,6 +40,7 @@ PATCH_FILE="$TOP_DIR/git_patch.json"
 #  - renesas-quickboot-wayland
 # Default is core-image-qt
 : ${IMAGE:=core-image-qt}
+TARGET_MACHINE="rzv2h-evk-ver1"
 
 # ------------------------------------------------------------------------------
 
@@ -166,15 +171,23 @@ check_pkg_require(){
 	#    echo "Please download 'RZ/G Verified Linux Package' from Renesas RZ/G2L Website (https://www.renesas.com/us/en/document/swo/rzg-verified-linux-package-v305-update1rtk0ef0045z0021azj-v305-update1zip?r=1597481)"
 	#    check=1
 	#fi
-	if [ ! -e ${REN_GPU_MALI_LIB_PKG}${SUFFIX_ZIP} ];then
-		log_error "Cannot find ${REN_GPU_MALI_LIB_PKG}${SUFFIX_ZIP} !"
-		echo "Please download 'RZ MPU Graphics Library' from Renesas RZ/G2L Website (https://www.renesas.com/us/en/document/swo/rz-mpu-graphics-library-evaluation-version-rzg2l-and-rzg2lc-rtk0ef0045z13001zj-v112enzip)"
-		check=2
-	fi
-	if [ ! -e ${REN_VEDIO_CODEC_LIB_PKG}${SUFFIX_ZIP} ];then
-		log_error "Cannot found ${REN_VEDIO_CODEC_LIB_PKG}${SUFFIX_ZIP} !"
-		echo "Please download 'RZ MPU Codec Library' from Renesas RZ/G2L Website (https://www.renesas.com/us/en/document/swo/rz-mpu-video-codec-library-evaluation-version-rzg2l-rtk0ef0045z15001zj-v110xxzip?r=1535641)"
-		check=3
+	if [ "${TARGET_MACHINE}" == "rzv2h-evk-ver1" ]; then
+		if [ ! -e ${REN_VEDIO_CODEC_LIB_PKG}${SUFFIX_ZIP} ];then
+			log_error "Cannot found ${REN_VEDIO_CODEC_LIB_PKG}${SUFFIX_ZIP} !"
+			echo "Please download 'RZ/V2H Linux Video Codecs Library Package' from Renesas RZ/V2H Website (https://www.renesas.com/document/swo/rzv2h-linux-video-codecs-library-package-rtk0ef0192z00001zjzip)"
+			check=3
+		fi
+	elif [ "${TARGET_MACHINE}" == "rzg2l-sbc" ]; then
+		if [ ! -e ${REN_GPU_MALI_LIB_PKG}${SUFFIX_ZIP} ];then
+			log_error "Cannot find ${REN_GPU_MALI_LIB_PKG}${SUFFIX_ZIP} !"
+			echo "Please download 'RZ MPU Graphics Library' from Renesas RZ/G2L Website (https://www.renesas.com/us/en/document/swo/rz-mpu-graphics-library-evaluation-version-rzg2l-and-rzg2lc-rtk0ef0045z13001zj-v112enzip)"
+			check=2
+		fi
+		if [ ! -e ${REN_VEDIO_CODEC_LIB_PKG}${SUFFIX_ZIP} ];then
+			log_error "Cannot found ${REN_VEDIO_CODEC_LIB_PKG}${SUFFIX_ZIP} !"
+			echo "Please download 'RZ MPU Codec Library' from Renesas RZ/G2L Website (https://www.renesas.com/us/en/document/swo/rz-mpu-video-codec-library-evaluation-version-rzg2l-rtk0ef0045z15001zj-v110xxzip?r=1535641)"
+			check=3
+		fi
 	fi
 
 	[ ${check} -ne 0 ] && echo "Package check failed. Fix errors and copy dependencies here." && exit
@@ -429,7 +442,7 @@ extract_to_meta(){
 	cd ${WORKSPACE}
 	pwd
 	unzip ${zipfile}
-	tar -xzf ${tarfile} -C ${tardir}
+	tar -xf ${tarfile} -C ${tardir}
 	sync
 }
 
@@ -499,8 +512,12 @@ get_bsp() {
 }
 
 unpack_local_repo() {
-	unpack_gpu
-	unpack_codec
+	if [ "${TARGET_MACHINE}" == "rzv2h-evk-ver1" ]; then
+		unpack_codec
+	elif [ "${TARGET_MACHINE}" == "rzg2l-sbc" ]; then
+		unpack_gpu
+		unpack_codec
+	fi
 }
 
 unpack_gpu() {
@@ -531,11 +548,11 @@ setup_conf(){
 	echo "Env setup completed. pwd = ${PWD}"
 
 	# Legacy style
-	#cp ../meta-renesas/docs/template/conf/rzg2l-sbc/* conf/
+	#cp ../meta-renesas/docs/template/conf/${TARGET_MACHINE}/* conf/
 	#bitbake core-image-qt
 
 	# New style
-	TEMPLATECONF=$PWD/meta-renesas/conf/templates/rzg2l-sbc/ . ./poky/oe-init-build-env build
+	TEMPLATECONF=$PWD/meta-renesas/conf/templates/${TARGET_MACHINE}/ . ./poky/oe-init-build-env build
 
 	# Remove templateconf.cfg as it will reference the old workspace directory when installing the eSDK on another host PC
 	rm -f "conf/templateconf.cfg"
@@ -543,8 +560,10 @@ setup_conf(){
 	# Check local overrides file
 	if [ ! -e "$WORKSPACE/site.conf" ]; then
 		echo "Local site.conf file not present in this workspace ($WORKSPACE). Assuming developer default build!"
-		# Copy default template overrides file as yocto doesnt copy site.conf.sample
-		cp ../meta-renesas/conf/templates/rzg2l-sbc/site.conf.sample conf/site.conf
+		if [ -e "../meta-renesas/conf/templates/${TARGET_MACHINE}/site.conf.sample" ]; then
+			# Copy default template overrides file as yocto doesnt copy site.conf.sample
+			cp ../meta-renesas/conf/templates/${TARGET_MACHINE}/site.conf.sample conf/site.conf
+		fi
 		echo "This build is a common build for rzsbc. It is not based on any release tag. Target image: ${IMAGE}"
 	else
 		# Copy local overrides file to yocto build conf folder
@@ -601,7 +620,7 @@ build_sdk() {
 	fi
 
 	#Initiate build sdk
-	MACHINE=rzg2l-sbc bitbake ${IMAGE} -c populate_sdk_ext
+	MACHINE=${TARGET_MACHINE} bitbake ${IMAGE} -c populate_sdk_ext
 
 	echo
 	echo "Finished the rz yocto sdk build for RZ SBC board. Target image: ${IMAGE}"
@@ -618,7 +637,7 @@ build() {
 	setup_conf
 
 	# Initiate build
-	MACHINE=rzg2l-sbc bitbake ${IMAGE}
+	MACHINE=${TARGET_MACHINE} bitbake ${IMAGE}
 
 	echo
 	echo "Finished the rz yocto build for RZ SBC board. Target image: ${IMAGE}"
@@ -629,7 +648,7 @@ build() {
 }
 
 deploy_build_assets() {
-	local target_dir="${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/host/src"
+	local target_dir="${RZ_TARGET_DIR}/build/tmp/deploy/images/${TARGET_MACHINE}/host/src"
 
 	# Check if the src directory already exists
 	if [ ! -d ${target_dir} ];then
@@ -657,14 +676,14 @@ output() {
 
 	# Collect final output
 	cd ${OUTPUT}
-	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/target/images/fip-rzg2l-sbc.srec $OUTPUT
-	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/target/images/dtbs/rzpi.dtb $OUTPUT
-	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/README.md $OUTPUT
-	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/target/env/uEnv.txt $OUTPUT
-	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/target/images/Image $OUTPUT
-	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/target/images/bl2_bp-rzg2l-sbc.srec $OUTPUT
-	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/target/images/Flash_Writer_SCIF_rzg2l-sbc.mot $OUTPUT
-	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/${IMAGE}-rzg2l-sbc.tar.bz2 $OUTPUT
+	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/${TARGET_MACHINE}/target/images/fip-${TARGET_MACHINE}.srec $OUTPUT
+	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/${TARGET_MACHINE}/target/images/dtbs/rzpi.dtb $OUTPUT
+	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/${TARGET_MACHINE}/README.md $OUTPUT
+	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/${TARGET_MACHINE}/target/env/uEnv.txt $OUTPUT
+	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/${TARGET_MACHINE}/target/images/Image $OUTPUT
+	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/${TARGET_MACHINE}/target/images/bl2_bp-${TARGET_MACHINE}.srec $OUTPUT
+	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/${TARGET_MACHINE}/target/images/Flash_Writer_SCIF_${TARGET_MACHINE}.mot $OUTPUT
+	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/${TARGET_MACHINE}/${IMAGE}-${TARGET_MACHINE}.tar.bz2 $OUTPUT
 
 	echo "The output located at: $OUTPUT"
 	ls -la $OUTPUT
