@@ -1,0 +1,6 @@
+rz-sbc/*/build/
+ubuntu/rootfs/
+
+*.zip
+*.tar.gz
+*.tar.bz
