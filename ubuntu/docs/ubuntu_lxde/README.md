@@ -1,4 +1,4 @@
-# Ubuntu Core System development on RZG2L SBC board #
+# Ubuntu LXDE System development on RZG2L SBC board #
 This is the quick startup guide for RZG2L SBC board (hereinafter referred to as `RZG2L-SBC`) to develop on Ubuntu LXDE (with Desktop environment support).
 
 The following sections will describe how to build this custom Ubuntu Core image and set up the development environment for the RZG2L-SBC.
@@ -52,7 +52,7 @@ The `config.ini` file is used for configuring the script that builds an Ubuntu i
 - **CLEAN_ALL**: Set to 0 to keep the current build (not recommended).
 - **BOOT_SIZE_MB**: Size of the boot partition in MB. It should be larger than 100 MB.
 - **ROOTFS_SPACE**: Additional space for the rootfs partition in MB.
-- **core_image_qt_name**: Input rootfs (contains Qt libraries, bootloader, kernel, etc. - generated from Yocto) file name.
+- **renesas_ubuntu_input_name**: Input rootfs (contains Qt libraries, bootloader, kernel, etc. - generated from Yocto) file name.
 - **UBUNTU_BASE_FILE_NAME**: The file name of the Ubuntu base that will be downloaded.
 - **UBUNTU_BASE_LINK**: The link to download the Ubuntu base file.
 - **OUTPUT_ROOTFS**: The output file name for the rootfs.
@@ -62,7 +62,8 @@ The `config.ini` file is used for configuring the script that builds an Ubuntu i
 - **SSH_NO_PASS_LOGIN**: Set to 1 to enable users to log in without a password.
 - **IS_WESTON_ENABLE**: Set to 0 to disable the Weston compositor.
 > :memo: **Note:** Host PC with Ubuntu 22.04 is recommended for the build. Prepare environment for building package and local build environment.
-
+> :memo: **Note:** LightDM display manager will not work when using the root user, login as normal user to use this.
+ 
 Then we can execute the script as follows:
 ```
 chmod +x rzsbc_ubuntu.sh

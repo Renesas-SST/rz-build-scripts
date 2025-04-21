@@ -34,7 +34,7 @@ The `config.ini` file is used for configuring the script that builds an Ubuntu i
 - **CLEAN_ALL**: Set to 0 to keep the current build (not recommended).
 - **BOOT_SIZE_MB**: Size of the boot partition in MB. It should be larger than 100 MB.
 - **ROOTFS_SPACE**: Additional space for the rootfs partition in MB.
-- **core_image_qt_name**: Input rootfs (contains Qt libraries, bootloader, kernel, etc. - generated from Yocto) file name.
+- **renesas_ubuntu_input_name**: Input rootfs (contains Qt libraries, bootloader, kernel, etc. - generated from Yocto) file name.
 - **UBUNTU_BASE_FILE_NAME**: The file name of the Ubuntu base that will be downloaded.
 - **UBUNTU_BASE_LINK**: The link to download the Ubuntu base file.
 - **OUTPUT_ROOTFS**: The output file name for the rootfs.

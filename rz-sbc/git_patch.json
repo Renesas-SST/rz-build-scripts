@@ -36,6 +36,15 @@
 		"type": "git",
 		"enable": "false"
 	},
+	"meta-qt6": {
+		"url": "git://code.qt.io/yocto/meta-qt6.git",
+		"branch": "6.9",
+		"tag": "",
+		"commit": "",
+		"patches": [],
+		"type": "git",
+		"enable": "false"
+	},
 	"meta-openembedded": {
 		"url": "https://github.com/openembedded/meta-openembedded",
 		"branch": "styhead",
@@ -74,15 +83,16 @@
 	},
 	"meta-browser": {
 		"url": "https://github.com/OSSystems/meta-browser.git",
-		"branch": "",
+		"branch": "master",
 		"tag": "",
-		"commit": "f2d5539552b54099893a7339cbb2ab46b42ee754",
+		"commit": "",
 		"patches": [],
 		"type": "git",
 		"enable": "false"
 	},
 	"meta-rz-features": {
 		"patches": ["patches/meta-rz-features/0001-support-codec-for-linux-6.10-and-yocto-styhead.patch"],
+		"add_files": [],
 		"type": "local",
 		"enable": "true"
 	}

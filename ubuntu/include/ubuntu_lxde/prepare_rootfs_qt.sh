@@ -1,22 +1,22 @@
 #!/bin/bash
 ##############################################################################
 # This script prepares the rootfs_qt built using the Yocto package.
-# Extract file core-image-qt.
-# Copy boot folder from core-image-qt to rootfs
-# Copy kernel module from core-image-qt to rootfs
-# Copy Wi-Fi firmware from core-image-qt to rootfs
+# Extract file renesas-ubuntu (yocto output).
+# Copy boot folder from renesas-ubuntu (yocto output) to rootfs
+# Copy kernel module from renesas-ubuntu (yocto output) to rootfs
+# Copy Wi-Fi firmware from renesas-ubuntu (yocto output) to rootfs
 # Get Bluetooth firmware from Realtek-OpenSource to rootfs
 ##############################################################################
 
 #######################################
-# Extract file core-image-qt.
+# Extract file renesas-ubuntu (yocto output).
 # Globals:
 #   WORK_DIR
 # Arguments:
 #   None
 #######################################
-tar_core_image_qt() {
-	echo "Extracting core-image-qt..."
+extract_renesas_ubuntu_input() {
+	echo "Extracting ${renesas_ubuntu_input_name}..."
 
 	# Define local variables
 	target_dir="rootfs_qt"
@@ -26,10 +26,10 @@ tar_core_image_qt() {
 	echo "Current working directory is: $WORK_DIR"
 	cd "$WORK_DIR" || { echo "Failed to change to WORK_DIR"; return 1; }
 
-	# Check file core_image_qt exists or not
+	# Check file renesas-ubuntu (yocto output) exists or not
 	# If file not exists, return 1
-	if [ ! -f "$core_image_qt_name" ]; then
-		echo "File $core_image_qt_name does not exist. Please download it first."
+	if [ ! -f "$renesas_ubuntu_input_name" ]; then
+		echo "File $renesas_ubuntu_input_name does not exist. Please download it first."
 		return 1
 	fi
 
@@ -52,19 +52,19 @@ tar_core_image_qt() {
 	fi
 
 	# Extract file into target folder
-	echo "Extracting $core_image_qt_name to $target_dir..."
-	tar xf "$core_image_qt_name" -C "$target_dir" -v
+	echo "Extracting $renesas_ubuntu_input_name to $target_dir..."
+	tar xf "$renesas_ubuntu_input_name" -C "$target_dir" -v
 	if [ $? -ne 0 ]; then
-		echo "Failed to extract $core_image_qt_name."
+		echo "Failed to extract $renesas_ubuntu_input_name."
 		return 1
 	fi
 
-	echo "tar_core_image_qt completed successfully."
+	echo "extract_renesas_ubuntu_input completed successfully."
 	return 0
 }
 
 #######################################
-# Copy boot folder from core-image-qt to rootfs
+# Copy boot folder from renesas-ubuntu (yocto output) to rootfs
 # Globals:
 #   WORK_DIR
 # Arguments:
@@ -107,7 +107,7 @@ copy_boot_folder() {
 }
 
 #######################################
-# Copy kernel module from core-image-qt to rootfs
+# Copy kernel module from renesas-ubuntu (yocto output) to rootfs
 # Globals:
 #   WORK_DIR
 # Arguments:
@@ -150,7 +150,7 @@ copy_kernel_modules() {
 }
 
 #######################################
-# Copy Wi-Fi firmware from core-image-qt to rootfs
+# Copy Wi-Fi firmware from renesas-ubuntu (yocto output) to rootfs
 # Globals:
 #   WORK_DIR
 # Arguments:
@@ -215,16 +215,16 @@ get_bluetooth_firmware() {
 #   None
 #######################################
 rootfs_qt() {
-	#Extract file core-image-qt.
-	echo "Starting tar_core_image_qt..."
-	tar_core_image_qt
+	#Extract file renesas-ubuntu (yocto output).
+	echo "Starting extract_renesas_ubuntu_input..."
+	extract_renesas_ubuntu_input
 	if [ $? -eq 1 ]; then
-		echo "tar_core_image_qt failed."
+		echo "extract_renesas_ubuntu_input failed."
 		return 1
 	fi
-	echo "tar_core_image_qt completed successfully."
+	echo "extract_renesas_ubuntu_input completed successfully."
 
-	#Copy boot folder from core-image-qt to rootfs
+	#Copy boot folder from renesas-ubuntu (yocto output) to rootfs
 	echo "5. Starting copy_boot_folder..."
 	copy_boot_folder
 	if [ $? -eq 1 ]; then
@@ -233,7 +233,7 @@ rootfs_qt() {
 	fi
 	echo "copy_boot_folder completed successfully."
 
-	# Copy kernel module from core-image-qt to rootfs
+	# Copy kernel module from renesas-ubuntu (yocto output) to rootfs
 	echo "6. Starting copy_kernel_modules..."
 	copy_kernel_modules
 	if [ $? -eq 1 ]; then
@@ -242,7 +242,7 @@ rootfs_qt() {
 	fi
 	echo "copy_kernel_modules completed successfully."
 
-	# Copy Wi-Fi firmware from core-image-qt to rootfs
+	# Copy Wi-Fi firmware from renesas-ubuntu (yocto output) to rootfs
 	echo "7. Starting copy_wifi_firmware..."
 	copy_wifi_firmware
 	if [ $? -eq 1 ]; then

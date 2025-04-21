@@ -65,8 +65,8 @@ source_env(){
 # Check if this script is clone by user (not root/sudo) or not.
 do_build_yocto(){
 	# Skip entering yocto env if output exists
-	if [ -f "$core_image_qt_name" ]; then
-		echo "Skipping do_build_yocto because $core_image_qt_name is available."
+	if [ -f "$renesas_ubuntu_input_name" ]; then
+		echo "Skipping do_build_yocto because $renesas_ubuntu_input_name is available."
 		return 0
 	fi
 
@@ -102,11 +102,11 @@ do_build_yocto(){
 # main function for ubuntu core
 main_ubuntu_core(){
 	# Prepare the environment by checking for required files and directories
-	# prepare_env
-	# if [ $? -eq 1 ]; then
-	# 	echo "prepare_env failed."
-	# 	exit 1
-	# fi
+	prepare_env
+	if [ $? -eq 1 ]; then
+		echo "prepare_env failed."
+		exit 1
+	fi
 
 	# Prepare the Ubuntu base system (install necessary binaries and setup rootfs)
 	ubuntu_base_prepare
@@ -116,11 +116,11 @@ main_ubuntu_core(){
 	fi
 
 	# Prepare qt_rootfs_source by copying relevant binaries and folders to the Ubuntu OS
-	# rootfs_qt
-	# if [ $? -eq 1 ]; then
-	# 	echo "rootfs_qt failed."
-	# 	exit 1
-	# fi
+	rootfs_qt
+	if [ $? -eq 1 ]; then
+		echo "rootfs_qt failed."
+		exit 1
+	fi
 
 	# Set configuration files
 	set_config
@@ -158,18 +158,18 @@ main_ubuntu_core(){
 	fi
 
 	# Install gstreamer to ubuntu
-	# install_gstreamer "rootfs" "qt_rootfs_source"
-	# if [ $? -eq 1 ]; then
-	# 	echo "install_gstreamer failed."
-	# 	exit 1
-	# fi
+	install_gstreamer "rootfs" "qt_rootfs_source"
+	if [ $? -eq 1 ]; then
+		echo "install_gstreamer failed."
+		exit 1
+	fi
 
 	# Install weston to ubuntu
-	# install_weston "rootfs" "qt_rootfs_source"
-	# if [ $? -eq 1 ]; then
-	# 	echo "install_weston failed."
-	# 	exit 1
-	# fi
+	install_weston "rootfs" "qt_rootfs_source"
+	if [ $? -eq 1 ]; then
+		echo "install_weston failed."
+		exit 1
+	fi
 
 	# Package the root filesystem into a compressed archive (tarball)
 	package_rootfs
@@ -179,18 +179,18 @@ main_ubuntu_core(){
 	fi
 
 	# Create a WIC image from the rootfs
-	# create_wic
-	# if [ $? -eq 1 ]; then
-	# 	echo "create_wic failed."
-	# 	exit 1
-	# fi
+	create_wic
+	if [ $? -eq 1 ]; then
+		echo "create_wic failed."
+		exit 1
+	fi
 
 	# Move WIC output to output yocto folder
-	# move_ubuntu_to_yocto_output
-	# if [ $? -eq 1 ]; then
-	# 	echo "move_ubuntu_to_yocto_output failed."
-	# 	exit 1
-	# fi
+	move_ubuntu_to_yocto_output
+	if [ $? -eq 1 ]; then
+		echo "move_ubuntu_to_yocto_output failed."
+		exit 1
+	fi
 }
 
 #######################################
@@ -352,7 +352,7 @@ fi
 case "$UBUNTU_TYPE" in
 	CORE)
 		source_env
-		# do_build_yocto
+		do_build_yocto
 		main_ubuntu_core
 		;;
 	LXDE)
@@ -362,15 +362,15 @@ case "$UBUNTU_TYPE" in
 		;;
 	ALL)
 		UBUNTU_TYPE="CORE"
-		OUTPUT_ROOTFS="ubuntu-core-image-qt-rzpi"
-		OUTPUT_WIC="ubuntu-core-image-qt-rzpi.wic"
+		OUTPUT_ROOTFS="ubuntu-core-image"
+		OUTPUT_WIC="ubuntu-core-image.wic"
 		source_env
 		do_build_yocto
 		main_ubuntu_core
 
 		UBUNTU_TYPE="LXDE"
-		OUTPUT_ROOTFS="ubuntu-lxde-image-qt-rzpi"
-		OUTPUT_WIC="ubuntu-lxde-image-qt-rzpi.wic"
+		OUTPUT_ROOTFS="ubuntu-lxde-image"
+		OUTPUT_WIC="ubuntu-lxde-image.wic"
 		source_env
 		main_ubuntu_lxde
 		;;

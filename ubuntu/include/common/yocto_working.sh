@@ -14,7 +14,7 @@ build_yocto() {
 		su -c "(cd ../rz-sbc/ && IMAGE=renesas-ubuntu DISTRO=ubuntu-tiny ./rzsbc_yocto.sh build)" "$MAIN_USER"
 
 		# Check the output
-		result=$(find ../rz-sbc/yocto_rzsbc_board/build/tmp/deploy/ -name '*.tar.bz2' -exec cp {} ./${core_image_qt_name} \; && echo "File copied successfully.")
+		result=$(find ../rz-sbc/yocto_rzsbc_board/build/tmp/deploy/ -name '*.tar.bz2' -exec cp {} ./${renesas_ubuntu_input_name} \; && echo "File copied successfully.")
 
 		# Exit if yocto does not build successfully
 		if [ -z "$result" ]; then

@@ -56,9 +56,15 @@ install_qemu() {
 	return 0
 }
 
-# 2. Download ubuntu 22.04-base
+# 2. Download ubuntu base
 download_ubuntu_base() {
-	echo "Downloading Ubuntu 22.04-base..."
+	# Check if UBUNTU_BASE_FILE_NAME is defined, if not, assign the default value 'ubuntu-base-22.04-base-arm64.tar.gz'
+	: "${UBUNTU_BASE_FILE_NAME:=ubuntu-base-22.04-base-arm64.tar.gz}"
+
+	# Check if UBUNTU_BASE_LINK is defined, if not, assign the default URL
+	: "${UBUNTU_BASE_LINK:=https://cdimage.ubuntu.com/ubuntu-base/releases/22.04/release/$UBUNTU_BASE_FILE_NAME}"
+
+	echo "Downloading ${UBUNTU_BASE_FILE_NAME%-*.tar.gz}..."
 
 	# Change dir WORK_DIR
 	echo "Current working directory is: $WORK_DIR"
@@ -69,12 +75,6 @@ download_ubuntu_base() {
 		echo "Failed to install wget."
 		return 1
 	fi
-
-	# Check if UBUNTU_BASE_FILE_NAME is defined, if not, assign the default value 'ubuntu-base-22.04-base-arm64.tar.gz'
-	: "${UBUNTU_BASE_FILE_NAME:=ubuntu-base-22.04-base-arm64.tar.gz}"
-
-	# Check if UBUNTU_BASE_LINK is defined, if not, assign the default URL
-	: "${UBUNTU_BASE_LINK:=https://cdimage.ubuntu.com/ubuntu-base/releases/22.04/release/$UBUNTU_BASE_FILE_NAME}"
 
 	# Assign the value of UBUNTU_BASE_FILE_NAME to local variable 'file_name'
 	file_name="$UBUNTU_BASE_FILE_NAME"
@@ -107,7 +107,7 @@ tar_ubuntu_base() {
 	# Assign the value of UBUNTU_BASE_FILE_NAME to local variable 'file_name'
 	file_name="$UBUNTU_BASE_FILE_NAME"
 
-	target_dir="rootfs"
+	target_dir="${ROOTFS}"
 
 	# Change dir WORK_DIR
 	echo "Current working directory is: $WORK_DIR"

@@ -8,11 +8,11 @@
 # Define global variable:
 WORK_DIR=$(pwd)
 
-# 1. Tar file core_image_qt
-function tar_core_image_qt() {
-	echo "Extracting core-image-qt..."
+# 1. Tar file renesas-ubuntu (yocto input)
+function extract_renesas_ubuntu_input() {
+	echo "Extracting ${renesas_ubuntu_input_name}..."
 
-	local file_name="$core_image_qt_name"
+	local file_name="$renesas_ubuntu_input_name"
 	local target_dir="qt_rootfs_source"
 	local check_file="qt_rootfs_source/home"
 
@@ -20,7 +20,7 @@ function tar_core_image_qt() {
 	echo "Current working directory is: $WORK_DIR"
 	cd "$WORK_DIR" || { echo "Failed to change to WORK_DIR"; return 1; }
 
-	# Check file core_image_qt
+	# Check file renesas-ubuntu (yocto input)
 	if [[ ! -f "$file_name" ]]; then
 		echo "File $file_name does not exist. Please download it first."
 		return 1
@@ -53,7 +53,7 @@ function tar_core_image_qt() {
 	fi
 
 	ls $target_dir
-	echo "tar_core_image_qt completed successfully."
+	echo "extract_renesas_ubuntu_input completed successfully."
 	return 0
 }
 
@@ -136,6 +136,11 @@ function copy_qt() {
 	local src_qt="qt_rootfs_source/usr"
 	local target_dir="rootfs/usr"
 
+	if [ ! -e "$src_qt/lib/qml/qt*" ]; then
+		echo "[Warning] Don't find qt files. Skipping copy qt files."
+		return 0
+	fi
+
 	# Copy folder boot
 	# cp -rd "$src_qt/share/qt"* "$target_dir/share" || { echo "Failed to copy 'qt lib' directory"; return 1; }
 	cp -rd "$src_qt/lib/qml/qt"* "$target_dir/lib/aarch64-linux-gnu/" || { echo "Failed to copy 'aarch64-linux-gnu' directory"; return 1; }
@@ -159,6 +164,11 @@ function copy_wifi_firmware() {
 	local src_qt="qt_rootfs_source/lib/firmware"
 	local target_dir="rootfs/lib"
 
+	if [ ! -e "${src_qt}" ]; then
+		echo "[Warning] Don't find wifi_firmware files. Skipping copy wifi_firmware files."
+		return 0
+	fi
+
 	# Copy folder
 	mkdir -p "$target_dir/firmware" || { echo "Failed to mkdir '/lib/firmware' directory"; return 1; }
 	cp -rd "$src_qt/"* "$target_dir/firmware/" || { echo "Failed to copy 'firmware' directory"; return 1; }
@@ -171,20 +181,20 @@ function copy_wifi_firmware() {
 # --------------------------------------------------------------------------#
 # function rootfs_qt use to copy binaries of qt_rootfs_source to ubuntu os.
 # function rootfs_qt contain 2 steps:
-# 1. Tar file core_image_qt
+# 1. Extract file renesas-ubuntu (yocto input)
 # 2. Copy boot folder, qt library, wifi firmware folder
 # --------------------------------------------------------------------------#
 
 # Function main
 function rootfs_qt() {
-	echo "4. Starting tar_core_image_qt..."
-	# Call tar_core_image_qt to create a tarball of the core image for the QT system
-	tar_core_image_qt
+	echo "4. Starting extract_renesas_ubuntu_input..."
+	# Call extract_renesas_ubuntu_input to create a tarball of the core image for the QT system
+	extract_renesas_ubuntu_input
 	if [[ $? -eq 1 ]]; then
-		echo "tar_core_image_qt failed."
+		echo "extract_renesas_ubuntu_input failed."
 		return 1
 	fi
-	echo "tar_core_image_qt completed successfully."
+	echo "extract_renesas_ubuntu_input completed successfully."
 
 	echo "5. Starting copy_boot_folder and copy_qt, copy_wifi_firmware..."
 	# Call copy_boot_folder to copy necessary boot files for the system

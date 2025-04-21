@@ -2,13 +2,13 @@
 # --------------------------------------------------------------------------#
 # This script prepares the environment by checking for the required file
 # and directories. It ensures that:
-# - The file `core-image-qt-rzpi.tar.bz2` exists.
+# - The file `renesas-ubuntu.tar.bz2` exists.
 # - The `rootfs` directory is removed if it exists. This function only works if 
 # CLEAN_ALL is set to 1 in config.ini
 # - The `qt_rootfs_source` directory can be reused if it exists.
 # --------------------------------------------------------------------------#
 
-file="$core_image_qt_name"
+file="$renesas_ubuntu_input_name"
 CLEAN_ALL="${CLEAN_ALL:-0}"
 function prepare_env() {
 
@@ -19,9 +19,9 @@ function prepare_env() {
 	fi
 
 	if [ "$CLEAN_ALL" -eq 1 ]; then
-		if [ -d "rootfs" ]; then
-			rm -rf "rootfs"
-			echo "Directory 'rootfs' has been removed."
+		if [ -d "${ROOTFS}" ]; then
+			rm -rf "${ROOTFS}"
+			echo "Directory '${ROOTFS}' has been removed."
 		fi
 	fi
 
