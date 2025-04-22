@@ -91,7 +91,7 @@
 		"enable": "false"
 	},
 	"meta-rz-features": {
-		"patches": ["patches/meta-rz-features/0001-support-codec-for-linux-6.10-and-yocto-styhead.patch"],
+		"patches": ["patches/meta-rz-features/meta-rz-features-styhead-for-rzv2h-evk-ver1.patch"],
 		"add_files": [],
 		"type": "local",
 		"enable": "true"

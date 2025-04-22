@@ -11,12 +11,12 @@ REN_GPU_MALI_LIB_PKG="RTK0EF0045Z13001ZJ-v1.1.2_EN"
 REN_GPU_MALI_LIB_META_FEATURE="meta-rz-features_graphics_v1.1.2"
 
 # RZ MPU Codec Library Evaluation Version V1.1.0
-# REN_VEDIO_CODEC_LIB_PKG="RTK0EF0045Z15001ZJ-v1.1.0_EN"
-# REN_VEDIO_CODEC_LIB_META_FEATURE="meta-rz-features_codec_v1.1.0"
+REN_VEDIO_CODEC_LIB_PKG="RTK0EF0045Z15001ZJ-v1.1.0_EN"
+REN_VEDIO_CODEC_LIB_META_FEATURE="meta-rz-features_codec_v1.1.0"
 
-# RZ/V2H Codec Library Evaluation
-REN_VEDIO_CODEC_LIB_PKG="RTK0EF0192Z00001ZJ"
-REN_VEDIO_CODEC_LIB_META_FEATURE="meta-rz-features"
+# RZ/V2H AI SDK v5.20 Source Code
+REN_AI_SDK_LIB_PKG="RTK0EF0180F05200SJ_linux-src"
+REN_AI_SDK_LIB_META_FEATURE="rzv2h_ai-sdk_yocto_recipe_v5.20"
 
 SUFFIX_ZIP=".zip"
 SUFFIX_TAR=".tar.gz"
@@ -230,10 +230,10 @@ check_pkg_require(){
 	#    check=1
 	#fi
 	if [ "${TARGET_MACHINE}" == "rzv2h-evk-ver1" ]; then
-		if [ ! -e ${REN_VEDIO_CODEC_LIB_PKG}${SUFFIX_ZIP} ];then
-			log_error "Cannot found ${REN_VEDIO_CODEC_LIB_PKG}${SUFFIX_ZIP} !"
-			echo "Please download 'RZ/V2H Linux Video Codecs Library Package' from Renesas RZ/V2H Website (https://www.renesas.com/document/swo/rzv2h-linux-video-codecs-library-package-rtk0ef0192z00001zjzip)"
-			check=3
+		if [ ! -e ${REN_AI_SDK_LIB_PKG}${SUFFIX_ZIP} ];then
+			log_error "Cannot found ${REN_AI_SDK_LIB_PKG}${SUFFIX_ZIP} !"
+			echo "Please download 'RZ/V2H AI SDK Source Code' from Renesas RZ/V2H Website (https://www.renesas.com/document/sws/rzv2h-ai-sdk-v520-source-code)"
+			check=4
 		fi
 	elif [ "${TARGET_MACHINE}" == "rzg2l-sbc" ]; then
 		if [ ! -e ${REN_GPU_MALI_LIB_PKG}${SUFFIX_ZIP} ];then
@@ -590,7 +590,7 @@ get_bsp() {
 
 unpack_local_repo() {
 	if [ "${TARGET_MACHINE}" == "rzv2h-evk-ver1" ]; then
-		unpack_codec
+		unpack_ai_sdk
 	elif [ "${TARGET_MACHINE}" == "rzg2l-sbc" ]; then
 		unpack_gpu
 		unpack_codec
@@ -614,6 +614,22 @@ unpack_codec() {
 	local codec=${REN_VEDIO_CODEC_LIB_META_FEATURE}${SUFFIX_TAR}
 
 	extract_to_meta ${pkg_file} "${zip_dir}/${codec}" ${RZ_TARGET_DIR}
+	rm -fr ${zip_dir}
+}
+
+unpack_ai_sdk() {
+	local pkg_file=${WORKSPACE}/${REN_AI_SDK_LIB_PKG}${SUFFIX_ZIP}
+	local zip_dir=${WORKSPACE}/${REN_AI_SDK_LIB_PKG}
+	local ai_sdk=${REN_AI_SDK_LIB_META_FEATURE}${SUFFIX_TAR}
+
+	mkdir -p ${zip_dir}
+	cd ${zip_dir}
+
+	unzip ${pkg_file}
+	tar -xf ${ai_sdk}
+	cp -r "${zip_dir}/meta-rz-features" ${RZ_TARGET_DIR}
+
+	cd ${WORKSPACE}
 	rm -fr ${zip_dir}
 }
 
