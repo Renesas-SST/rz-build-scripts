@@ -625,11 +625,13 @@ unpack_ai_sdk() {
 	mkdir -p ${zip_dir}
 	cd ${zip_dir}
 
-	unzip ${pkg_file}
+	# Only extract the meta-rz-features recipe
+	unzip ${pkg_file} ${ai_sdk} 
 	tar -xf ${ai_sdk}
-	cp -r "${zip_dir}/meta-rz-features" ${RZ_TARGET_DIR}
 
 	cd ${WORKSPACE}
+	cp -r ${zip_dir}/meta-rz-features ${RZ_TARGET_DIR}
+
 	rm -fr ${zip_dir}
 }
 

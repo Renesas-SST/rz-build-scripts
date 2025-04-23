@@ -16,7 +16,7 @@
 		"patches": ["patches/meta-summit-radio/0001-rz-sbc-meta-summit-radio-Support-build-in-yocto-styh.patch",
 				"patches/meta-summit-radio/0002-rz-sbc-summit-radio-support-eSDK-build.patch"],
 		"type": "git",
-		"enable": "true"
+		"enable": "false"
 	},
 	"meta-renesas": {
 		"url": "https://github.com/congnguyenzn/meta-renesas.git",
@@ -91,8 +91,9 @@
 		"enable": "false"
 	},
 	"meta-rz-features": {
-		"patches": ["patches/meta-rz-features/meta-rz-features-styhead-for-rzv2h-evk-ver1.patch"],
-		"add_files": [],
+		"patches": ["patches/meta-rz-features/support-video-codec-for-styhead.patch",
+					"patches/meta-rz-features/support-opencva-for-styhead.patch",
+					"patches/meta-rz-features/support-drpai-for-styhead.patch"],
 		"type": "local",
 		"enable": "true"
 	}

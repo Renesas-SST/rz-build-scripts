@@ -1,0 +1,924 @@
+diff --git a/meta-rz-drpai/conf/layer.conf b/meta-rz-drpai/conf/layer.conf
+index e4f5b31..7d91f05 100644
+--- a/meta-rz-drpai/conf/layer.conf
++++ b/meta-rz-drpai/conf/layer.conf
+@@ -10,5 +10,4 @@ BBFILES += "${LAYERDIR}/recipes-*/*/*.bb \
+ BBFILE_COLLECTIONS += "rz-drpai"
+ BBFILE_PATTERN_rz-drpai := "^${LAYERDIR}/"
+ 
+-LAYERDEPENDS_rz-drpai = "rz-common"
+-LAYERSERIES_COMPAT_rz-drpai = "dunfell"
++LAYERSERIES_COMPAT_rz-drpai = "styhead"
+diff --git a/meta-rz-drpai/recipes-bsp/u-boot/files/0001-add-ether-setting.patch b/meta-rz-drpai/recipes-bsp/u-boot/files/0001-add-ether-setting.patch
+index cb6c597..d68a4fc 100644
+--- a/meta-rz-drpai/recipes-bsp/u-boot/files/0001-add-ether-setting.patch
++++ b/meta-rz-drpai/recipes-bsp/u-boot/files/0001-add-ether-setting.patch
+@@ -1,3 +1,4 @@
++Upstream-Status: Pending
+ diff --git a/include/configs/rzv2h-dev.h b/include/configs/rzv2h-dev.h
+ index d304c7a..554cc79 100644
+ --- a/include/configs/rzv2h-dev.h
+diff --git a/meta-rz-drpai/recipes-bsp/u-boot/u-boot_%.bbappend b/meta-rz-drpai/recipes-bsp/u-boot/u-boot_%.bbappend
+index 2e06e6e..071fe8c 100644
+--- a/meta-rz-drpai/recipes-bsp/u-boot/u-boot_%.bbappend
++++ b/meta-rz-drpai/recipes-bsp/u-boot/u-boot_%.bbappend
+@@ -1,5 +1,5 @@
+-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
++FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
+ 
+-SRC_URI += " \
++SRC_URI:append = " \
+ 	file://0001-add-ether-setting.patch \
+ "
+diff --git a/meta-rz-drpai/recipes-core/images/core-image-%.bbappend b/meta-rz-drpai/recipes-core/images/core-image-%.bbappend
+index ffea09d..807b82e 100644
+--- a/meta-rz-drpai/recipes-core/images/core-image-%.bbappend
++++ b/meta-rz-drpai/recipes-core/images/core-image-%.bbappend
+@@ -1,8 +1,8 @@
+-IMAGE_INSTALL_append = " \
++IMAGE_INSTALL:append = " \
+     kernel-module-udmabuf \
+     libjpeg-turbo-dev \
+     opencv \
+     opencv-dev \
+ "
+ 
+-TOOLCHAIN_TARGET_TASK_append = " drpai "
++TOOLCHAIN_TARGET_TASK:append = " drpai "
+diff --git a/meta-rz-drpai/recipes-drpai/drpai/drpai_1.2.0.bb b/meta-rz-drpai/recipes-drpai/drpai/drpai_1.2.0.bb
+index 6ccc501..6f58be0 100644
+--- a/meta-rz-drpai/recipes-drpai/drpai/drpai_1.2.0.bb
++++ b/meta-rz-drpai/recipes-drpai/drpai/drpai_1.2.0.bb
+@@ -5,7 +5,7 @@
+ DESCRIPTION = "Recipe for header file of DRP-AI driver"
+ SECTION = "libs"
+ DEPENDS = ""
+-LICENSE = "GPL-2.0-WITH-Linux-syscall-note"
++LICENSE = "GPL-2.0-only"
+ LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
+ 
+ PACKAGE_ARCH = "${MACHINE_ARCH}"
+@@ -20,11 +20,11 @@ SRC_URI = " \
+     "
+ 
+ # The list of directories or files that are placed in packages.
+-FILES_${PN} = " \
++FILES:${PN} = " \
+     ${includedir}/linux/drpai.h \
+     "
+ 
+-S = "${WORKDIR}"
++UNPACKDIR = "${S}"
+ 
+ do_install() {
+     install -d ${D}/${includedir}/linux
+diff --git a/meta-rz-drpai/recipes-kernel/linux/kernel-module-mmngr/kernel-module-mmngr.bbappend b/meta-rz-drpai/recipes-kernel/linux/kernel-module-mmngr/kernel-module-mmngr.bbappend
+index 26bb28a..c94897b 100644
+--- a/meta-rz-drpai/recipes-kernel/linux/kernel-module-mmngr/kernel-module-mmngr.bbappend
++++ b/meta-rz-drpai/recipes-kernel/linux/kernel-module-mmngr/kernel-module-mmngr.bbappend
+@@ -1,7 +1,7 @@
+ DESCRIPTION = "Memory Manager Kernel module for Renesas RZ/V"
+ 
+-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}/:"
++FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}/:"
+ 
+-SRC_URI_append = " \
++SRC_URI:append = " \
+     file://0013-kernel-module-mmngr-bug-fix.patch \
+ "
+diff --git a/meta-rz-drpai/recipes-kernel/linux/kernel-module-mmngr/kernel-module-mmngr/0013-kernel-module-mmngr-bug-fix.patch b/meta-rz-drpai/recipes-kernel/linux/kernel-module-mmngr/kernel-module-mmngr/0013-kernel-module-mmngr-bug-fix.patch
+index 5bee5bc..0bf7b31 100644
+--- a/meta-rz-drpai/recipes-kernel/linux/kernel-module-mmngr/kernel-module-mmngr/0013-kernel-module-mmngr-bug-fix.patch
++++ b/meta-rz-drpai/recipes-kernel/linux/kernel-module-mmngr/kernel-module-mmngr/0013-kernel-module-mmngr-bug-fix.patch
+@@ -1,8 +1,9 @@
++Upstream-Status: Pending
+ diff --git a/mmngr_drv/mmngr/mmngr-module/files/mmngr/drv/mmngr_drv.c b/mmngr_drv/mmngr/mmngr-module/files/mmngr/drv/mmngr_drv.c
+-index fdef30b..7cc1e33 100755
++index 1ea632b..51ae368 100644
+ --- a/mmngr_drv/mmngr/mmngr-module/files/mmngr/drv/mmngr_drv.c
+ +++ b/mmngr_drv/mmngr/mmngr-module/files/mmngr/drv/mmngr_drv.c
+-@@ -963,7 +963,7 @@ static long ioctl(struct file *file, unsigned int cmd, unsigned long arg)
++@@ -937,7 +937,7 @@ static long ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+  	int		ercd;
+  	int		ret;
+  	struct MM_PARAM	*p = file->private_data;
+@@ -11,14 +12,14 @@ index fdef30b..7cc1e33 100755
+  	struct device	*mm_dev;
+  
+  	mm_dev = mm_drvdata->mm_dev;
+-@@ -1016,14 +1016,14 @@ static long ioctl(struct file *file, unsigned int cmd, unsigned long arg)
++@@ -990,14 +990,14 @@ static long ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+  		}
+  		break;
+  	case MM_IOC_FLUSH:
+ -		cachep = (struct MM_CACHE_PARAM *)arg;
+ -		dma_sync_single_for_device(mm_dev, p->hard_addr + cachep->offset,
+ -					   cachep->len, DMA_FROM_DEVICE);
+-+	    copy_from_user(&cachep, arg, sizeof(struct MM_CACHE_PARAM));
+++	    copy_from_user(&cachep, (void __user *)arg, sizeof(struct MM_CACHE_PARAM));
+ +	    dma_sync_single_for_device(mm_dev, p->hard_addr + cachep.offset,
+ +					   cachep.len, DMA_FROM_DEVICE);
+  		break;
+@@ -26,7 +27,7 @@ index fdef30b..7cc1e33 100755
+ -		cachep = (struct MM_CACHE_PARAM *)arg;
+ -		dma_sync_single_for_cpu(mm_dev, p->hard_addr + cachep->offset,
+ -					cachep->len, DMA_TO_DEVICE);
+-+	    copy_from_user(&cachep, arg, sizeof(struct MM_CACHE_PARAM));
+++	    copy_from_user(&cachep, (void __user *)arg, sizeof(struct MM_CACHE_PARAM));
+ +		dma_sync_single_for_cpu(mm_dev, p->hard_addr + cachep.offset,
+ +					cachep.len, DMA_TO_DEVICE);
+  		break;
+diff --git a/meta-rz-drpai/recipes-kernel/linux/kernel-module-udmabuf/kernel-module-udmabuf.bb b/meta-rz-drpai/recipes-kernel/linux/kernel-module-udmabuf/kernel-module-udmabuf.bb
+index e44195b..4c44909 100644
+--- a/meta-rz-drpai/recipes-kernel/linux/kernel-module-udmabuf/kernel-module-udmabuf.bb
++++ b/meta-rz-drpai/recipes-kernel/linux/kernel-module-udmabuf/kernel-module-udmabuf.bb
+@@ -6,17 +6,18 @@ LIC_FILES_CHKSUM = " \
+ "
+ 
+ inherit module
+-require include/rzg2-modules-common.inc
++require include/rz-modules-common.inc
+ 
+-DEPENDS = "linux-renesas"
++DEPENDS = "linux-yocto"
+ PN = "kernel-module-udmabuf"
+ PV = "v3.2.4"
+ 
+-SRC_URI = "git://github.com/ikwzm/udmabuf.git;protocol=git"
++SRC_URI = "git://github.com/ikwzm/udmabuf.git;branch=master;protocol=https"
+ SRCREV = "24a1346c1f4371ef6161699c8ccb8bf968e6bb0a"
+ 
+-SRC_URI_append = " \
++SRC_URI:append = " \
+ 	file://0001-change-makefile.patch \
++    file://0001-Support-u-dma-buf-for-kernel-6.10.patch \
+ "
+ 
+ S = "${WORKDIR}/git"
+@@ -32,8 +33,8 @@ do_compile() {
+ 
+ 
+ do_install () {
+-    install -d ${D}/lib/modules/${KERNEL_VERSION}/kernel/
+-    install -m 644 ${S}/u-dma-buf.ko ${D}/lib/modules/${KERNEL_VERSION}/kernel/
++    install -d ${D}/${libdir}/modules/${KERNEL_VERSION}/kernel/
++    install -m 644 ${B}/u-dma-buf.ko ${D}/${libdir}/modules/${KERNEL_VERSION}/kernel/
+ }
+ 
+ PACKAGES = " \
+@@ -41,12 +42,14 @@ PACKAGES = " \
+     ${PN}-dev \
+ "
+ 
+-FILES_${PN} = " \
+-    /lib/modules/${KERNEL_VERSION}/kernel/u-dma-buf.ko \
++FILES:${PN} = " \
++    ${libdir}/modules/${KERNEL_VERSION}/kernel/u-dma-buf.ko \
+ "
+ 
+ #Package name aliases
+-RPROVIDES_${PN} += "kernel-module-udmabuf"
++RPROVIDES:${PN} += "kernel-module-udmabuf"
+ 
+ # Autoload u-dma-buf
+ KERNEL_MODULE_AUTOLOAD += "u-dma-buf"
++
++INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
+diff --git a/meta-rz-drpai/recipes-kernel/linux/kernel-module-udmabuf/kernel-module-udmabuf/0001-Support-u-dma-buf-for-kernel-6.10.patch b/meta-rz-drpai/recipes-kernel/linux/kernel-module-udmabuf/kernel-module-udmabuf/0001-Support-u-dma-buf-for-kernel-6.10.patch
+new file mode 100644
+index 0000000..9a40388
+--- /dev/null
++++ b/meta-rz-drpai/recipes-kernel/linux/kernel-module-udmabuf/kernel-module-udmabuf/0001-Support-u-dma-buf-for-kernel-6.10.patch
+@@ -0,0 +1,72 @@
++From e991e6b2aa8a7c60ebc3570533f29949ed577ee0 Mon Sep 17 00:00:00 2001
++From: Cong Nguyen <cong.nguyen.zn@renesas.com>
++Date: Thu, 17 Apr 2025 08:46:59 +0000
++Subject: [PATCH] Support u-dma-buf for kernel 6.10
++
++Upstream-Status: Pending
++
++Signed-off-by: Cong Nguyen <cong.nguyen.zn@renesas.com>
++---
++ u-dma-buf.c | 19 +++++++++++++------
++ 1 file changed, 13 insertions(+), 6 deletions(-)
++
++diff --git a/u-dma-buf.c b/u-dma-buf.c
++index 3d19a1c..6f7c7dc 100644
++--- a/u-dma-buf.c
+++++ b/u-dma-buf.c
++@@ -636,15 +636,15 @@ static int udmabuf_device_file_mmap(struct file *file, struct vm_area_struct* vm
++     if ((file->f_flags & O_SYNC) | (this->sync_mode & SYNC_ALWAYS)) {
++         switch (this->sync_mode & SYNC_MODE_MASK) {
++             case SYNC_MODE_NONCACHED :
++-                vma->vm_flags    |= VM_IO;
+++                vm_flags_set(vma, VM_IO);
++                 vma->vm_page_prot = _PGPROT_NONCACHED(vma->vm_page_prot);
++                 break;
++             case SYNC_MODE_WRITECOMBINE :
++-                vma->vm_flags    |= VM_IO;
+++                vm_flags_set(vma, VM_IO);
++                 vma->vm_page_prot = _PGPROT_WRITECOMBINE(vma->vm_page_prot);
++                 break;
++             case SYNC_MODE_DMACOHERENT :
++-                vma->vm_flags    |= VM_IO;
+++                vm_flags_set(vma, VM_IO);
++                 vma->vm_page_prot = _PGPROT_DMACOHERENT(vma->vm_page_prot);
++                 break;
++             default :
++@@ -657,7 +657,7 @@ static int udmabuf_device_file_mmap(struct file *file, struct vm_area_struct* vm
++     {
++         unsigned long page_frame_num = (this->phys_addr >> PAGE_SHIFT) + vma->vm_pgoff;
++         if (pfn_valid(page_frame_num)) {
++-            vma->vm_flags |= VM_PFNMAP;
+++            vm_flags_set(vma, VM_PFNMAP);
++             vma->vm_ops    = &udmabuf_device_vm_ops;
++             udmabuf_device_vma_open(vma);
++             return 0;
++@@ -1276,7 +1276,14 @@ static int udmabuf_platform_device_create(const char* name, int id, unsigned int
++         struct property_entry* props = (name != NULL) ? &props_list[0] : &props_list[1];
++ #if     (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 7, 0))
++         {
++-            retval = device_add_properties(&pdev->dev, props);
+++            struct fwnode_handle *fwnode;
+++
+++            fwnode = fwnode_create_software_node(props, NULL);
+++            if (IS_ERR(fwnode))
+++                retval = PTR_ERR(fwnode);
+++            else 
+++                set_secondary_fwnode(&pdev->dev, fwnode);
+++
++             if (retval != 0) {
++                 dev_err(&pdev->dev, "device_add_properties failed. return=%d\n", retval);
++                 goto failed;
++@@ -2081,7 +2088,7 @@ static int __init u_dma_buf_init(void)
++         goto failed;
++     }
++ 
++-    udmabuf_sys_class = class_create(THIS_MODULE, DRIVER_NAME);
+++    udmabuf_sys_class = class_create(DRIVER_NAME);
++     if (IS_ERR_OR_NULL(udmabuf_sys_class)) {
++         retval = PTR_ERR(udmabuf_sys_class);
++         udmabuf_sys_class = NULL;
++-- 
++2.25.1
++
+diff --git a/meta-rz-drpai/recipes-kernel/linux/kernel-module-udmabuf/kernel-module-udmabuf/0001-change-makefile.patch b/meta-rz-drpai/recipes-kernel/linux/kernel-module-udmabuf/kernel-module-udmabuf/0001-change-makefile.patch
+index 7137d1d..fcb2c4a 100644
+--- a/meta-rz-drpai/recipes-kernel/linux/kernel-module-udmabuf/kernel-module-udmabuf/0001-change-makefile.patch
++++ b/meta-rz-drpai/recipes-kernel/linux/kernel-module-udmabuf/kernel-module-udmabuf/0001-change-makefile.patch
+@@ -1,3 +1,4 @@
++Upstream-Status: Pending
+ diff --git a/Makefile b/Makefile
+ index 62d8e64..3328f2f 100644
+ --- a/Makefile
+@@ -36,9 +37,9 @@ index 62d8e64..3328f2f 100644
+ -clean:
+ -	make -C $(KERNEL_SRC_DIR) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) M=$(PWD) clean
+ -
+-+obj-m += u-dma-buf.o
+-+
+-+all:
+-+	make -C $(KERNELSRC) M=$(PWD) modules
+-+clean:
+-+	make -C $(KERNELSRC) M=$(PWD) clean
+++obj-m += u-dma-buf.o
+++
+++all:
+++	make -C $(KERNELSRC) M=$(PWD) modules
+++clean:
+++	make -C $(KERNELSRC) M=$(PWD) clean
+diff --git a/meta-rz-drpai/recipes-kernel/linux/linux-renesas/0001-enable-u-dma-buf-function.patch b/meta-rz-drpai/recipes-kernel/linux/linux-renesas/0001-enable-u-dma-buf-function.patch
+deleted file mode 100644
+index c94d0ce..0000000
+--- a/meta-rz-drpai/recipes-kernel/linux/linux-renesas/0001-enable-u-dma-buf-function.patch
++++ /dev/null
+@@ -1,60 +0,0 @@
+-diff --git a/arch/arm64/boot/dts/renesas/r9a09g057h4-dev.dts b/arch/arm64/boot/dts/renesas/r9a09g057h4-dev.dts
+-index 67cc4a9..8524042 100644
+---- a/arch/arm64/boot/dts/renesas/r9a09g057h4-dev.dts
+-+++ b/arch/arm64/boot/dts/renesas/r9a09g057h4-dev.dts
+-@@ -190,6 +190,15 @@
+- 		regulator-max-microvolt = <1500000>;
+- 		regulator-always-on;
+- 	};
+-+
+-+	udmabuf@0 {
+-+		compatible = "ikwzm,u-dma-buf";
+-+		device-name = "udmabuf0";
+-+		minor-number = <0>;
+-+		size = <0x4000000>; // 64MiB
+-+		dma-coherent;
+-+		memory-region = <&image_buf0>;
+-+	};
+- };
+- 
+- &pinctrl {
+-diff --git a/arch/arm64/boot/dts/renesas/r9a09g057h4-evk-alpha.dts b/arch/arm64/boot/dts/renesas/r9a09g057h4-evk-alpha.dts
+-index 4473f24..868e72e 100644
+---- a/arch/arm64/boot/dts/renesas/r9a09g057h4-evk-alpha.dts
+-+++ b/arch/arm64/boot/dts/renesas/r9a09g057h4-evk-alpha.dts
+-@@ -333,6 +333,15 @@
+- 		};
+- #endif
+- 	};
+-+
+-+	udmabuf@0 {
+-+		compatible = "ikwzm,u-dma-buf";
+-+		device-name = "udmabuf0";
+-+		minor-number = <0>;
+-+		size = <0x4000000>; // 64MiB
+-+		dma-coherent;
+-+		memory-region = <&image_buf0>;
+-+	};
+- };
+- 
+- &audio_clka {
+-diff --git a/arch/arm64/boot/dts/renesas/r9a09g057h4-evk-ver1.dts b/arch/arm64/boot/dts/renesas/r9a09g057h4-evk-ver1.dts
+-index af1731f..625f24e 100644
+---- a/arch/arm64/boot/dts/renesas/r9a09g057h4-evk-ver1.dts
+-+++ b/arch/arm64/boot/dts/renesas/r9a09g057h4-evk-ver1.dts
+-@@ -337,6 +337,15 @@
+- 		};
+- #endif
+- 	};
+-+
+-+	udmabuf@0 {
+-+		compatible = "ikwzm,u-dma-buf";
+-+		device-name = "udmabuf0";
+-+		minor-number = <0>;
+-+		size = <0x4000000>; // 64MiB
+-+		dma-coherent;
+-+		memory-region = <&image_buf0>;
+-+	};
+- };
+- 
+- &audio_clka {
+diff --git a/meta-rz-drpai/recipes-kernel/linux/linux-renesas/0002-add-drpai-prop-to-devicetree.patch b/meta-rz-drpai/recipes-kernel/linux/linux-renesas/0002-add-drpai-prop-to-devicetree.patch
+deleted file mode 100644
+index 549ea25..0000000
+--- a/meta-rz-drpai/recipes-kernel/linux/linux-renesas/0002-add-drpai-prop-to-devicetree.patch
++++ /dev/null
+@@ -1,65 +0,0 @@
+-diff --git a/arch/arm64/boot/dts/renesas/r9a09g057.dtsi b/arch/arm64/boot/dts/renesas/r9a09g057.dtsi
+-index f8976ce..eeceaac 100644
+---- a/arch/arm64/boot/dts/renesas/r9a09g057.dtsi
+-+++ b/arch/arm64/boot/dts/renesas/r9a09g057.dtsi
+-@@ -2309,6 +2309,18 @@
+- 				};
+- 			};
+- 		};
+-+
+-+		drpai0: drpai@16800000 {
+-+			compatible = "renesas,rzv2h-drpai";
+-+			reg = <0 0x17000000 0 0x1000000>,
+-+				<0 0x16800000 0 0x400000>;
+-+			interrupts = <GIC_SPI 914 IRQ_TYPE_LEVEL_HIGH>,
+-+				<GIC_SPI 915 IRQ_TYPE_LEVEL_HIGH>,
+-+				<GIC_SPI 916 IRQ_TYPE_LEVEL_HIGH>,
+-+				<GIC_SPI 917 IRQ_TYPE_LEVEL_HIGH>;
+-+			resets = <&cpg R9A09G057_DRPAI_ARESETN>;
+-+			status = "disabled";
+-+		};
+- 	};
+- 
+- 	thermal-zones {
+-diff --git a/arch/arm64/boot/dts/renesas/r9a09g057h4-dev.dts b/arch/arm64/boot/dts/renesas/r9a09g057h4-dev.dts
+-index 8524042..410c55e 100644
+---- a/arch/arm64/boot/dts/renesas/r9a09g057h4-dev.dts
+-+++ b/arch/arm64/boot/dts/renesas/r9a09g057h4-dev.dts
+-@@ -675,3 +675,9 @@
+- &cmtw1 {
+- 	status = "okay";
+- };
+-+
+-+&drpai0 {
+-+	memory-region = <&drp_reserved>;
+-+	image-memory-region = <&image_buf0>;
+-+	status = "okay";
+-+};
+-diff --git a/arch/arm64/boot/dts/renesas/r9a09g057h4-evk-alpha.dts b/arch/arm64/boot/dts/renesas/r9a09g057h4-evk-alpha.dts
+-index 868e72e..88b202a 100644
+---- a/arch/arm64/boot/dts/renesas/r9a09g057h4-evk-alpha.dts
+-+++ b/arch/arm64/boot/dts/renesas/r9a09g057h4-evk-alpha.dts
+-@@ -1308,3 +1308,9 @@
+- &cmtw1 {
+- 	status = "okay";
+- };
+-+
+-+&drpai0 {
+-+	memory-region = <&drp_reserved>;
+-+	image-memory-region = <&image_buf0>;
+-+	status = "okay";
+-+};
+-diff --git a/arch/arm64/boot/dts/renesas/r9a09g057h4-evk-ver1.dts b/arch/arm64/boot/dts/renesas/r9a09g057h4-evk-ver1.dts
+-index 625f24e..4203529 100644
+---- a/arch/arm64/boot/dts/renesas/r9a09g057h4-evk-ver1.dts
+-+++ b/arch/arm64/boot/dts/renesas/r9a09g057h4-evk-ver1.dts
+-@@ -1132,3 +1132,9 @@
+- &cmtw1 {
+- 	status = "okay";
+- };
+-+
+-+&drpai0 {
+-+	memory-region = <&drp_reserved>;
+-+	image-memory-region = <&image_buf0>;
+-+	status = "okay";
+-+};
+diff --git a/meta-rz-drpai/recipes-kernel/linux/linux-renesas_5.10.bbappend b/meta-rz-drpai/recipes-kernel/linux/linux-renesas_5.10.bbappend
+deleted file mode 100644
+index b9282ab..0000000
+--- a/meta-rz-drpai/recipes-kernel/linux/linux-renesas_5.10.bbappend
++++ /dev/null
+@@ -1,12 +0,0 @@
+-#
+-# Copyright (C) 2024 RenesasElectronics, Co, Ltd.
+-#
+-DESCRIPTION = "DRP-AI Driver with kernel for RZ/V2H"
+-
+-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}/:"
+-
+-SRC_URI_append += "\
+-	file://0001-enable-u-dma-buf-function.patch \
+-	file://0002-add-drpai-prop-to-devicetree.patch \
+-	file://0003-add-drpai-drv.patch \
+-"
+diff --git a/meta-rz-drpai/recipes-kernel/linux/linux-renesas/0003-add-drpai-drv.patch b/meta-rz-drpai/recipes-kernel/linux/linux-yocto/0018-Add-support-for-DRP-AI-driver.patch
+similarity index 98%
+rename from meta-rz-drpai/recipes-kernel/linux/linux-renesas/0003-add-drpai-drv.patch
+rename to meta-rz-drpai/recipes-kernel/linux/linux-yocto/0018-Add-support-for-DRP-AI-driver.patch
+index 4d0d632..d9ba7b9 100644
+--- a/meta-rz-drpai/recipes-kernel/linux/linux-renesas/0003-add-drpai-drv.patch
++++ b/meta-rz-drpai/recipes-kernel/linux/linux-yocto/0018-Add-support-for-DRP-AI-driver.patch
+@@ -1,26 +1,88 @@
++From 6032959414709bebc6483e841e81fbc7ce747cc3 Mon Sep 17 00:00:00 2001
++From: Cong Nguyen <cong.nguyen.zn@renesas.com>
++Date: Thu, 17 Apr 2025 10:21:48 +0000
++Subject: [PATCH 18/19] Add support for DRP-AI driver
++
++Upstream-Status: Pending
++
++Signed-off-by: Cong Nguyen <cong.nguyen.zn@renesas.com>
++---
++ drivers/Kconfig                     |    2 +
++ drivers/Makefile                    |    1 +
++ drivers/clk/renesas/r9a09g057-cpg.c |    5 +
++ drivers/drpai/Kconfig               |   14 +
++ drivers/drpai/Makefile              |   11 +
++ drivers/drpai/drpai-core.c          | 1734 ++++++++++
++ drivers/drpai/drpai-core.h          |  120 +
++ drivers/drpai/drpai-if.c            | 4695 +++++++++++++++++++++++++++
++ drivers/drpai/drpai-reg.h           | 1053 ++++++
++ drivers/drpai/lock_drpai.c          |  543 ++++
++ drivers/drpai/lock_drpai.h          |   67 +
++ include/linux/drpai.h               |   23 +
++ include/uapi/linux/drpai.h          |  148 +
++ 13 files changed, 8416 insertions(+)
++ create mode 100644 drivers/drpai/Kconfig
++ create mode 100644 drivers/drpai/Makefile
++ create mode 100644 drivers/drpai/drpai-core.c
++ create mode 100644 drivers/drpai/drpai-core.h
++ create mode 100644 drivers/drpai/drpai-if.c
++ create mode 100644 drivers/drpai/drpai-reg.h
++ create mode 100644 drivers/drpai/lock_drpai.c
++ create mode 100644 drivers/drpai/lock_drpai.h
++ create mode 100644 include/linux/drpai.h
++ create mode 100644 include/uapi/linux/drpai.h
++
+ diff --git a/drivers/Kconfig b/drivers/Kconfig
+-index dcecc9f..4ac778b 100644
++index 9c8698a31..beb7eed76 100644
+ --- a/drivers/Kconfig
+ +++ b/drivers/Kconfig
+-@@ -235,4 +235,6 @@ source "drivers/interconnect/Kconfig"
+- source "drivers/counter/Kconfig"
++@@ -239,6 +239,8 @@ source "drivers/counter/Kconfig"
+  
+  source "drivers/most/Kconfig"
+-+
++ 
+ +source "drivers/drpai/Kconfig"
+- endmenu
+++
++ source "drivers/peci/Kconfig"
++ 
++ source "drivers/hte/Kconfig"
+ diff --git a/drivers/Makefile b/drivers/Makefile
+-index 5762280..354b8fd 100644
++index 76d814e54..3da37f323 100644
+ --- a/drivers/Makefile
+ +++ b/drivers/Makefile
+-@@ -189,3 +189,4 @@ obj-$(CONFIG_GNSS)		+= gnss/
++@@ -187,6 +187,7 @@ obj-$(CONFIG_DRP)		+= drp/
+  obj-$(CONFIG_INTERCONNECT)	+= interconnect/
+  obj-$(CONFIG_COUNTER)		+= counter/
+  obj-$(CONFIG_MOST)		+= most/
+ +obj-$(CONFIG_DRPAI)		+= drpai/
+-diff --git b/drivers/drpai/Kconfig b/drivers/drpai/Kconfig
++ obj-$(CONFIG_PECI)		+= peci/
++ obj-$(CONFIG_HTE)		+= hte/
++ obj-$(CONFIG_DRM_ACCEL)		+= accel/
++diff --git a/drivers/clk/renesas/r9a09g057-cpg.c b/drivers/clk/renesas/r9a09g057-cpg.c
++index eee5d5e41..e9c9a930c 100644
++--- a/drivers/clk/renesas/r9a09g057-cpg.c
+++++ b/drivers/clk/renesas/r9a09g057-cpg.c
++@@ -483,6 +483,10 @@ static const struct rzv2h_mod_clk r9a09g057_mod_clks[] __initconst = {
++     DEF_MOD("drp_dclkin",       CLK_QEXTAL, 17, 0, 8, 16),
++     DEF_MOD("drp_aclk",         CLK_PLLDTY_DRP_DIV2, 17, 1, 8, 17),
++     DEF_MOD("drp_initclk",      CLK_QEXTAL, 17, 2, 8, 18),
+++    DEF_MOD("drpai_dclkin",		CLK_PLLDRP, 17, 3, 8, 19),
+++    DEF_MOD("drpai_aclk",		CLK_PLLDTY_DRP_DIV2, 17, 4, 8, 20),
+++    DEF_MOD("drpai_initclk",	CLK_PLLDRP, 17, 5, 8, 21),
+++    DEF_MOD("drpai_mclk",		CLK_PLLETH, 17, 6, 8, 22),
++     DEF_MOD("ssi9_clk",			CLK_PLLCLN_DIV8, 24, 10, -1, -1),
++     DEF_MOD("ssi8_clk",			CLK_PLLCLN_DIV8, 24,  9, -1, -1),
++     DEF_MOD("ssi7_clk",			CLK_PLLCLN_DIV8, 24,  8, -1, -1),
++@@ -655,6 +659,7 @@ static const struct rzv2h_reset r9a09g057_resets[] __initconst = {
++     DEF_RST(15, 7, 7, 8),		/* TSU0_PRESETN */
++     DEF_RST(15, 8, 7, 9),		/* TSU1_PRESETN */
++     DEF_RST(15, 12, 7, 13),     /* DRP0_ARESETN */
+++    DEF_RST(15, 13,	7, 14),     /* DRPAI_0_ARESETN */
++ };
++ 
++ const struct rzv2h_cpg_info r9a09g057_cpg_info __initconst = {
++diff --git a/drivers/drpai/Kconfig b/drivers/drpai/Kconfig
+ new file mode 100644
+-index 0000000..ccbf90a
++index 000000000..ccbf90afa
+ --- /dev/null
+ +++ b/drivers/drpai/Kconfig
+ @@ -0,0 +1,14 @@
+@@ -38,25 +100,26 @@ index 0000000..ccbf90a
+ +	  If you want DRP-AI support, you should say Y here.
+ +
+ +endmenu
+-diff --git b/drivers/drpai/Makefile b/drivers/drpai/Makefile
++diff --git a/drivers/drpai/Makefile b/drivers/drpai/Makefile
+ new file mode 100644
+-index 0000000..6358959
++index 000000000..adc6a54fc
+ --- /dev/null
+ +++ b/drivers/drpai/Makefile
+-@@ -0,0 +1,10 @@
++@@ -0,0 +1,11 @@
+ +# SPDX-License-Identifier: GPL-2.0
+ +#
+ +# Makefile for DRP-AI/DRP.
+ +#
+ +
+ +ifdef CONFIG_ARCH_R9A09G056
+++CFLAGS_lock_drpai.o += -isystem $(shell $(CC) -print-file-name=include) -mno-outline-atomics
+ +obj-$(CONFIG_DRPAI)	+= drpai-core.o drpai-if.o lock_drpai.o
+ +else
+ +obj-$(CONFIG_DRPAI)	+= drpai-core.o drpai-if.o
+ +endif
+-diff --git b/drivers/drpai/drpai-core.c b/drivers/drpai/drpai-core.c
++diff --git a/drivers/drpai/drpai-core.c b/drivers/drpai/drpai-core.c
+ new file mode 100644
+-index 0000000..207e5da
++index 000000000..8c3f6f609
+ --- /dev/null
+ +++ b/drivers/drpai/drpai-core.c
+ @@ -0,0 +1,1734 @@
+@@ -180,44 +243,44 @@ index 0000000..207e5da
+ +static void mdelay(uint32_t msecs);
+ +#endif
+ +
+-+const static uint32_t stp_errint_status_reg_tbl[STP_ERRINT_STATUS_REG_NUM] =
+++static const uint32_t stp_errint_status_reg_tbl[STP_ERRINT_STATUS_REG_NUM] =
+ +{
+ +    DRP_ERRINT_STATUS_ADDR, IDIF_EINT_ADDR, ODIF_EINT_ADDR, IDMAC_INTSE_ADDR, ODMAC_INTSE_ADDR,
+ +};
+ +
+-+const static char* stp_errint_status_reg_name_tbl[STP_ERRINT_STATUS_REG_NUM] =
+++static const char* stp_errint_status_reg_name_tbl[STP_ERRINT_STATUS_REG_NUM] =
+ +{
+ +    "DRP_ERRINT_STATUS","IDIF_EINT", "ODIF_EINT", "IDMAC_INTSE", "ODMAC_INTSE",
+ +};
+ +
+-+const static uint32_t aimac_errint_status_reg_tbl[AIMAC_ERRINT_STATUS_REG_NUM] =
+++static const uint32_t aimac_errint_status_reg_tbl[AIMAC_ERRINT_STATUS_REG_NUM] =
+ +{
+ +    AID0_IDIF_EINT_ADDR, AID0_IDIF2_EINT_DSC_ADDR, AID0_IDMAC_INTSE_ADDR, AID1_IDIF_EINT_ADDR,
+ +    AID1_IDMAC_INTSE_ADDR, PRAM_INT_ADDR, FMBUF_ERR_STS_ADDR, MACCTL_ERR_STS_ADDR,
+ +};
+ +
+-+const static char* aimac_errint_status_reg_name_tbl[AIMAC_ERRINT_STATUS_REG_NUM] =
+++static const char* aimac_errint_status_reg_name_tbl[AIMAC_ERRINT_STATUS_REG_NUM] =
+ +{
+ +    "AID0_IDIF_EINT", "AID0_IDIF2_EINT_DSC", "AID0_IDMAC_INTSE", "AID1_IDIF_EINT",
+ +    "AID1_IDMAC_INTSE", "PRAM_INT", "FMBUF_ERR_STS", "MACCTL_ERR_STS",
+ +};
+ +
+-+const static uint32_t exd0_errint_status_reg_tbl[EXDx_ERRINT_STATUS_REG_NUM] =
+++static const uint32_t exd0_errint_status_reg_tbl[EXDx_ERRINT_STATUS_REG_NUM] =
+ +{
+ +    EXD0_IDIF_BADDR + IDIF_EINT_REG, EXD0_ODIF_BADDR + ODIF_EINT_REG, EXD0_IDMAC_INTSE_ADDR, EXD0_ODMAC_INTSE_ADDR,
+ +};
+ +
+-+const static char* exd0_errint_status_reg_name_tbl[EXDx_ERRINT_STATUS_REG_NUM] =
+++static const char* exd0_errint_status_reg_name_tbl[EXDx_ERRINT_STATUS_REG_NUM] =
+ +{
+ +    "EXD0_IDIF_EINT", "EXD0_ODIF_EINT", "EXD0_IDMAC_INTSE", "EXD0_ODMAC_INTSE",
+ +};
+ +
+-+const static uint32_t exd1_errint_status_reg_tbl[EXDx_ERRINT_STATUS_REG_NUM] =
+++static const uint32_t exd1_errint_status_reg_tbl[EXDx_ERRINT_STATUS_REG_NUM] =
+ +{
+ +    EXD1_IDIF_BADDR + IDIF_EINT_REG, EXD1_ODIF_BADDR + ODIF_EINT_REG, EXD1_IDMAC_INTSE_ADDR, EXD1_ODMAC_INTSE_ADDR,
+ +};
+ +
+-+const static char* exd1_errint_status_reg_name_tbl[EXDx_ERRINT_STATUS_REG_NUM] =
+++static const char* exd1_errint_status_reg_name_tbl[EXDx_ERRINT_STATUS_REG_NUM] =
+ +{
+ +    "EXD1_IDIF_EINT", "EXD1_ODIF_EINT", "EXD1_IDMAC_INTSE", "EXD1_ODMAC_INTSE",
+ +};
+@@ -1794,9 +1857,9 @@ index 0000000..207e5da
+ +MODULE_AUTHOR("Renesas Electronics Corporation");
+ +MODULE_LICENSE("GPL v2");
+ +#endif
+-diff --git b/drivers/drpai/drpai-core.h b/drivers/drpai/drpai-core.h
++diff --git a/drivers/drpai/drpai-core.h b/drivers/drpai/drpai-core.h
+ new file mode 100644
+-index 0000000..4c17539
++index 000000000..4c1753985
+ --- /dev/null
+ +++ b/drivers/drpai/drpai-core.h
+ @@ -0,0 +1,120 @@
+@@ -1920,12 +1983,12 @@ index 0000000..4c17539
+ +int32_t initialize_cpg(addr_t cpg_base_addr);
+ +
+ +#endif /* DRPAI__H */
+-diff --git b/drivers/drpai/drpai-if.c b/drivers/drpai/drpai-if.c
++diff --git a/drivers/drpai/drpai-if.c b/drivers/drpai/drpai-if.c
+ new file mode 100644
+-index 0000000..1745ce9
++index 000000000..6ed0dece5
+ --- /dev/null
+ +++ b/drivers/drpai/drpai-if.c
+-@@ -0,0 +1,4694 @@
++@@ -0,0 +1,4695 @@
+ +/*
+ + * Driver for the Renesas RZ/V2H, RZ/V2N DRP-AI unit
+ + *
+@@ -1973,6 +2036,7 @@ index 0000000..1745ce9
+ +#include <linux/delay.h>
+ +#include <linux/clk.h>
+ +#include <linux/reset.h>
+++#include <linux/vmalloc.h>
+ +#include <linux/drpai.h>    /* Header file for DRP-AI Driver */
+ +#include "drpai-core.h"     /* Header file for DRP-AI Core */
+ +#include "lock_drpai.h"     /* To use for exclusion control of DRP-AI with shared memory */
+@@ -2241,7 +2305,7 @@ index 0000000..1745ce9
+ +    uint32_t drpai_divfix;
+ +};
+ +
+-+static DEFINE_SEMAPHORE(rw_sem);
+++static DEFINE_SEMAPHORE(rw_sem, 1);
+ +static struct drpai_rw_status *drpai_rw_sentinel;
+ +
+ +/* Virtual base address of register */
+@@ -2721,7 +2785,7 @@ index 0000000..1745ce9
+ +                    result = -EFAULT;
+ +                    goto end;
+ +                }
+-+                __flush_dcache_area((void *)p_drpai_cma, drpai_rw_status->drpai_data.size);
+++                dcache_clean_inval_poc((unsigned long)p_drpai_cma, (unsigned long)(p_drpai_cma) + drpai_rw_status->drpai_data.size);
+ +                drpai_rw_status->rw_status = DRPAI_STATUS_IDLE_RW;
+ +                DRPAI_DEBUG_PRINT("Deleted list %px rw_status %d prev %px next %px\n", &drpai_rw_status->list, drpai_rw_status->rw_status, drpai_rw_status->list.prev, drpai_rw_status->list.next);
+ +                list_del(&drpai_rw_status->list);
+@@ -3344,7 +3408,7 @@ index 0000000..1745ce9
+ +    }
+ +
+ +    /* Cleate class "/sys/class/drpai/" */
+-+    drpai_class = class_create(THIS_MODULE, DRPAI_DRIVER_NAME);
+++    drpai_class = class_create(DRPAI_DRIVER_NAME);
+ +    if (IS_ERR(drpai_class)) {
+ +        ptr_err = PTR_ERR(drpai_class);
+ +        pr_err("DRP-AI Driver: class_create = %d\n", ptr_err);
+@@ -3994,7 +4058,7 @@ index 0000000..1745ce9
+ +        result = -EFAULT;
+ +        goto end;
+ +    }
+-+    __inval_dcache_area((void *)p_virt_address, drpai_data_buf.size);
+++    dcache_inval_poc((unsigned long)p_virt_address, (unsigned long)(p_virt_address +drpai_data_buf.size));
+ +
+ +    /* Initialization of read / write processing variables */
+ +    drpai_rw_status->drpai_data  = drpai_data_buf;
+@@ -4808,7 +4872,7 @@ index 0000000..1745ce9
+ +        goto end;
+ +    }
+ +    iowrite16(value, (void *)virt_addr);
+-+    __flush_dcache_area((void *)virt_addr, sizeof(value));
+++    dcache_clean_inval_poc((unsigned long)virt_addr, (unsigned long)(virt_addr) + sizeof(value));
+ +end:
+ +    DRPAI_DEBUG_PRINT("end.\n");
+ +
+@@ -4828,7 +4892,7 @@ index 0000000..1745ce9
+ +        goto end;
+ +    }
+ +    iowrite32(value, (void *)virt_addr);
+-+    __flush_dcache_area((void *)virt_addr, sizeof(value));
+++    dcache_clean_inval_poc((unsigned long)virt_addr, (unsigned long)(virt_addr) + sizeof(value));
+ +end:
+ +    DRPAI_DEBUG_PRINT("end.\n");
+ +
+@@ -5064,7 +5128,7 @@ index 0000000..1745ce9
+ +            result = -1;
+ +            goto end;
+ +        }
+-+        __flush_dcache_area((void *)p_input, flush_size);
+++        dcache_clean_inval_poc((unsigned long)p_input, (unsigned long)p_input + flush_size);
+ +    }
+ +end:
+ +    DRPAI_DEBUG_PRINT("end.\n");
+@@ -6620,9 +6684,9 @@ index 0000000..1745ce9
+ +#endif
+ +MODULE_AUTHOR("Renesas Electronics Corporation");
+ +MODULE_LICENSE("GPL v2");
+-diff --git b/drivers/drpai/drpai-reg.h b/drivers/drpai/drpai-reg.h
++diff --git a/drivers/drpai/drpai-reg.h b/drivers/drpai/drpai-reg.h
+ new file mode 100644
+-index 0000000..fc7fd57
++index 000000000..fc7fd57c0
+ --- /dev/null
+ +++ b/drivers/drpai/drpai-reg.h
+ @@ -0,0 +1,1053 @@
+@@ -7679,9 +7743,9 @@ index 0000000..fc7fd57
+ +#define MACCTL_ERR_STS_ADDR         (0x001C0008uLL)
+ +
+ +#endif /* DRPAI_REG__H */
+-diff --git b/drivers/drpai/lock_drpai.c b/drivers/drpai/lock_drpai.c
++diff --git a/drivers/drpai/lock_drpai.c b/drivers/drpai/lock_drpai.c
+ new file mode 100644
+-index 0000000..84111f4
++index 000000000..84111f41b
+ --- /dev/null
+ +++ b/drivers/drpai/lock_drpai.c
+ @@ -0,0 +1,543 @@
+@@ -8228,9 +8292,9 @@ index 0000000..84111f4
+ +    *p_rstc = rstc;
+ +    return 0;
+ +}
+-diff --git b/drivers/drpai/lock_drpai.h b/drivers/drpai/lock_drpai.h
++diff --git a/drivers/drpai/lock_drpai.h b/drivers/drpai/lock_drpai.h
+ new file mode 100644
+-index 0000000..13e9190
++index 000000000..13e919023
+ --- /dev/null
+ +++ b/drivers/drpai/lock_drpai.h
+ @@ -0,0 +1,67 @@
+@@ -8301,12 +8365,12 @@ index 0000000..13e9190
+ +#endif /* __cplusplus */
+ +
+ +#endif /* R_DRPAI_LOCK_H */
+-diff --git b/include/linux/drpai.h b/include/linux/drpai.h
++diff --git a/include/linux/drpai.h b/include/linux/drpai.h
+ new file mode 100644
+-index 0000000..141574b
++index 000000000..6aa75202a
+ --- /dev/null
+ +++ b/include/linux/drpai.h
+-@@ -0,0 +1,22 @@
++@@ -0,0 +1,23 @@
+ +/*
+ + * Driver for the Renesas RZ/V2H, RZ/V2N DRP-AI unit
+ + *
+@@ -8329,9 +8393,11 @@ index 0000000..141574b
+ +#include <uapi/linux/drpai.h>
+ +
+ +#endif /* _DRPAI_H */
+-diff --git b/include/uapi/linux/drpai.h b/include/uapi/linux/drpai.h
+++ 
++\ No newline at end of file
++diff --git a/include/uapi/linux/drpai.h b/include/uapi/linux/drpai.h
+ new file mode 100644
+-index 0000000..8026211
++index 000000000..842d5a0eb
+ --- /dev/null
+ +++ b/include/uapi/linux/drpai.h
+ @@ -0,0 +1,148 @@
+@@ -8369,11 +8435,11 @@ index 0000000..8026211
+ +#define DRPAI_GET_STATUS            _IOR (DRPAI_IO_TYPE, 3, drpai_status_t)
+ +#define DRPAI_REG_DUMP              _IO  (DRPAI_IO_TYPE, 5)
+ +#define DRPAI_ASSIGN_PARAM          _IOW (DRPAI_IO_TYPE, 6, drpai_assign_param_t)  /* Since the sturecture size is different,       */
+-+                                                                                   /* it will be a different ID from DRPAI_SET_SEQ. */
+++                                                                                /* it will be a different ID from DRPAI_SET_SEQ. */
+ +#define DRPAI_PREPOST_CROP          _IOW (DRPAI_IO_TYPE, 7, drpai_crop_t)
+ +#define DRPAI_PREPOST_INADDR        _IOW (DRPAI_IO_TYPE, 8, drpai_inout_t)
+ +#define DRPAI_SET_SEQ               _IOW (DRPAI_IO_TYPE, 6, drpai_seq_t)           /* Since the sturecture size is different,            */
+-+                                                                                   /* it will be a different ID from DRPAI_ASSIGN_PARAM. */
+++                                                                                /* it will be a different ID from DRPAI_ASSIGN_PARAM. */
+ +#define DRPAI_GET_DRPAI_AREA        _IOR (DRPAI_IO_TYPE, 11, drpai_data_t)
+ +
+ +#define DRPAI_SET_DRP_MAX_FREQ      _IOW (DRPAI_IO_TYPE, 12, uint32_t)
+@@ -8483,3 +8549,6 @@ index 0000000..8026211
+ +#endif
+ +
+ +#endif /* _UAPI__DRPAI_H */
++-- 
++2.25.1
++
+diff --git a/meta-rz-drpai/recipes-kernel/linux/linux-yocto/0019-Add-drpai-node-and-udmabuf-to-device-tree.patch b/meta-rz-drpai/recipes-kernel/linux/linux-yocto/0019-Add-drpai-node-and-udmabuf-to-device-tree.patch
+new file mode 100644
+index 0000000..191bd7a
+--- /dev/null
++++ b/meta-rz-drpai/recipes-kernel/linux/linux-yocto/0019-Add-drpai-node-and-udmabuf-to-device-tree.patch
+@@ -0,0 +1,72 @@
++From 332e61e5030ef6cb07832a7926a9c6dabcb5fba2 Mon Sep 17 00:00:00 2001
++From: Cong Nguyen <cong.nguyen.zn@renesas.com>
++Date: Tue, 22 Apr 2025 07:23:50 +0000
++Subject: [PATCH 19/19] Add drpai node and udmabuf to device tree
++
++Upstream-Status: Pending
++
++Signed-off-by: Cong Nguyen <cong.nguyen.zn@renesas.com>
++---
++ arch/arm64/boot/dts/renesas/r9a09g057.dtsi        | 12 ++++++++++++
++ .../boot/dts/renesas/r9a09g057h4-evk-ver1.dts     | 15 +++++++++++++++
++ 2 files changed, 27 insertions(+)
++
++diff --git a/arch/arm64/boot/dts/renesas/r9a09g057.dtsi b/arch/arm64/boot/dts/renesas/r9a09g057.dtsi
++index 9d26e9206..fcfc6e2c6 100644
++--- a/arch/arm64/boot/dts/renesas/r9a09g057.dtsi
+++++ b/arch/arm64/boot/dts/renesas/r9a09g057.dtsi
++@@ -1675,6 +1675,18 @@ xhci1: usb@15860000 {
++  			phy-names = "usb1";
++  			status = "disabled";
++  		};
+++
+++		drpai0: drpai@16800000 {
+++			compatible = "renesas,rzv2h-drpai";
+++			reg = <0 0x17000000 0 0x1000000>,
+++				<0 0x16800000 0 0x400000>;
+++			interrupts = <GIC_SPI 914 IRQ_TYPE_LEVEL_HIGH>,
+++				<GIC_SPI 915 IRQ_TYPE_LEVEL_HIGH>,
+++				<GIC_SPI 916 IRQ_TYPE_LEVEL_HIGH>,
+++				<GIC_SPI 917 IRQ_TYPE_LEVEL_HIGH>;
+++			resets = <&cpg 253>;
+++			status = "disabled";
+++		};
++ 	};
++ 
++ 	thermal-zones {
++diff --git a/arch/arm64/boot/dts/renesas/r9a09g057h4-evk-ver1.dts b/arch/arm64/boot/dts/renesas/r9a09g057h4-evk-ver1.dts
++index 4e32a9fef..b7cf2ddee 100644
++--- a/arch/arm64/boot/dts/renesas/r9a09g057h4-evk-ver1.dts
+++++ b/arch/arm64/boot/dts/renesas/r9a09g057h4-evk-ver1.dts
++@@ -236,6 +236,15 @@ osc1: cec-clock {
++ 		#clock-cells = <0>;
++ 		clock-frequency = <12000000>;
++ 	};
+++
+++	udmabuf@0 {
+++		compatible = "ikwzm,u-dma-buf";
+++		device-name = "udmabuf0";
+++		minor-number = <0>;
+++		size = <0x4000000>; // 64MiB
+++		dma-coherent;
+++		memory-region = <&image_buf0>;
+++	};
++ };
++ 
++ &pinctrl {
++@@ -753,6 +762,12 @@ &cmtw0 {
++ 	status = "okay";
++ };
++ 
+++&drpai0 {
+++	memory-region = <&drp_reserved>;
+++	image-memory-region = <&image_buf0>;
+++	status = "okay";
+++};
+++
++ &cmtw1 {
++ 	status = "okay";
++ };
++-- 
++2.25.1
++
+diff --git a/meta-rz-drpai/recipes-kernel/linux/linux-yocto_6.10.bbappend b/meta-rz-drpai/recipes-kernel/linux/linux-yocto_6.10.bbappend
+new file mode 100644
+index 0000000..e0224f9
+--- /dev/null
++++ b/meta-rz-drpai/recipes-kernel/linux/linux-yocto_6.10.bbappend
+@@ -0,0 +1,11 @@
++#
++# Copyright (C) 2024 RenesasElectronics, Co, Ltd.
++#
++DESCRIPTION = "DRP-AI Driver with kernel for RZ/V2H"
++
++FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}/:"
++
++SRC_URI:append = "\
++	file://0018-Add-support-for-DRP-AI-driver.patch \
++	file://0019-Add-drpai-node-and-udmabuf-to-device-tree.patch \
++"
+diff --git a/meta-rz-drpai/recipes-support/opencv/opencv_%.bbappend b/meta-rz-drpai/recipes-support/opencv/opencv_%.bbappend
+index f66d972..b9494e7 100644
+--- a/meta-rz-drpai/recipes-support/opencv/opencv_%.bbappend
++++ b/meta-rz-drpai/recipes-support/opencv/opencv_%.bbappend
+@@ -1,2 +1,2 @@
+-PACKAGECONFIG_append_pn-opencv = " gtk"
+-PACKAGECONFIG_append_pn-nativesdk-opencv = " gtk"
++PACKAGECONFIG:append:pn-opencv = " gtk"
++PACKAGECONFIG:append:pn-nativesdk-opencv = " gtk"
