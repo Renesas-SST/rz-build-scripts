@@ -46,11 +46,21 @@ TARGET_MACHINE="rzv2h-evk-ver1"
 # -----------------------------Global variable------------------------------------
 # ------------------------------------------------------------------------------
 
+log_warning(){
+	string=$1
+	echo -e "\e[33m$string\e[0m\n"
+}
+
+log_error(){
+	string=$1
+	echo -e "\e[31m$string \e[0m\n"
+}
+
 # Guidance
 # Currently, this script supports for RZ SBC board
 guideline() {
 	echo "------------------------------------------------------------"
-	echo "Syntax Error!!!"
+	log_error "Syntax Error!!!"
 	echo "How to use script:"
 	echo "Syntax:"
 	echo ""
@@ -94,7 +104,7 @@ add_files() {
 	add_files=$("${JQ}" -r --arg key "$key" '.[$key].add_files' "$PATCH_FILE")
 
 	if [ $? -ne 0 ]; then
-		echo "Error: Failed to parse JSON file for files."
+		log_error "Error: Failed to parse JSON file for files."
 		exit 1
 	fi
 
@@ -151,7 +161,7 @@ apply_patches() {
 	local patch_list
 	patch_list=$("${JQ}" -r --arg key "$key" '.[$key].patches[]?' "$PATCH_FILE")
 	if [ $? -ne 0 ]; then
-		echo "Error: Failed to parse JSON file."
+		log_error "Error: Failed to parse JSON file."
 		exit 1
 	fi
 
@@ -174,7 +184,7 @@ apply_patches() {
 			git apply "$TOP_DIR/$local_patch"
 		fi
 		if [ $? -ne 0 ]; then
-			echo "Error: Failed to apply patch $TOP_DIR/$local_patch."
+			log_error "Error: Failed to apply patch $TOP_DIR/$local_patch."
 			exit 1
 		fi
 	fi
@@ -196,16 +206,6 @@ check_and_set_dir() {
 
 }
 
-log_warning(){
-	string=$1
-	echo "\e[33m$string\e[0m\n"
-}
-
-log_error(){
-	string=$1
-	echo "\e[31m$string \e[0m\n"
-}
-
 check_pkg_require(){
 	# check required pacakages are downloaded from Renesas website and local package
 	check=0
@@ -218,7 +218,7 @@ check_pkg_require(){
 		echo "${lsb_id} ${lsb_rel}"
 	else
 		printf -v VERSION_LIST '%s, ' "${LSB_REL_OK[@]}"
-		echo "Unsupported ${lsb_id} ${lsb_rel}!"
+		log_error "Unsupported ${lsb_id} ${lsb_rel}!"
 		echo "Only known working OS is ${LSB_ID_OK}, version ${VERSION_LIST%, }. Kindly ensure this script is run on a supported OS or docker container"
 		exit 0
 	fi
@@ -248,7 +248,7 @@ check_pkg_require(){
 		fi
 	fi
 
-	[ ${check} -ne 0 ] && echo "Package check failed. Fix errors and copy dependencies here." && exit
+	[ ${check} -ne 0 ] && log_error "Package check failed. Fix errors and copy dependencies here." && exit
 }
 
 check_patch_require() {
@@ -269,7 +269,7 @@ check_patch_require() {
 			if [ -n "$patch_path" ]; then
 				echo "Checking patch: $patch_path"
 				if [ ! -e "${WORKSPACE}/${patch_path}" ]; then
-					echo "Error: Patch ${patch_path} is not present in this workspace (${WORKSPACE}/${patch_path})."
+					log_error "Error: Patch ${patch_path} is not present in this workspace (${WORKSPACE}/${patch_path})."
 					echo "This patch is essential for the build. Please check!"
 					exit 1
 				fi
@@ -493,7 +493,7 @@ clone_repo_with_retries() {
 			echo "Cloning completed successfully."
 			return 0
 		else
-			echo "Git clone failed (Attempt $attempt/$max_retries)."
+			log_warning "Git clone failed (Attempt $attempt/$max_retries)."
 		fi
 
 		attempt=$((attempt + 1))
@@ -503,7 +503,7 @@ clone_repo_with_retries() {
 	done
 
 	echo "Git clone failed after $max_retries attempts."
-	echo "Error: Cloning failed after multiple attempts."
+	log_error "Error: Cloning failed after multiple attempts."
 	exit 1
 }
 
@@ -572,7 +572,7 @@ get_bsp() {
 			elif [ -n "$repo_branch" ]; then
 				git checkout "$repo_branch"
 			else
-				echo "Please define a tag, commit, or branch for $repo_name in the $PATCH_FILE or this layer will use default branch"
+				log_warning "Please define a tag, commit, or branch for $repo_name in the $PATCH_FILE or this layer will use default branch"
 			fi
 		fi
 
