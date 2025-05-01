@@ -19,7 +19,7 @@
 	"meta-renesas": {
 		"url": "https://github.com/Renesas-SST/meta-renesas.git",
 		"branch": "",
-		"tag": "rz-cmn-srp-1.1-rc3",
+		"tag": "rz-cmn-srp-1.1-rc3.1",
 		"commit": "",
 		"patches": [],
 		"type": "git"
