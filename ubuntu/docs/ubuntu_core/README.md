@@ -40,6 +40,8 @@ The `config.ini` file is used for configuring the script that builds an Ubuntu i
 - **TIME_ZONE_AREA**: The time zone area (e.g., "Asia").
 - **TIME_ZONE_CITY**: The time zone city (e.g., "Ho_Chi_Minh").
 - **IS_WESTON_ENABLE**: Set to 0 to disable Weston compositor.
+- **USERNAME**: The default username for logging into the system (e.g., "rzpi"). This account is used for user login during system access.
+- **PASSWORD**: The password associated with the default USERNAME (e.g., "1"). This password is required to authenticate the user during login.
 
 > :memo: **Note:** Host PC with Ubuntu 20.04 is recommended for the build. Prepare environment for building package and local build environment.
 
@@ -60,7 +62,7 @@ Inside rzsbc_ubuntu.sh, the script reads the environment settings from a file na
 The script then launches a sub-shell under the current user’s privileges. This means that any processes started in this sub-shell will run with the permissions of the user who invoked the script, not as the root user.
 
 - **Building Yocto**:
-Within this sub-shell, the script will use the Yocto build script located in the rz-sbc folder. Yocto is a project that helps developers create custom Linux distributions, and this step involves compiling the necessary components based on the configurations specified earlier.
+Within this sub-shell, the script will use the Yocto build script located in the `yocto` folder. Yocto is a project that helps developers create custom Linux distributions, and this step involves compiling the necessary components based on the configurations specified earlier.
 
 - **Executing Remaining Build as Root**:
 After the Yocto build process is complete, the script uses root privileges (via sudo) to perform any remaining tasks in the Ubuntu build process. This ensures that any actions requiring elevated permissions can be executed without interruption.
@@ -119,7 +121,7 @@ ubuntu/
 |   `-- set_root_password.sh
 `-- ubuntu-base-24.04.01-base-arm64.tar.gz
 
-rz-sbc/yocto_rzsbc_board/build/tmp/deploy/images/rzpi/target/images
+yocto/yocto_rzsbc_board/build/tmp/deploy/images/rzpi/target/images
 |-- rootfs
 |   `-- ubuntu-image-qt-rzpi.tar.zst        <---- Output compressed rootfs
 |-- ubuntu-image-qt-rzpi.wic                <---- Output WIC
