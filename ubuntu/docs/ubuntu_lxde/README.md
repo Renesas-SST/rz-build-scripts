@@ -58,6 +58,9 @@ The `config.ini` file is used for configuring the script that builds an Ubuntu i
 - **TIME_ZONE_AREA**: The time zone area (e.g., "Asia").
 - **TIME_ZONE_CITY**: The time zone city (e.g., "Ho_Chi_Minh").
 - **IS_WESTON_ENABLE**: Set to 0 to disable Weston compositor.
+- **USERNAME**: The default username for logging into the system (e.g., "rzpi"). This account is used for user login during system access.
+- **PASSWORD**: The password associated with the default USERNAME (e.g., "1"). This password is required to authenticate the user during login.
+
 > :memo: **Note:** Host PC with Ubuntu 20.04 is recommended for the build. Prepare environment for building package and local build environment.
 > :memo: **Note:** GNOME display manager will not work when using the root user.
 
