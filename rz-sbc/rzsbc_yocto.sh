@@ -655,11 +655,12 @@ build() {
 	fi
 
 	deploy_build_assets
+	deploy_ubuntu_build_assets
 	#output
 }
 
 deploy_build_assets() {
-	local target_dir="${RZ_TARGET_DIR}/build/tmp/deploy/images/rzpi/host/src"
+	local target_dir="${RZ_TARGET_DIR}/build/tmp/deploy/images/rzpi/host/src/yocto"
 
 	# Check if the src directory already exists
 	if [ ! -d ${target_dir} ];then
@@ -675,6 +676,23 @@ deploy_build_assets() {
 		cp "${TOP_DIR}/site.conf" "$target_dir"
 	fi
 	cp "${TOP_DIR}/README.md" "$target_dir"
+}
+
+deploy_ubuntu_build_assets() {
+        local target_dir="${RZ_TARGET_DIR}/build/tmp/deploy/images/rzpi/host/src/ubuntu"
+
+        # Check if the src directory already exists
+        if [ ! -d ${target_dir} ];then
+                mkdir -p ${target_dir}
+        fi
+
+        # Copy build assets to the src directory
+        cp -r "${TOP_DIR}/../ubuntu/config" "$target_dir"
+        cp -r "${TOP_DIR}/../ubuntu/docs" "$target_dir"
+        cp -r "${TOP_DIR}/../ubuntu/include" "$target_dir"
+        cp -r "${TOP_DIR}/../ubuntu/script" "$target_dir"
+        cp "${TOP_DIR}/../ubuntu/config.ini" "$target_dir"
+        cp "${TOP_DIR}/../ubuntu/rzsbc_ubuntu.sh" "$target_dir"
 }
 
 # Main output
