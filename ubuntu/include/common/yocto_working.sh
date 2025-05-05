@@ -5,24 +5,29 @@
 
 # This function help main script can build yocto
 build_yocto() {
-	# Initialize a variable to store the result
-	result=""
+	# Run the build and wait for it to finish
+	su -c "(cd ../yocto/ && IMAGE=renesas-ubuntu DISTRO=ubuntu-tiny ./rzsbc_yocto.sh build)" "$MAIN_USER"
 
-	# Loop until we find the output file
-	while [ -z "$result" ]; do
-		# Run bitbake
-		su -c "(cd ../yocto/ && IMAGE=renesas-ubuntu DISTRO=ubuntu-tiny ./rzsbc_yocto.sh build)" "$MAIN_USER"
+	if [ $? -ne 0 ]; then
+		echo "[Yocto]: Build script failed. Exiting."
+		exit 1
+	fi
 
-		# Check the output
-		result=$(find ../yocto/yocto_rzsbc_board/build/tmp/deploy/ -name '*.tar.bz2' -exec cp {} ./${core_image_qt_name} \; && echo "File copied successfully.")
+	# Find the output file and try to copy it
+	output_file=$(find ../yocto/yocto_rzsbc_board/build/tmp/deploy/ -name "${core_image_qt_name}" | head -n 1)
 
-		# Exit if yocto does not build successfully
-		if [ -z "$result" ]; then
-			echo "[Yocto]: No output files found. Retrying..."
-		else
-			echo "Yocto output have been built."
-		fi
-	done
+	if [ -z "$output_file" ]; then
+		echo "[Yocto]: No output files found."
+		exit 1
+	fi
+
+	cp "$output_file" "./${core_image_qt_name}"
+	if [ $? -eq 0 ]; then
+		echo "[Yocto]: File copied successfully."
+	else
+		echo "[Yocto]: Failed to copy output file."
+		exit 1
+	fi
 }
 
 # This function help main script bring wic file to yocto output's directory

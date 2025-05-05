@@ -95,30 +95,40 @@ This directory holds the automated build scripts that perform the Ubuntu image b
 
 | File                 | Description                                                                                                                                                     |
 |----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| config/       | The folder that holds configuration files for different Ubuntu variants. script.                                                                                    |
+| config/       | The folder that holds configuration files for different Ubuntu variants.                                                                                    |
 | docs/             | Contains documentation detailing supported features and usage instructions for each Ubuntu image variant.                                                      |
 | script/       | The folder that contains all scripts related to Ubuntu image creation.                                                                                          |
 | rzsbc_ubuntu.sh | Custom Ubuntu build script that automates the setup, configuration, and creation of Ubuntu-based images (e.g., Ubuntu Core, Ubuntu LXDE) for the RZ/G2L-SBC.  |
-| config.ini            | Configuration file that defines key parameters for the Ubuntu image build process, such as the Ubuntu variant, base image, output filenames, and system settings..|
+| config.ini            | Configuration file that defines key parameters for the Ubuntu image build process, such as the Ubuntu variant, base image, output filenames, and system settings.|
 | README.md            | This README (the current document).|
 
 ## Ubuntu Build
 
-You can perform the ubuntu build right here or by moving this directorys contents to your chosed location.
-To perform ubuntu build with all RZ SOc's IP's functioning, you will need to download the following going through the click through agreements.
+You can perform the Ubuntu build right here or by moving this directorys contents to your chosen location.
+To perform Ubuntu build with all RZ SoC's IP's functioning, you must first build the Yocto environment. This step is necessary to collect essential binary artifacts that will be reused during the Ubuntu image build process.
+
+### Required Components
+
+Before running the Ubuntu build, download the following ZIP files from the Renesas website after accepting their click-through license agreements. These packages contain proprietary GPU and codec drivers necessary for full hardware support.
+
+| File                             |   Description                                                                                                                |
+|----------------------------------|------------------------------------------------------------------------------------------------------------------------------|
+| RTK0EF0045Z13001ZJ-v1.1.2_EN.zip | RZ Mali GPU driver and HAL package.  |
+| RTK0EF0045Z15001ZJ-v1.1.0_EN.zip | RZ codec driver and HAL package.    |
 
 > [!IMPORTANT]
+> Place the downloaded ZIP files into the `yocto/` directory before building.
 > Simply running the script `rzsbc_ubuntu.sh` will tell you the command options.
-> Use the script with the `ubuntu-lxde`, `ubuntu-core`, or `all` parameter to build the corresponding images. For example, run `sudo rzsbc_ubuntu.sh all` to build both images.
+> Use the script with the `ubuntu-lxde`, `ubuntu-core`, or `all-ubuntu-images` parameter to build the corresponding images. For example, run `sudo rzsbc_ubuntu.sh all-ubuntu-images` to build both images.
 
 > [!IMPORTANT]
-> Please ensure that you are making this build in an ubuntu 20.04 OS environment through docker/VM/native-OS installations.
+> Please ensure that you are making this build in an Ubuntu 20.04 OS environment through docker/VM/native-OS installations.
 
 Run the build script and it will take care of everything else.
 
 For more details on each Ubuntu image, please refer to its README:
-- Ubuntu core: docs/ubuntu_core/README.md
-- Ubuntu LXDE: docs/ubuntu_lxde/README.md
+- Ubuntu core: `docs/ubuntu_core/README.md`
+- Ubuntu LXDE: `docs/ubuntu_lxde/README.md`
 
 ## User configuration (config.ini)
 ### User Account Settings

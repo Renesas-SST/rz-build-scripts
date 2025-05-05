@@ -18,7 +18,7 @@ guideline() {
     echo "Syntax:"
     echo ""
     echo "========="
-    echo "Build Yocto"
+    echo "Build Ubuntu"
     echo "Usage:"
     echo "sudo ./rzsbc_ubuntu.sh <target_image>"
     echo ""
@@ -28,7 +28,6 @@ guideline() {
     echo "     2. ubuntu-lxde"
     echo "     3. all-ubuntu-images"
     echo "Note: If <target_image> is set to 'all-ubuntu-images', all supported images will be built."
-    echo "      If <target_image> is not specified, the script will build the image defined in config.ini."
     echo ""
     echo "For example: "
     echo "sudo ./rzsbc_ubuntu.sh ubuntu-core"
@@ -64,23 +63,11 @@ source_env(){
 
 # Check if this script is clone by user (not root/sudo) or not.
 do_build_yocto(){
-	MAIN_USER=$(sudo grep 'sudo: .*rzsbc_ubuntu.sh' /var/log/auth.log | tail -n 1 | awk '{print $6}')
-	# Recheck user for yocto build
-	if [ -n "$MAIN_USER" ]; then
-		echo "User executed sudo ./main_script is: $MAIN_USER"
-	else
-		echo "It seem that you are root. Recheck..."
-		MAIN_USER=$(stat -c '%U' rzsbc_ubuntu.sh)
-		if [ -n "$MAIN_USER" ]; then
-			echo "User executed sudo ./main_script is: $MAIN_USER"
-		else
-			echo "It seem that you are root. Please login and clone as a user"
-			exit 1
-		fi
-	fi
+	MAIN_USER=${SUDO_USER:-$(whoami)}
 
+	# Recheck user for yocto build
 	if [ "$MAIN_USER" = "root" ]; then
-		echo "Error: Current user cannot be root, we cannot build yocto with root's privilege."
+		echo "Error: Cannot build Yocto as root. Please use a normal user with sudo privileges."
 		exit 1
 	fi
 
@@ -304,9 +291,6 @@ main_ubuntu_lxde(){
 	fi
 }
 
-# Set the default build type to Ubuntu Core
-UBUNTU_TYPE="${UBUNTU_TYPE:=CORE}"
-
 # Handle the Ubuntu type based on the input parameter
 if [ -n "$1" ]; then
 	case "$1" in
@@ -325,7 +309,8 @@ if [ -n "$1" ]; then
 			;;
 	esac
 else
-	echo "Ubuntu type is ${UBUNTU_TYPE} located in config.ini"
+	guideline
+	exit 1
 fi
 
 # call main
@@ -347,6 +332,9 @@ case "$UBUNTU_TYPE" in
 		source_env
 		do_build_yocto
 		main_ubuntu_core
+
+		# Clean old build artifacts
+		rm -rf *rootfs*
 
 		UBUNTU_TYPE="LXDE"
 		OUTPUT_ROOTFS="ubuntu-lxde-image-qt-rzpi"

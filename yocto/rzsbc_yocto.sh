@@ -191,7 +191,7 @@ check_pkg_require(){
 		check=3
 	fi
 
-	[ ${check} -ne 0 ] && echo "Package check failed. Fix errors and copy dependencies here." && exit
+	[ ${check} -ne 0 ] && echo "Package check failed. Fix errors and copy dependencies here: `pwd`." && exit 1
 }
 
 check_patch_require() {
@@ -657,6 +657,8 @@ build() {
 	deploy_build_assets
 	deploy_ubuntu_build_assets
 	#output
+
+	exit 0
 }
 
 deploy_build_assets() {
