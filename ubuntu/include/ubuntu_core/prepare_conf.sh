@@ -107,6 +107,7 @@ function set_network_config() {
 		return 1
 	fi
 
+	# Network interface setting
 	NETWORK_CONF="$ETC_PATH/network/interfaces"
 	# Check and create folder
 	mkdir -p "$(dirname "$NETWORK_CONF")" || { echo "Failed to create $(dirname "$NETWORK_CONF")"; return 1; }

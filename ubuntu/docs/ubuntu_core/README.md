@@ -83,6 +83,7 @@ Here are the packages preinstalled after running the script:
 ubuntu/
 ├── config
 │   └── ubuntu_core
+│       ├── resolved.conf
 │       └── network_interfaces.conf
 ├── config.ini
 ├── docs
@@ -104,7 +105,9 @@ ubuntu/
 └── script
     └── ubuntu_core
         ├── apt_install_base.sh
-        └── set_root_password.sh
+        ├── set_root_password.sh
+        ├── link_to_leagcy_iptables.sh
+        └── setup_dns.sh
 
 ```
 

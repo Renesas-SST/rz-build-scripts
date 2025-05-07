@@ -44,6 +44,7 @@ source_env(){
 		. include/ubuntu_core/prepare_rootfs_qt.sh
 		. include/ubuntu_core/prepare_conf.sh
 		. include/ubuntu_core/mount.sh
+		. include/ubuntu_core/setup_dns.sh
 	elif [ "$UBUNTU_TYPE" = "LXDE" ]; then
 		. include/ubuntu_lxde/prepare_rootfs_qt.sh
 		. include/ubuntu_lxde/prepare_conf.sh
@@ -121,6 +122,20 @@ main_ubuntu_core(){
 	chroot_run_1_script "set_root_password.sh"
 	if [ $? -eq 1 ]; then
 		echo "set_root_password failed."
+		exit 1
+	fi
+
+	# Run the script 'link_to_leagcy_iptables.sh' inside chroot environment
+	chroot_run_1_script "link_to_leagcy_iptables.sh"
+	if [ $? -eq 1 ]; then
+		echo "link_to_leagcy_iptables failed."
+		exit 1
+	fi
+
+	# Set up configuration after install packages
+	set_config_after_install
+	if [ $? -eq 1 ]; then
+		echo "set_config_after_install failed."
 		exit 1
 	fi
 

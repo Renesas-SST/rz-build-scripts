@@ -8,6 +8,7 @@ This directory holds the automated build scripts that perform the Ubuntu image b
 .
 ├── config
 │   ├── ubuntu_core
+│   │   ├── resolved.conf
 │   │   └── network_interfaces.conf
 │   └── ubuntu_lxde
 │       ├── interfaces
@@ -64,7 +65,8 @@ This directory holds the automated build scripts that perform the Ubuntu image b
 │   │   ├── mount.sh
 │   │   ├── prepare_conf.sh
 │   │   ├── prepare_env.sh
-│   │   └── prepare_rootfs_qt.sh
+│   │   ├── prepare_rootfs_qt.sh
+|	|   └── setup_dns.sh
 │   └── ubuntu_lxde
 │       ├── create_swap.sh
 │       ├── mount.sh
@@ -75,7 +77,8 @@ This directory holds the automated build scripts that perform the Ubuntu image b
 └── script
     ├── ubuntu_core
     │   ├── apt_install_base.sh
-    │   └── set_root_password.sh
+    │   ├── set_root_password.sh
+	│   └──	link_to_leagcy_iptables.sh
     └── ubuntu_lxde
         ├── apt_audio_video.sh
         ├── apt_blueman.sh
@@ -87,7 +90,7 @@ This directory holds the automated build scripts that perform the Ubuntu image b
         ├── set_swap_enable.sh
         └── setup-set-permissions.sh
 
-15 directories, 66 files
+15 directories, 68 files
 
 ``` 
 
