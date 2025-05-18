@@ -74,7 +74,7 @@ This repository holds scripts to build various Linux-based systems for RZ platfo
 │   │       ├── prepare_conf.sh
 │   │       └── prepare_rootfs_qt.sh
 │   ├── README.md
-│   ├── rzsbc_ubuntu.sh
+│   ├── setup_ubuntu_environment.sh
 │   └── script
 │       ├── ubuntu_core
 │       │   ├── apt_install_base.sh

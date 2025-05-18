@@ -11,7 +11,8 @@
 # These values can be modified in the config.ini file if needed.
 # --------------------------------------------------------------------------#
 
-. config.ini
+# Source the prepared environment file
+. script/config.ini
 
 # Check if the script is run as root
 if [ "$(id -u)" -ne 0 ]; then

@@ -1,11 +1,11 @@
 # rz-sbc build package
 
-This directory holds the automated build scripts that perform the Ubuntu image builds.
+This directory (ubuntu/) provides an organized framework to create Ubuntu-based images (e.g., Ubuntu Core, Ubuntu LXDE) for Renesas RZ/G2L-SBC platforms. The main script acts as a controller that **includes and invokes modular scripts** to perform image creation tasks.
 
 ## Hierarchy
 
 ```
-.
+ubuntu/
 ├── config
 │   ├── ubuntu_core
 │   │   └── network_interfaces.conf
@@ -71,7 +71,7 @@ This directory holds the automated build scripts that perform the Ubuntu image b
 │       ├── prepare_conf.sh
 │       └── prepare_rootfs_qt.sh
 ├── README.md
-├── rzsbc_ubuntu.sh
+├── setup_ubuntu_environment.sh
 └── script
     ├── ubuntu_core
     │   ├── apt_install_base.sh
@@ -87,34 +87,29 @@ This directory holds the automated build scripts that perform the Ubuntu image b
         ├── set_swap_enable.sh
         └── setup-set-permissions.sh
 
-15 directories, 66 files
-
+14 directories, 66 files
 ``` 
 
 ## Organization:
 
 | File                 | Description                                                                                                                                                     |
 |----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| config/       | The folder that holds configuration files for different Ubuntu variants. script.                                                                                    |
+| config/       | The folder that holds configuration files for different Ubuntu variants.                                                                                    |
 | docs/             | Contains documentation detailing supported features and usage instructions for each Ubuntu image variant.                                                      |
 | script/       | The folder that contains all scripts related to Ubuntu image creation.                                                                                          |
-| rzsbc_ubuntu.sh | Custom Ubuntu build script that automates the setup, configuration, and creation of Ubuntu-based images (e.g., Ubuntu Core, Ubuntu LXDE) for the RZ/G2L-SBC.  |
-| config.ini            | Configuration file that defines key parameters for the Ubuntu image build process, such as the Ubuntu variant, base image, output filenames, and system settings..|
+| setup_ubuntu_environment.sh | **Main entry-point script** (acts like a dispatcher/header). It sources and sequences logic from the modular scripts under `script/`. It does **not** build anything by itself.|
+| config.ini            | Configuration file that defines key parameters for the Ubuntu image build process, such as the Ubuntu variant, base image, output filenames, and system settings.|
 | README.md            | This README (the current document).|
 
-## Ubuntu Build
+## Ubuntu Image Build Overview
 
-You can perform the ubuntu build right here or by moving this directorys contents to your chosed location.
-To perform ubuntu build with all RZ SOc's IP's functioning, you will need to download the following going through the click through agreements.
+This directory contains the resources necessary to prepare for building Ubuntu images. You may use it from this location or move its contents to another directory of your choice.
 
-> [!IMPORTANT]
-> Simply running the script `rzsbc_ubuntu.sh` will tell you the command options.
-> Use the script with the `ubuntu-lxde`, `ubuntu-core`, or `all` parameter to build the corresponding images. For example, run `sudo rzsbc_ubuntu.sh all` to build both images.
+To build Ubuntu images with full RZ SoC IP support, you must first manually download the required proprietary components. These files are gated behind click-through license agreements.
 
 > [!IMPORTANT]
-> Please ensure that you are making this build in an ubuntu 20.04 OS environment through docker/VM/native-OS installations.
-
-Run the build script and it will take care of everything else.
+> The script `setup_ubuntu_environment.sh` is a helper script that prepares the Ubuntu environment and dependencies. It assists the main build process but does not perform the full build itself, which is handled by the `rzsbc_builder.sh` script.
+> Please ensure that you are making this build in an Ubuntu 20.04 OS environment through docker/VM/native-OS installations.
 
 For more details on each Ubuntu image, please refer to its README:
 - Ubuntu core: docs/ubuntu_core/README.md
