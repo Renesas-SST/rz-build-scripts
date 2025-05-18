@@ -6,7 +6,9 @@
 # Password: 1
 # These values can be modified in the config.ini file if needed.
 ##############################################################################
-. config.ini
+
+# Source the prepared environment file
+. script/config.ini
 
 # Ensures the script is run as root user with maximum privileges.
 if [ "$(id -u)" -ne 0 ]; then
