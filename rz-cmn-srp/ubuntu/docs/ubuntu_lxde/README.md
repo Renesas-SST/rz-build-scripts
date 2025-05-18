@@ -59,11 +59,13 @@ The `config.ini` file is used for configuring the script that builds an Ubuntu i
 - **OUTPUT_WIC**: The output file name for the wic image.
 - **TIME_ZONE_AREA**: The time zone area (e.g., "Asia").
 - **TIME_ZONE_CITY**: The time zone city (e.g., "Ho_Chi_Minh").
-- **SSH_NO_PASS_LOGIN**: Set to 1 to enable users to log in without a password.
-- **IS_WESTON_ENABLE**: Set to 0 to disable the Weston compositor.
+- **IS_WESTON_ENABLE**: Set to 0 to disable Weston compositor.
+- **USERNAME**: The default username for logging into the system (e.g., "root"). This account is used for user login during system access.
+- **PASSWORD**: The password associated with the default USERNAME (e.g., "1"). This password is required to authenticate the user during login.
+
 > :memo: **Note:** Host PC with Ubuntu 22.04 is recommended for the build. Prepare environment for building package and local build environment.
-> :memo: **Note:** LightDM display manager will not work when using the root user, login as normal user to use this.
- 
+> :memo: **Note:** GNOME display manager will not work when using the root user.
+
 Then we can execute the script as follows:
 ```
 chmod +x rzsbc_ubuntu.sh

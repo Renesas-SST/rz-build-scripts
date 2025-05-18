@@ -47,7 +47,7 @@ umount_chroot() {
 
 # Function check_and_copy_script_folder
 copy_script() {
-	input_folder="./script/ubuntu_core"
+	input_folder="${SCRIPT_DIR}/script/ubuntu_core"
 	destination="./rootfs/script/ubuntu_core"
 
 	# Check input script
