@@ -90,7 +90,7 @@ copy_file_conf() {
 	file_permission="$3"
 
 	# Check if file exists in the config folder
-	if [ ! -f "${WORK_DIR}/config/ubuntu_lxde/${file_name}" ]; then
+	if [ ! -f "${SCRIPT_DIR}/config/ubuntu_lxde/${file_name}" ]; then
 		echo "File ${file_name} does not exist in the config folder."
 		return 1
 	fi
@@ -106,7 +106,7 @@ copy_file_conf() {
 	fi
 
 	# Copy the file to the target folder
-	cp "${WORK_DIR}/config/ubuntu_lxde/${file_name}" "${target_folder}"
+	cp "${SCRIPT_DIR}/config/ubuntu_lxde/${file_name}" "${target_folder}"
 	if [ $? -ne 0 ]; then
 		echo "Failed to copy file ${file_name} to ${target_folder}."
 		return 1

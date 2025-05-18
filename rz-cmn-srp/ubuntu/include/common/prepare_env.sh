@@ -8,6 +8,7 @@
 # - The `qt_rootfs_source` directory can be reused if it exists.
 # --------------------------------------------------------------------------#
 
+<<<<<<< HEAD:rz-cmn-srp/ubuntu/include/common/prepare_env.sh
 file="$renesas_ubuntu_input_name"
 CLEAN_ALL="${CLEAN_ALL:-0}"
 function prepare_env() {
@@ -23,6 +24,12 @@ function prepare_env() {
 			rm -rf "rootfs"
 			echo "Directory 'rootfs' has been removed."
 		fi
+=======
+function prepare_env() {
+	if [ -d "rootfs" ]; then
+		rm -rf "rootfs"
+		echo "Directory 'rootfs' removed."
+>>>>>>> 8e8bbc4... rz-cmn-srp: Refactor build script and layout:rz-cmn-srp/ubuntu/include/ubuntu_core/prepare_env.sh
 	fi
 
 	if [ -d "qt_rootfs_source" ] || [ -d "rootfs_qt" ]; then

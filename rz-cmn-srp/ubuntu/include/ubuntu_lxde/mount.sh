@@ -65,7 +65,7 @@ umount_chroot() {
 #######################################
 copy_script() {
 	# Define local variables
-	input_folder="./script/ubuntu_lxde"
+	input_folder="${SCRIPT_DIR}/script/ubuntu_lxde"
 	destination="./rootfs/script/ubuntu_lxde"
 
 	# Check input script
