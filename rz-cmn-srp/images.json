@@ -1,0 +1,21 @@
+{
+	"yocto": [
+		"core-image-minimal",
+		"core-image-bsp",
+		"core-image-weston",
+		"core-image-qt",
+		"renesas-core-image-cli",
+		"renesas-core-image-weston",
+		"renesas-quickboot-cli",
+		"renesas-quickboot-wayland"
+	],
+	"ubuntu": [
+		"ubuntu-core",
+		"ubuntu-lxde"
+	],
+	"static": [
+		"all-yocto-images",
+		"all-ubuntu-images",
+		"all-supported-images"
+	]
+}
