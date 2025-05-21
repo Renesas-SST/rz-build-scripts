@@ -107,12 +107,13 @@ function set_network_config() {
 		return 1
 	fi
 
+	# Network interface setting
 	NETWORK_CONF="$ETC_PATH/network/interfaces"
 	# Check and create folder
 	mkdir -p "$(dirname "$NETWORK_CONF")" || { echo "Failed to create $(dirname "$NETWORK_CONF")"; return 1; }
 
 	# Check exist file network config
-	NETWORK_CONFIG_FILE="./config/ubuntu_core/network_interfaces.conf"
+	NETWORK_CONFIG_FILE="${SCRIPT_DIR}/config/ubuntu_core/network_interfaces.conf"
 	if [[ ! -f "$NETWORK_CONFIG_FILE" ]]; then
 		echo "Configuration file $NETWORK_CONFIG_FILE not found"
 		return 1

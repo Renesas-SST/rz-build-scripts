@@ -4,6 +4,16 @@
 # Root user can be access without password at first
 # --------------------------------------------------------------------------#
 
+# --------------------------------------------------------------------------#
+# Description:
+# User: rzpi
+# Password: 1
+# These values can be modified in the config.ini file if needed.
+# --------------------------------------------------------------------------#
+
+# Source the prepared environment file
+. script/config.ini
+
 # Check if the script is run as root
 if [ "$(id -u)" -ne 0 ]; then
 	echo "Please run this script as root or using sudo."
@@ -31,15 +41,6 @@ else
 	exit 1
 fi
 
-# --------------------------------------------------------------------------#
-# Description:
-# User: rzpi
-# Password: 1
-# --------------------------------------------------------------------------#
-
-# Define the new user
-USERNAME="rzpi"
-PASSWORD="1"
 : ${SSH_NO_PASS_LOGIN:=1}
 
 # Check if user already exists then don't create it

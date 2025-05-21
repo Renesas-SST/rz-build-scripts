@@ -4,17 +4,17 @@
 # The root user can't run the lxde-desktop. so we need to create a new normal user.
 # User: rzpi
 # Password: 1
+# These values can be modified in the config.ini file if needed.
 ##############################################################################
+
+# Source the prepared environment file
+. script/config.ini
 
 # Ensures the script is run as root user with maximum privileges.
 if [ "$(id -u)" -ne 0 ]; then
 	echo "Please run this script as root or using sudo."
 	exit 1
 fi
-
-# Define the new user
-USERNAME="rzpi"
-PASSWORD="1"
 
 # Check if user already exists then don't create it
 if id "$USERNAME" > /dev/null 2>&1; then

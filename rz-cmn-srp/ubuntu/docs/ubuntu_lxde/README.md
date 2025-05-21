@@ -1,10 +1,10 @@
 # Ubuntu LXDE System development on RZG2L SBC board #
 This is the quick startup guide for RZG2L SBC board (hereinafter referred to as `RZG2L-SBC`) to develop on Ubuntu LXDE (with Desktop environment support).
 
-The following sections will describe how to build this custom Ubuntu Core image and set up the development environment for the RZG2L-SBC.
+The following sections will describe how to build this custom Ubuntu LXDE image and set up the development environment for the RZG2L-SBC.
 
 ## Status
-This is a Custom Ubuntu Core release of the RZG2L development product for RZG2L-SBC.
+This is a Custom Ubuntu LXDE release of the RZG2L development product for RZG2L-SBC.
 
 This release provides the following features:
 
@@ -27,7 +27,7 @@ This release provides the following features:
 - Generic USB Bluetooth framework supported for connecting Bluetooth devices.
 
 **Additional Features**
-- Custom Ubuntu Core build scripts for easy setup and deployment.
+- Custom Ubuntu LXDE build scripts for easy setup and deployment.
 - RZG2L-SBC Linux BSP functionalities.
 - Graphic and Codec libraries supported for various multimedia tasks.
 - 40 IO expansion interfaces supported for hardware connectivity.
@@ -58,14 +58,12 @@ The `config.ini` file is used for configuring the script that builds an Ubuntu i
 - **TIME_ZONE_AREA**: The time zone area (e.g., "Asia").
 - **TIME_ZONE_CITY**: The time zone city (e.g., "Ho_Chi_Minh").
 - **IS_WESTON_ENABLE**: Set to 0 to disable Weston compositor.
+- **USERNAME**: The default username for logging into the system (e.g., "rzpi"). This account is used for user login during system access.
+- **PASSWORD**: The password associated with the default USERNAME (e.g., "1"). This password is required to authenticate the user during login.
+
 > :memo: **Note:** Host PC with Ubuntu 20.04 is recommended for the build. Prepare environment for building package and local build environment.
 > :memo: **Note:** GNOME display manager will not work when using the root user.
 
-Then we can execute the script as follows:
-```
-chmod +x rzsbc_ubuntu.sh
-sudo ./rzsbc_ubuntu.sh
-```
 Here are the packages preinstalled after running the script:
 
 | **Category**                     | **Package(s)**                                                                    |
@@ -80,61 +78,75 @@ Here are the packages preinstalled after running the script:
 ```
 ubuntu/
 ├── config
-│   └── ubuntu_lxde
-│       ├── interfaces
-│       ├── lightdm.conf
-│       ├── NetworkManager.conf
-│       ├── rsyslog
-│       ├── ttyS0.conf
-│       └── v4l2-init.sh
+│   ├── ubuntu_core
+│   │   └── network_interfaces.conf
+│   └── ubuntu_lxde
+│       ├── interfaces
+│       ├── lightdm.conf
+│       ├── NetworkManager.conf
+│       ├── rsyslog
+│       ├── ttyS0.conf
+│       └── v4l2-init.sh
 ├── config.ini
 ├── docs
-│   └── ubuntu_lxde
-│       ├── Pictures
-│       │   ├── audacity.png
-│       │   ├── bluetooth_0.png
-│       │   ├── bluetooth_1.png
-│       │   ├── bluetooth_2.png
-│       │   ├── bluetooth_3.png
-│       │   ├── bluetooth_4.png
-│       │   ├── csi_0.png
-│       │   ├── csi_1.png
-│       │   ├── csi_2.png
-│       │   ├── eth_1.png
-│       │   ├── eth_2.png
-│       │   ├── eth_3.png
-│       │   ├── eth_4.png
-│       │   ├── eth_5.png
-│       │   ├── eth.png
-│       │   ├── save_audio_0.png
-│       │   ├── save_audio_1.png
-│       │   ├── save_audio_2.png
-│       │   ├── vlc_open_0.png
-│       │   ├── vlc_open_1.png
-│       │   ├── vlc_open_2.png
-│       │   ├── vlc.png
-│       │   ├── vlc_video_1.png
-│       │   ├── vlc_video.png
-│       │   ├── web_1.png
-│       │   ├── web_2.png
-│       │   ├── web_lxterm_htop.png
-│       │   ├── web.png
-│       │   └── wifi_0.png
-│       └── README.md
+│   ├── ubuntu_core
+│   │   └── README.md
+│   └── ubuntu_lxde
+│       ├── Pictures
+│       │   ├── audacity.png
+│       │   ├── bluetooth_0.png
+│       │   ├── bluetooth_1.png
+│       │   ├── bluetooth_2.png
+│       │   ├── bluetooth_3.png
+│       │   ├── bluetooth_4.png
+│       │   ├── csi_0.png
+│       │   ├── csi_1.png
+│       │   ├── csi_2.png
+│       │   ├── eth_1.png
+│       │   ├── eth_2.png
+│       │   ├── eth_3.png
+│       │   ├── eth_4.png
+│       │   ├── eth_5.png
+│       │   ├── eth.png
+│       │   ├── save_audio_0.png
+│       │   ├── save_audio_1.png
+│       │   ├── save_audio_2.png
+│       │   ├── vlc_open_0.png
+│       │   ├── vlc_open_1.png
+│       │   ├── vlc_open_2.png
+│       │   ├── vlc.png
+│       │   ├── vlc_video_1.png
+│       │   ├── vlc_video.png
+│       │   ├── web_1.png
+│       │   ├── web_2.png
+│       │   ├── web_lxterm_htop.png
+│       │   ├── web.png
+│       │   └── wifi_0.png
+│       └── README.md
 ├── include
-│   ├── common
-│   │   ├── create_wic.sh
-│   │   ├── install_gstreamer.sh
-│   │   ├── install_weston.sh
-│   │   ├── prepare_ubuntu_base.sh
-│   │   └── yocto_working.sh
-│   └── ubuntu_lxde
-│       ├── create_swap.sh
-│       ├── mount.sh
-│       ├── prepare_conf.sh
-│       └── prepare_rootfs_qt.sh
-├── rzsbc_ubuntu.sh
+│   ├── common
+│   │   ├── allow_empty_password.sh
+│   │   ├── create_wic.sh
+│   │   ├── install_gstreamer.sh
+│   │   ├── install_weston.sh
+│   │   ├── prepare_ubuntu_base.sh
+│   │   └── yocto_working.sh
+│   ├── ubuntu_core
+│   │   ├── mount.sh
+│   │   ├── prepare_conf.sh
+│   │   ├── prepare_env.sh
+│   │   └── prepare_rootfs_qt.sh
+│   └── ubuntu_lxde
+│       ├── create_swap.sh
+│       ├── mount.sh
+│       ├── prepare_conf.sh
+│       └── prepare_rootfs_qt.sh
+├── README.md
+├── setup_ubuntu_environment.sh
 └── script
+    ├── ubuntu_core
+    │   ├── apt_install_base.sh
+    │   └── set_root_password.sh
     └── ubuntu_lxde
         ├── apt_audio_video.sh
         ├── apt_blueman.sh
@@ -145,7 +157,50 @@ ubuntu/
         ├── set_root_password.sh
         ├── set_swap_enable.sh
         └── setup-set-permissions.sh
+
+14 directories, 66 files
 ```
+
+**Output folder outline and build process:**
+
+The image build is controlled by the main build `script rzsbc_builder.sh` located at the root of the repository. Running this script initiates the complete build process, producing the output images and root filesystem archives as shown below.
+
+To build the Ubuntu LXDE image, run the main build script with the following command:
+
+```shell
+IMAGE=ubuntu-lxde ./rzsbc_builder.sh build
+```
+
+```
+ubuntu/
+├── config
+│   ├── ubuntu_core
+│   └── ubuntu_lxde
+├── config.ini                                    <---- User configuration
+├── docs
+│   ├── ubuntu_core
+│   └── ubuntu_lxde
+├── include
+│   ├── common
+│   ├── ubuntu_core
+│   └── ubuntu_lxde
+├── README.md                                     <---- The main README
+├── renesas-ubuntu-rzpi.tar.bz2                   <---- Roofs that generated by yocto
+├── setup_ubuntu_environment.sh                   <---- Setup environment for main build script
+├── script
+│   ├── ubuntu_core
+│   └── ubuntu_lxde
+├── ubuntu-base-22.04-base-arm64.tar.gz
+└── ubuntu-lxde-image-qt-rzpi.tar.bz2             <---- Output rootfs of Ubuntu LXDE
+
+yocto/yocto_rzsbc_board/build/tmp/deploy/images/rzpi/target/images
+├── rootfs
+|   └── ubuntu-lxde-image-qt-rzpi.tar.bz2         <---- Output compressed rootfs
+└──  ubuntu-lxde-image-qt-rzpi.wic.gz             <---- Output compressed WIC
+```
+### U-boot environment
+For more information about the U-Boot environment configuration, please refer to the original documentation provided in the [Renesas-SST/meta-renesas](https://github.com/Renesas-SST/meta-renesas/blob/dunfell/rz-sbc/meta-rzg2l/docs/recipes-docs/rzpi-readme/files/README.md) layer.
+
 ### Introduction of LXDE
 LXDE is a lightweight and rapid desktop environment. It is designed to be user-friendly and take up few resources while keeping resource usage low.LXDE uses less memory and CPU to present as feature-rich desktop environment as possible. Unlike other desktop environments, LXDE strives to be a modular desktop environment so that each component can be used independently. This allows porting LXDE to different distributions and platforms more easily.
 
