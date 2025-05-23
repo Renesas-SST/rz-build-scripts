@@ -218,6 +218,18 @@ In addition to these core components, LXDE has some other auxiliary tools, such 
 
 ## Features on Ubuntu LXDE
 
+### Selecting LXDE session
+
+To use the LXDE desktop environment, manual selection is required during the initial login:
+
+1. At the login screen, look for a gear ⚙️ icon in the bottom-right corner.
+2. Click it and select "LXDE" from the list of available sessions.
+3. Enter your password and log in.
+
+The chosen session will be remembered for subsequent logins.
+
+Skipping this step results in logging into the default desktop environment, which may not provide the full LXDE experience.
+
 ### Audacity
 
 **Audacity** is a free, open-source, cross-platform audio software that is used for recording, editing, and producing audio. It allows users to capture live audio, convert tapes and records into digital recordings, and edit audio files in a variety of formats. Audacity is widely used for tasks such as podcasting, music production, and audio analysis due to its user-friendly interface and powerful editing tools. It supports multi-track editing, numerous audio effects, and plugins, making it a popular choice for both amateurs and professionals.
