@@ -22,7 +22,7 @@ SUFFIX_ZIP=".zip"
 SUFFIX_TAR=".tar.gz"
 
 LSB_ID_OK="Ubuntu"
-LSB_REL_OK="22.04"
+LSB_REL_OK="24.04"
 
 TOP_DIR=$(pwd)
 
@@ -116,7 +116,7 @@ guideline() {
 	echo "Note: If DISTRO is not set, 'poky' will be selected by default."
 	echo ""
 	echo "For example: "
-	echo "$ IMAGE=renesas-core-image-cli ./rzsbc_yocto.sh build ~/yocto-build"
+	echo "$ IMAGE=renesas-core-image-cli ./rzsbc_builder.sh build ~/yocto-build"
 	echo "--------------------------------------------------------------------------------------------------"
 }
 
@@ -126,6 +126,62 @@ clean_repository() {
 		git checkout .
 		git clean -fdx
 	fi
+}
+
+add_files() {
+	local key=$1
+
+	# Get the add_files data from JSON
+	local add_files
+	add_files=$("${JQ}" -r --arg key "$key" '.[$key].add_files' "$PATCH_FILE")
+
+	if [ $? -ne 0 ]; then
+		echo "Error: Failed to parse JSON file for files."
+		exit 1
+	fi
+
+	# Check if add_files is empty or null
+	if [ -z "$add_files" ] || [ "$add_files" == "null" ]; then
+		echo "No files to add for $key (add_files is empty)"
+		return 0
+	fi
+
+	# Check if any of the add_files entries have empty source and target fields
+	invalid_entries=$(echo "$add_files" | grep -E '"source": ""| "target": ""')
+
+	if [ -n "$invalid_entries" ]; then
+		echo "No files to add for $key (invalid source/target entries found)"
+		return 0
+	fi
+
+	echo "Files to add in $key: $add_files"
+
+	# Loop through the add_files list
+	while IFS= read -r file_info; do
+		local source target
+		source=""
+		target=""
+
+		# Extract the source and target from add_files lists
+		source=${TOP_DIR}/$(echo "$file_info" | ${JQ} -r '.source')
+		target=${RZ_TARGET_DIR}/$(echo "$file_info" | ${JQ} -r '.target')
+
+		# Create target folder if it's missing
+		if [ ! -d "$target" ]; then
+			echo "Missing $target, creating directory..."
+			mkdir -p "$target"
+		fi
+
+		echo "Processing: $source -> $target"
+
+		# Check if the source file actually exists before copying
+		if [ -f "$source" ]; then
+			echo "Copying file from $source to $target"
+			cp "$source" "$target"
+		else
+			echo "Source file does not exist: $source"
+		fi
+	done <<< "$("${JQ}" -c '.[]' <<< "$add_files")"
 }
 
 apply_patches() {
@@ -254,12 +310,18 @@ bsp_checkout_verification() {
 	bsp_layers=$("${JQ}" -r 'keys[]' "${PATCH_FILE}")
 
 	for bsp_layer in $bsp_layers; do
-		cd "${bsp_layer}" || { log_error "Failed to switch to ${bsp_layer}" ; exit 1; }
-
 		local expected_branch expected_commit expected_tags
 		expected_branch=$("${JQ}" -r --arg repo "${bsp_layer}" '.[$repo].branch // empty' "${PATCH_FILE}")
 		expected_commit=$("${JQ}" -r --arg repo "${bsp_layer}" '.[$repo].commit // empty' "${PATCH_FILE}")
 		expected_tags=$("${JQ}" -r --arg repo "${bsp_layer}" '.[$repo].tag // empty' "${PATCH_FILE}")
+		is_layer_enabled=$("${JQ}" -r --arg repo "$bsp_layer" '.[$repo].enable // empty' "$PATCH_FILE")
+
+		# Only verify the git repositories that have 'enabled: true' setting in the JSON file
+		if [ "$is_layer_enabled" = "false" ]; then
+			continue
+		fi
+
+		cd "${bsp_layer}" || { log_error "Failed to switch to ${bsp_layer}" ; exit 1; }
 
 		# Check if the directory is a Git repository
 		if [ ! -d ".git" ]; then
@@ -290,6 +352,9 @@ bsp_checkout_verification() {
 
 				# Need to apply the necessary patches
 				apply_patches "${bsp_layer}"
+
+				# Add addtion files after apply the patches
+				add_files "$bsp_layer"
 			fi
 
 			cd ..
@@ -311,6 +376,10 @@ bsp_checkout_verification() {
 
 				# Need to apply the neccessary patches
 				apply_patches "${bsp_layer}"
+
+				# Add addtion files after apply the patches
+				add_files $bsp_layer
+
 				cd ..
 				continue
 			fi
@@ -331,6 +400,10 @@ bsp_checkout_verification() {
 
 				# Need to apply the neccessary patches
 				apply_patches "${bsp_layer}"
+
+				# Add addtion files after apply the patches
+				add_files $bsp_layer
+
 				cd ..
 				continue
 			fi
@@ -367,11 +440,16 @@ check_and_clone_missing_layers() {
 		repo_commit=$("${JQ}" -r --arg repo "$missing_layer" '.[$repo].commit // empty' "$PATCH_FILE")
 		repo_tag=$("${JQ}" -r --arg repo "$missing_layer" '.[$repo].tag // empty' "$PATCH_FILE")
 		repo_type=$("${JQ}" -r --arg repo "$missing_layer" '.[$repo].type // empty' "$PATCH_FILE")
+		is_layer_enabled=$("${JQ}" -r --arg repo "$missing_layer" '.[$repo].enable // empty' "$PATCH_FILE")
+
+		# Only clone the git repositories that have 'enabled: true' setting in the JSON file
+		if [ "$is_layer_enabled" = "false" ]; then
+			continue
+		fi
 
 		# If the missing repos is local
 		if [ "$repo_type" = "local" ]; then
-			unpack_gpu
-			unpack_codec
+			unpack_local_repo
 			cd "${RZ_TARGET_DIR}/$missing_layer" || { log_error "Failed to change dir ${RZ_TARGET_DIR}/${missing_layer}" ; exit 1; }
 		elif [ "$repo_type" = "git" ]; then
 			if [ -z "$repo_url" ] || [ "$repo_url" = "null" ]; then
@@ -404,6 +482,10 @@ check_and_clone_missing_layers() {
 
 		# Apply necessary patches
 		apply_patches "${missing_layer}"
+
+		# Add addtion files after apply the patches
+		add_files $missing_layer
+
 		cd ..
 	done
 
@@ -482,40 +564,56 @@ get_bsp() {
 		repo_commit=$("${JQ}" -r --arg repo "$repo_name" '.[$repo].commit // empty' "$PATCH_FILE")
 		repo_tag=$("${JQ}" -r --arg repo "$repo_name" '.[$repo].tag // empty' "$PATCH_FILE")
 		repo_type=$("${JQ}" -r --arg repo "$repo_name" '.[$repo].type // empty' "$PATCH_FILE")
+		is_layer_enabled=$("${JQ}" -r --arg repo "$repo_name" '.[$repo].enable // empty' "$PATCH_FILE")
 
-		# Only clone the git repositories
-		if [ "$repo_type" = "local" ]; then
+		# Only clone the git repositories that have 'enabled: true' setting in the JSON file
+		if [ "$is_layer_enabled" = "false" ]; then
 			continue
 		fi
 
-		# Raise an error when a git repo doesn't have the 'url' field set
-		if [ -z "$repo_url" ] || [ "$repo_url" = "null" ]; then
-			log_error "Error: No URL specified for $repo_name. Cannot clone repository. Please verify the 'url' key in $PATCH_FILE."
-			exit 1
-		fi
-
-		echo "Cloning and setting up $repo_name from $url"
-
-		clone_repo_with_retries "$repo_url"
-		cd "${repo_name}" || { log_error "Failed to switch to ${repo_name}" ; exit 1; }
-
-		# Checkout tag, commit or branch if specified
-		if [ -n "$repo_tag" ]; then
-			git checkout "$repo_tag"
-		elif [ -n "$repo_commit" ]; then
-			git checkout "$repo_commit"
-		elif [ -n "$repo_branch" ]; then
-			git checkout "$repo_branch"
+		# Only clone the git repositories
+		if [ "$repo_type" = "local" ]; then
+			unpack_local_repo
+			cd "${RZ_TARGET_DIR}/$repo_name" || { log_error "Failed to switch to ${RZ_TARGET_DIR}/${repo_name}" ; exit 1; }
 		else
-			echo "Please define a tag, commit, or branch for $repo_name in the $PATCH_FILE or this layer will use default branch"
+			# Raise an error when a git repo doesn't have the 'url' field set
+			if [ -z "$repo_url" ] || [ "$repo_url" = "null" ]; then
+				log_error "Error: No URL specified for $repo_name. Cannot clone repository. Please verify the 'url' key in $PATCH_FILE."
+				exit 1
+			fi
+
+			echo "Cloning and setting up $repo_name from $url"
+
+			clone_repo_with_retries "$repo_url"
+			cd "${repo_name}" || { log_error "Failed to switch to ${repo_name}" ; exit 1; }
+
+			# Checkout tag, commit or branch if specified
+			if [ -n "$repo_tag" ]; then
+				git checkout "$repo_tag"
+			elif [ -n "$repo_commit" ]; then
+				git checkout "$repo_commit"
+			elif [ -n "$repo_branch" ]; then
+				git checkout "$repo_branch"
+			else
+				echo "Please define a tag, commit, or branch for $repo_name in the $PATCH_FILE or this layer will use default branch"
+			fi
 		fi
 
 		# Apply patches
 		apply_patches "$repo_name"
+
+		# Add addtion files after apply the patches
+		add_files "$repo_name"
+
 		cd ..
 	done
 
 	echo "---------------------- Download completed --------------------------------------"
+}
+
+unpack_local_repo() {
+	# unpack_gpu
+	unpack_codec
 }
 
 unpack_gpu() {
@@ -588,8 +686,6 @@ setup() {
 		mkdir -p "${RZ_TARGET_DIR}"
 		#unpack_bsp
 		get_bsp
-		unpack_gpu
-		unpack_codec
 	else
 		echo "${RZ_TARGET_DIR} already exists! Checking for any missing layers..."
 		check_and_clone_missing_layers
@@ -873,7 +969,7 @@ output() {
 	# Collect final output
 	cd ${OUTPUT}
 	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/target/images/fip-rzg2l-sbc.srec $OUTPUT
-	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/target/images/dtbs/rzpi.dtb $OUTPUT
+	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/target/images/dtbs/rzg2l-sbc.dtb $OUTPUT
 	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/README.md $OUTPUT
 	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/target/env/uEnv.txt $OUTPUT
 	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/target/images/Image $OUTPUT
