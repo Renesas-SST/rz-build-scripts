@@ -8,6 +8,7 @@ This directory (ubuntu/) provides an organized framework to create Ubuntu-based 
 ubuntu/
 ├── config
 │   ├── ubuntu_core
+│   │   ├── resolved.conf
 │   │   └── network_interfaces.conf
 │   └── ubuntu_lxde
 │       ├── interfaces
@@ -82,12 +83,12 @@ ubuntu/
         ├── apt_install_base.sh
         ├── apt_lxde_desktop.sh
         ├── apt_wifi_ble.sh
-        ├── create_rzpi_user.sh
+        ├── create_user.sh
         ├── set_root_password.sh
         ├── set_swap_enable.sh
         └── setup-set-permissions.sh
 
-14 directories, 66 files
+14 directories, 67 files
 ``` 
 
 ## Organization:
@@ -109,7 +110,7 @@ To build Ubuntu images with full RZ SoC IP support, you must first manually down
 
 > [!IMPORTANT]
 > The script `setup_ubuntu_environment.sh` is a helper script that prepares the Ubuntu environment and dependencies. It assists the main build process but does not perform the full build itself, which is handled by the `rzsbc_builder.sh` script.
-> Please ensure that you are making this build in an Ubuntu 20.04 OS environment through docker/VM/native-OS installations.
+> Please ensure that you are making this build in an Ubuntu 24.04 OS environment through docker/VM/native-OS installations.
 
 For more details on each Ubuntu image, please refer to its README:
 - Ubuntu core: docs/ubuntu_core/README.md
@@ -123,7 +124,7 @@ Both Ubuntu Core and Ubuntu LXDE images support setting up a non-root user accou
 To configure the default user credentials, edit the following entries in `config.ini`:
 
 ```shell
-USERNAME=rzpi
+USERNAME=rz
 PASSWORD=1
 ```
 

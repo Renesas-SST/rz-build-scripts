@@ -222,10 +222,10 @@ main_ubuntu_lxde(){
 		exit 1
 	fi
 
-	# Create rzpi user - normal user
-	chroot_run_1_script "create_rzpi_user.sh"
+	# Create user - normal user
+	chroot_run_1_script "create_user.sh"
 	if [ $? -eq 1 ]; then
-		echo "create_rzpi_user failed."
+		echo "create_user failed."
 		exit 1
 	fi
 
@@ -303,7 +303,7 @@ main_ubuntu_lxde(){
 # Usage: check_yocto_artifacts <yocto_artifacts_dir>
 check_yocto_artifacts() {
 	local artifacts_dir="$1"
-	local artifacts_path="${artifacts_dir}/${core_image_qt_name}"
+	local artifacts_path="${artifacts_dir}/${renesas_ubuntu_input_name}"
 
 	# Check if artifacts dir is exist
 	if [ ! -d "${artifacts_dir}" ]; then
@@ -322,7 +322,7 @@ check_yocto_artifacts() {
 	fi
 
 	log_info "Found Yocto artifact: ${artifacts_path}"
-	cp "${artifacts_path}" "${core_image_qt_name}"
+	cp "${artifacts_path}" "${renesas_ubuntu_input_name}"
 }
 
 # Run ubuntu build based on the first argument
@@ -332,8 +332,8 @@ run_ubuntu_build() {
 	case "$ubuntu_type" in
 		ubuntu-core)
 			UBUNTU_TYPE="CORE"
-			OUTPUT_ROOTFS="ubuntu-core-image-qt-rzpi"
-			OUTPUT_WIC="ubuntu-core-image-qt-rzpi.wic"
+			OUTPUT_ROOTFS="ubuntu-core-image-rzg2l-sbc"
+			OUTPUT_WIC="ubuntu-core-image-rzg2l-sbc.wic"
 			cleanup_ubuntu_artifacts
 
 			source_env
@@ -341,8 +341,8 @@ run_ubuntu_build() {
 			;;
 		ubuntu-lxde)
 			UBUNTU_TYPE="LXDE"
-			OUTPUT_ROOTFS="ubuntu-lxde-image-qt-rzpi"
-			OUTPUT_WIC="ubuntu-lxde-image-qt-rzpi.wic"
+			OUTPUT_ROOTFS="ubuntu-lxde-image-rzg2l-sbc"
+			OUTPUT_WIC="ubuntu-lxde-image-rzg2l-sbc.wic"
 			cleanup_ubuntu_artifacts
 
 			source_env
@@ -350,8 +350,8 @@ run_ubuntu_build() {
 			;;
 		all-ubuntu-images)
 			UBUNTU_TYPE="CORE"
-			OUTPUT_ROOTFS="ubuntu-core-image-qt-rzpi"
-			OUTPUT_WIC="ubuntu-core-image-qt-rzpi.wic"
+			OUTPUT_ROOTFS="ubuntu-core-image-rzg2l-sbc"
+			OUTPUT_WIC="ubuntu-core-image-rzg2l-sbc.wic"
 			cleanup_ubuntu_artifacts
 
 			source_env
@@ -361,8 +361,8 @@ run_ubuntu_build() {
 			cleanup_ubuntu_artifacts
 
 			UBUNTU_TYPE="LXDE"
-			OUTPUT_ROOTFS="ubuntu-lxde-image-qt-rzpi"
-			OUTPUT_WIC="ubuntu-lxde-image-qt-rzpi.wic"
+			OUTPUT_ROOTFS="ubuntu-lxde-image-rzg2l-sbc"
+			OUTPUT_WIC="ubuntu-lxde-image-rzg2l-sbc.wic"
 			source_env
 			main_ubuntu_lxde
 			;;

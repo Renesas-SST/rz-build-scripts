@@ -2,7 +2,7 @@
 ##############################################################################
 # This script creates a new normal user to run lxde-desktop.
 # The root user can't run the lxde-desktop. so we need to create a new normal user.
-# User: rzpi
+# User: rz
 # Password: 1
 # These values can be modified in the config.ini file if needed.
 ##############################################################################

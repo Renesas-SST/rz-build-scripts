@@ -53,7 +53,7 @@ EOF
 
 	#----------------------------porting wayland----------------------------
 	#bin
-	sudo cp $wic_rootfs/usr/bin/wayland* $rootfs/usr/bin
+	# sudo cp $wic_rootfs/usr/bin/wayland* $rootfs/usr/bin
 
 	#include
 	cp $wic_rootfs/usr/include/wayland*.h $rootfs/usr/include
@@ -79,7 +79,7 @@ EOF
 	sudo cp $wic_rootfs/usr/bin/weston* $rootfs/usr/bin
 
 	#include
-	cp -r $wic_rootfs/usr/include/libweston-8 $rootfs/usr/include
+	# cp -r $wic_rootfs/usr/include/libweston-8 $rootfs/usr/include
 	cp -r $wic_rootfs/usr/include/weston $rootfs/usr/include
 
 	#lib -p save the attributes
@@ -97,7 +97,7 @@ EOF
 	sudo cp  $wic_rootfs/usr/libexec/weston* $rootfs/usr/libexec 
 
 	#share
-	sudo cp -r $wic_rootfs/usr/share/libweston-8 $rootfs/usr/share
+	# sudo cp -r $wic_rootfs/usr/share/libweston-8 $rootfs/usr/share
 	sudo cp  $wic_rootfs/usr/share/pkgconfig/*weston* $rootfs/usr/share/pkgconfig
 	sudo cp -r $wic_rootfs/usr/share/wayland-sessions $rootfs/usr/share
 	sudo cp -r $wic_rootfs/usr/share/weston $rootfs/usr/share
@@ -110,58 +110,58 @@ EOF
 	#----------------------------porting libdrm----------------------------
 	#bin
 	sudo cp $wic_rootfs/usr/bin/kms* $rootfs/usr/bin
-	sudo cp $wic_rootfs/usr/bin/etn* $rootfs/usr/bin
-	sudo cp $wic_rootfs/usr/bin/mode* $rootfs/usr/bin
-	sudo cp $wic_rootfs/usr/bin/proptest $rootfs/usr/bin
-	sudo cp $wic_rootfs/usr/bin/vbltest $rootfs/usr/bin
+	# sudo cp $wic_rootfs/usr/bin/etn* $rootfs/usr/bin
+	# sudo cp $wic_rootfs/usr/bin/mode* $rootfs/usr/bin
+	# sudo cp $wic_rootfs/usr/bin/proptest $rootfs/usr/bin
+	# sudo cp $wic_rootfs/usr/bin/vbltest $rootfs/usr/bin
 
 	#include
 	cp -r $wic_rootfs/usr/include/freedreno $rootfs/usr/include
 	cp -r $wic_rootfs/usr/include/libdrm $rootfs/usr/include
-	cp -r $wic_rootfs/usr/include/libkms $rootfs/usr/include
+	# cp -r $wic_rootfs/usr/include/libkms $rootfs/usr/include
 	cp -r $wic_rootfs/usr/include/omap $rootfs/usr/include
 	cp $wic_rootfs/usr/include/libsync.h $rootfs/usr/include
 	cp $wic_rootfs/usr/include/*drm*.h $rootfs/usr/include
 
 	#lib -p save the attributes
 	sudo rsync -avl $wic_rootfs/usr/lib/libdrm* $rootfs/usr/lib/aarch64-linux-gnu  
-	sudo rsync -avl $wic_rootfs/usr/lib/libkms* $rootfs/usr/lib/aarch64-linux-gnu 
+	# sudo rsync -avl $wic_rootfs/usr/lib/libkms* $rootfs/usr/lib/aarch64-linux-gnu 
 
 	#pkgconfig
 	sudo cp $wic_rootfs/usr/lib/pkgconfig/libdrm*.pc $rootfs/usr/lib/aarch64-linux-gnu/pkgconfig
-	sudo cp $wic_rootfs/usr/lib/pkgconfig/libkms*.pc $rootfs/usr/lib/aarch64-linux-gnu/pkgconfig
+	# sudo cp $wic_rootfs/usr/lib/pkgconfig/libkms*.pc $rootfs/usr/lib/aarch64-linux-gnu/pkgconfig
 
 	#share
 	sudo cp -r $wic_rootfs/usr/share/libdrm $rootfs/usr/share
 
 	#----------------------------porting gpu mali_um----------------------------
 	#include
-	cp -r $wic_rootfs/usr/include/CL $rootfs/usr/include
-	#cp -r $wic_rootfs/usr/include/CL_GLES $rootfs/usr/include
-	cp -r $wic_rootfs/usr/include/GLES $rootfs/usr/include
+	# cp -r $wic_rootfs/usr/include/CL $rootfs/usr/include
+	# cp -r $wic_rootfs/usr/include/CL_GLES $rootfs/usr/include
+	# cp -r $wic_rootfs/usr/include/GLES $rootfs/usr/include
 
 	#pkgconfig
 	sudo cp $wic_rootfs/usr/lib/pkgconfig/egl.pc $rootfs/usr/lib/aarch64-linux-gnu/pkgconfig
 	sudo cp $wic_rootfs/usr/lib/pkgconfig/gbm.pc $rootfs/usr/lib/aarch64-linux-gnu/pkgconfig
-	sudo cp $wic_rootfs/usr/lib/pkgconfig/glesv1.pc $rootfs/usr/lib/aarch64-linux-gnu/pkgconfig
-	sudo cp $wic_rootfs/usr/lib/pkgconfig/glesv1_cm.pc $rootfs/usr/lib/aarch64-linux-gnu/pkgconfig
+	# sudo cp $wic_rootfs/usr/lib/pkgconfig/glesv1.pc $rootfs/usr/lib/aarch64-linux-gnu/pkgconfig
+	# sudo cp $wic_rootfs/usr/lib/pkgconfig/glesv1_cm.pc $rootfs/usr/lib/aarch64-linux-gnu/pkgconfig
 	sudo cp $wic_rootfs/usr/lib/pkgconfig/glesv2.pc $rootfs/usr/lib/aarch64-linux-gnu/pkgconfig
-	sudo cp $wic_rootfs/usr/lib/pkgconfig/OpenCL.pc $rootfs/usr/lib/aarch64-linux-gnu/pkgconfig
+	# sudo cp $wic_rootfs/usr/lib/pkgconfig/OpenCL.pc $rootfs/usr/lib/aarch64-linux-gnu/pkgconfig
 	sudo cp $wic_rootfs/usr/lib/pkgconfig/wayland-egl.pc $rootfs/usr/lib/aarch64-linux-gnu/pkgconfig
 
 	#lib -p save the attributes
 	sudo cp -p $wic_rootfs/usr/lib/libEGL.so $rootfs/usr/lib/aarch64-linux-gnu  
 	sudo cp -p $wic_rootfs/usr/lib/libgbm.so $rootfs/usr/lib/aarch64-linux-gnu 
-	sudo cp -p $wic_rootfs/usr/lib/libGLESv1_CM.so $rootfs/usr/lib/aarch64-linux-gnu  
+	# sudo cp -p $wic_rootfs/usr/lib/libGLESv1_CM.so $rootfs/usr/lib/aarch64-linux-gnu  
 	sudo cp -p $wic_rootfs/usr/lib/libGLESv2.so $rootfs/usr/lib/aarch64-linux-gnu 
-	sudo cp -p $wic_rootfs/usr/lib/libOpenCL.so $rootfs/usr/lib/aarch64-linux-gnu  
+	# sudo cp -p $wic_rootfs/usr/lib/libOpenCL.so $rootfs/usr/lib/aarch64-linux-gnu  
 	# sudo cp -p $wic_rootfs/usr/lib/libwayland-egl.so $rootfs/usr/lib/aarch64-linux-gnu 
 
 	#----------------------------porting gpu mali libmali.so----------------------------
 	#lib -p save the attributes
-	sudo cp -pr $wic_rootfs/usr/lib/mali_wayland $rootfs/usr/lib/aarch64-linux-gnu  
-	sudo cp -pr $wic_rootfs/usr/lib/mali_fbdev $rootfs/usr/lib/aarch64-linux-gnu 
-	sudo cp -p $wic_rootfs/usr/lib/libmali.so $rootfs/usr/lib/aarch64-linux-gnu 
+	# sudo cp -pr $wic_rootfs/usr/lib/mali_wayland $rootfs/usr/lib/aarch64-linux-gnu  
+	# sudo cp -pr $wic_rootfs/usr/lib/mali_fbdev $rootfs/usr/lib/aarch64-linux-gnu 
+	# sudo cp -p $wic_rootfs/usr/lib/libmali.so $rootfs/usr/lib/aarch64-linux-gnu 
 
 	#----------------------------porting gpu ko----------------------------
 	# sudo mkdir $rootfs/lib/modules
@@ -171,9 +171,9 @@ EOF
 	#----------------------------porting weston-init----------------------------
 	#etc
 	sudo cp $wic_rootfs/etc/default/weston $rootfs/etc/default
-	sudo cp $wic_rootfs/etc/init.d/weston@ $rootfs/etc/init.d
+	# sudo cp $wic_rootfs/etc/init.d/weston@ $rootfs/etc/init.d
 	sudo cp $wic_rootfs/etc/profile.d/weston.sh $rootfs/etc/profile.d
-	sudo cp $wic_rootfs/etc/udev/rules.d/71-weston-drm.rules $rootfs/etc/udev/rules.d
+	# sudo cp $wic_rootfs/etc/udev/rules.d/71-weston-drm.rules $rootfs/etc/udev/rules.d
 	sudo cp -r $wic_rootfs/etc/xdg/weston $rootfs/etc/xdg
 
 	#this rule is to prevent weston service running
@@ -183,10 +183,10 @@ EOF
 	fi
 
 	#lib
-	sudo cp $wic_rootfs/lib/systemd/system/weston@.service $rootfs/lib/systemd/system
+	# sudo cp $wic_rootfs/lib/systemd/system/weston@.service $rootfs/lib/systemd/system
 
 	#bin
-	sudo cp $wic_rootfs/usr/bin/weston-start $rootfs/usr/bin
+	# sudo cp $wic_rootfs/usr/bin/weston-start $rootfs/usr/bin
 	#sudo cp $wic_rootfs/usr/bin/openvt* $rootfs/usr/bin
 
 	set +x

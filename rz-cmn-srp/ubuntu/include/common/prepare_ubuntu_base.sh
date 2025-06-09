@@ -56,9 +56,9 @@ install_qemu() {
 	return 0
 }
 
-# 2. Download ubuntu 22.04-base
+# 2. Download ubuntu base
 download_ubuntu_base() {
-	echo "Downloading Ubuntu 22.04-base..."
+	echo "Downloading Ubuntu base..."
 
 	# Change dir WORK_DIR
 	echo "Current working directory is: $WORK_DIR"
@@ -146,7 +146,7 @@ tar_ubuntu_base() {
 # function ubuntu_base_prepare use to prepare basic binaries of ubuntu os.
 # function ubuntu_base_prepare contain 3 step:
 # 1. Install qemu-user-static
-# 2. Download ubuntu 22.04-base
+# 2. Download ubuntu base
 # 3. Tar file ubuntu base
 # --------------------------------------------------------------------------#
 

@@ -6,7 +6,7 @@
 
 # --------------------------------------------------------------------------#
 # Description:
-# User: rzpi
+# User: rz
 # Password: 1
 # These values can be modified in the config.ini file if needed.
 # --------------------------------------------------------------------------#
