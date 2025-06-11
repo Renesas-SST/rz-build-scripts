@@ -390,10 +390,10 @@ The following output is an example of the build artifacts generated for the `all
 ```
 ## User Manual
 
-The build provides comprehensive documentation of the supported board and all the features in a user manual having the name `rz-g2l-sbc-single-board-computer.pdf`.
+The build provides comprehensive documentation of the supported board and all the features in a user manual having the name `rz-srp-yocto3-um.pdf`.
 
 > [!IMPORTANT]
 > The user manual name is prefixed with an internal code that we use for tracking and version within our systems. The actual filename would have a prefix looking like :
-> `xxxxxx-rz-g2l-sbc-single-board-computer.pdf`
+> `xxxxxx-rz-srp-yocto3-um.pdf`
 >
 > The document gets updated with each official release.

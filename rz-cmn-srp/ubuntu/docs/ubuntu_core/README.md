@@ -95,6 +95,7 @@ To build the Ubuntu Core image, run the main build script with the following com
 IMAGE=ubuntu-core ./rzsbc_builder.sh build
 ```
 
+```
 ├── config
 │   ├── ubuntu_core
 │   └── ubuntu_lxde
