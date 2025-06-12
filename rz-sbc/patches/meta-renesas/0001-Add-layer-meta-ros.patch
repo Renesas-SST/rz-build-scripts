@@ -1,0 +1,27 @@
+diff --git a/conf/templates/rzv2h-evk-ver1/bblayers.conf.sample b/conf/templates/rzv2h-evk-ver1/bblayers.conf.sample
+index c1c902e..7620fca 100644
+--- a/conf/templates/rzv2h-evk-ver1/bblayers.conf.sample
++++ b/conf/templates/rzv2h-evk-ver1/bblayers.conf.sample
+@@ -9,7 +9,12 @@ QT_LAYER = "${@os.path.isdir("##OEROOT##/../meta-qt5")}"
+ RZ_FEATURE_CODEC = "${@os.path.isdir("##OEROOT##/../meta-rz-features/meta-rz-codecs")}"
+ RZ_FEATURE_OPENCVA = "${@os.path.isdir("##OEROOT##/../meta-rz-features/meta-rz-opencva")}"
+ RZ_FEATURE_DRPAI = "${@os.path.isdir("##OEROOT##/../meta-rz-features/meta-rz-drpai")}"
+-
++RZ_FEATURE_SDK_ROS_JAZZY = "${@all(os.path.isdir(path) for path in [ \
++    d.getVar('OEROOT') + '/../meta-rz-features-ros/meta-rzv2h-ros-jazzy', \
++    d.getVar('OEROOT') + '/../meta-ros/meta-ros-common', \
++    d.getVar('OEROOT') + '/../meta-ros/meta-ros2', \
++    d.getVar('OEROOT') + '/../meta-ros/meta-ros2-jazzy' \
++])}"
+ BBLAYERS ?= " \
+   ##OEROOT##/meta \
+   ##OEROOT##/meta-poky \
+@@ -23,4 +28,8 @@ BBLAYERS ?= " \
+   ${@'##OEROOT##/../meta-rz-features/meta-rz-codecs' if '${RZ_FEATURE_CODEC}' == 'True' else ''} \
+   ${@'##OEROOT##/../meta-rz-features/meta-rz-opencva' if '${RZ_FEATURE_OPENCVA}' == 'True' else ''} \
+   ${@'##OEROOT##/../meta-rz-features/meta-rz-drpai' if '${RZ_FEATURE_DRPAI}' == 'True' else ''} \
++  ${@'##OEROOT##/../meta-rz-features-ros/meta-rzv2h-ros-jazzy' if '${RZ_FEATURE_SDK_ROS_JAZZY}' == 'True' else ''} \
++  ${@'##OEROOT##/../meta-ros/meta-ros-common' if '${RZ_FEATURE_SDK_ROS_JAZZY}' == 'True' else ''} \
++  ${@'##OEROOT##/../meta-ros/meta-ros2' if '${RZ_FEATURE_SDK_ROS_JAZZY}' == 'True' else ''} \
++  ${@'##OEROOT##/../meta-ros/meta-ros2-jazzy' if '${RZ_FEATURE_SDK_ROS_JAZZY}' == 'True' else ''} \
+   "

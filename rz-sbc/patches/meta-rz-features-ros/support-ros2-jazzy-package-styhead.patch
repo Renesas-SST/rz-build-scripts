@@ -1,0 +1,359 @@
+From ba0694c506df26c1d15a35a39c1e3f9a53b2df76 Mon Sep 17 00:00:00 2001
+From: PoC <rvc-poc@renesas.com>
+Date: Tue, 10 Jun 2025 16:54:13 +0000
+Subject: [PATCH] test
+
+---
+ .../meta-rzv2h-ros-jazzy/COPYING.MIT          |  17 ++
+ .../meta-rzv2h-ros-jazzy/README               |  41 ++++
+ .../conf/include/toolchain_host.inc           |  18 ++
+ .../conf/include/toolchain_target.inc         | 195 ++++++++++++++++++
+ .../meta-rzv2h-ros-jazzy/conf/layer.conf      |  16 ++
+ .../recipes-core/images/core-image-%.bbappend |  10 +
+ 6 files changed, 297 insertions(+)
+ create mode 100644 yocto_rzsbc_board/meta-rz-features-ros/meta-rzv2h-ros-jazzy/COPYING.MIT
+ create mode 100644 yocto_rzsbc_board/meta-rz-features-ros/meta-rzv2h-ros-jazzy/README
+ create mode 100644 yocto_rzsbc_board/meta-rz-features-ros/meta-rzv2h-ros-jazzy/conf/include/toolchain_host.inc
+ create mode 100644 yocto_rzsbc_board/meta-rz-features-ros/meta-rzv2h-ros-jazzy/conf/include/toolchain_target.inc
+ create mode 100644 yocto_rzsbc_board/meta-rz-features-ros/meta-rzv2h-ros-jazzy/conf/layer.conf
+ create mode 100644 yocto_rzsbc_board/meta-rz-features-ros/meta-rzv2h-ros-jazzy/recipes-core/images/core-image-%.bbappend
+
+diff --git a/yocto_rzsbc_board/meta-rz-features-ros/meta-rzv2h-ros-jazzy/COPYING.MIT b/yocto_rzsbc_board/meta-rz-features-ros/meta-rzv2h-ros-jazzy/COPYING.MIT
+new file mode 100644
+index 0000000..fb950dc
+--- /dev/null
++++ b/yocto_rzsbc_board/meta-rz-features-ros/meta-rzv2h-ros-jazzy/COPYING.MIT
+@@ -0,0 +1,17 @@
++Permission is hereby granted, free of charge, to any person obtaining a copy 
++of this software and associated documentation files (the "Software"), to deal 
++in the Software without restriction, including without limitation the rights 
++to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
++copies of the Software, and to permit persons to whom the Software is 
++furnished to do so, subject to the following conditions:
++
++The above copyright notice and this permission notice shall be included in 
++all copies or substantial portions of the Software.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
++IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
++FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
++AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
++LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
++OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
++THE SOFTWARE.
+diff --git a/yocto_rzsbc_board/meta-rz-features-ros/meta-rzv2h-ros-jazzy/README b/yocto_rzsbc_board/meta-rz-features-ros/meta-rzv2h-ros-jazzy/README
+new file mode 100644
+index 0000000..60c7a8b
+--- /dev/null
++++ b/yocto_rzsbc_board/meta-rz-features-ros/meta-rzv2h-ros-jazzy/README
+@@ -0,0 +1,41 @@
++This README file contains information on the contents of the meta-rzv2h-ros-jazzy layer.
++
++Please see the corresponding sections below for details.
++
++Dependencies
++============
++
++  URI: <first dependency>
++  branch: <branch name>
++
++  URI: <second dependency>
++  branch: <branch name>
++
++  .
++  .
++  .
++
++Patches
++=======
++
++Please submit any patches against the meta-rzv2h-ros-jazzy layer to the xxxx mailing list (xxxx@zzzz.org)
++and cc: the maintainer:
++
++Maintainer: XXX YYYYYY <xxx.yyyyyy@zzzzz.com>
++
++Table of Contents
++=================
++
++  I. Adding the meta-rzv2h-ros-jazzy layer to your build
++ II. Misc
++
++
++I. Adding the meta-rzv2h-ros-jazzy layer to your build
++=================================================
++
++Run 'bitbake-layers add-layer meta-rzv2h-ros-jazzy'
++
++II. Misc
++========
++
++--- replace with specific information about the meta-rzv2h-ros-jazzy layer ---
+diff --git a/yocto_rzsbc_board/meta-rz-features-ros/meta-rzv2h-ros-jazzy/conf/include/toolchain_host.inc b/yocto_rzsbc_board/meta-rz-features-ros/meta-rzv2h-ros-jazzy/conf/include/toolchain_host.inc
+new file mode 100644
+index 0000000..aaf6097
+--- /dev/null
++++ b/yocto_rzsbc_board/meta-rz-features-ros/meta-rzv2h-ros-jazzy/conf/include/toolchain_host.inc
+@@ -0,0 +1,18 @@
++RZ_ROS_SDK_HOST_PACKAGES = " \
++    nativesdk-ament-package \
++    nativesdk-python3-colcon-common-extensions \
++    nativesdk-python3-numpy \
++    nativesdk-rosidl-adapter \
++    nativesdk-rosidl-cli \
++    nativesdk-rosidl-cmake \
++    nativesdk-rosidl-default-generators \
++    nativesdk-rosidl-generator-c \
++    nativesdk-rosidl-generator-cpp \
++    nativesdk-rosidl-parser \
++    nativesdk-rosidl-typesupport-c \
++    nativesdk-rosidl-typesupport-cpp \
++    nativesdk-rosidl-typesupport-fastrtps-c \
++    nativesdk-rosidl-typesupport-fastrtps-cpp \
++    nativesdk-rosidl-typesupport-introspection-c \
++    nativesdk-rosidl-typesupport-introspection-cpp \
++"
+\ No newline at end of file
+diff --git a/yocto_rzsbc_board/meta-rz-features-ros/meta-rzv2h-ros-jazzy/conf/include/toolchain_target.inc b/yocto_rzsbc_board/meta-rz-features-ros/meta-rzv2h-ros-jazzy/conf/include/toolchain_target.inc
+new file mode 100644
+index 0000000..228084c
+--- /dev/null
++++ b/yocto_rzsbc_board/meta-rz-features-ros/meta-rzv2h-ros-jazzy/conf/include/toolchain_target.inc
+@@ -0,0 +1,195 @@
++#### ament ####
++RZ_ROS_SDK_TARGET_PACKAGES += " \
++    ament-cmake-python  \
++    ament-cmake-ros \
++    ament-package   \
++    ament-lint  \
++    ament-lint-auto \
++    ament-cmake \
++    ament-cmake-auto    \
++    ament-cmake-core    \
++    ament-cmake-export-definitions  \
++    ament-cmake-export-dependencies \
++    ament-cmake-export-include-directories  \
++    ament-cmake-export-interfaces   \
++    ament-cmake-export-libraries    \
++    ament-cmake-export-link-flags   \
++    ament-cmake-export-targets  \
++    ament-cmake-gen-version-h   \
++    ament-cmake-gmock   \
++    ament-cmake-gtest   \
++    ament-cmake-include-directories \
++    ament-cmake-libraries   \
++    ament-cmake-pytest  \
++    ament-cmake-target-dependencies \
++    ament-cmake-test    \
++    ament-cmake-vendor-package  \
++    ament-cmake-version \
++    ament-cmake-catch2  \
++    ament-cmake-copyright   \
++    ament-cmake-cppcheck    \
++    ament-cmake-cpplint \
++    ament-cmake-flake8  \
++    ament-cmake-google-benchmark    \
++    ament-cmake-lint-cmake  \
++    ament-cmake-mypy    \
++    ament-cmake-pclint  \
++    ament-cmake-pep257  \
++    ament-cmake-pycodestyle \
++    ament-cmake-pyflakes    \
++    ament-cmake-uncrustify  \
++    ament-cmake-xmllint \
++    ament-copyright \
++    ament-cppcheck  \
++    ament-cpplint   \
++    ament-flake8    \
++    ament-index-cpp \
++    ament-index-python  \
++    ament-lint-cmake    \
++    ament-lint-common   \
++    ament-mypy  \
++    ament-nodl  \
++    ament-pclint    \
++    ament-pep257    \
++    ament-pycodestyle   \
++    ament-pyflakes  \
++    ament-uncrustify    \
++    ament-xmllint   \
++"
++#TOOLCHAIN_TARGET_TASK:append = " ament-cmake-nose"
++
++
++
++#### rcl ####
++RZ_ROS_SDK_TARGET_PACKAGES += " \
++    rcl \
++    rcl-action  \
++    rcl-interfaces  \
++    rcl-lifecycle   \
++    rcl-logging-interface   \
++    rcl-logging-noop    \
++    rcl-logging-spdlog  \
++    rcl-yaml-param-parser   \
++    rclcpp \
++    rclcpp-lifecycle \
++    rclcpp-action \
++    rclcpp-components \
++"
++
++#### rosidl
++RZ_ROS_SDK_TARGET_PACKAGES += " \
++    rosidl-default-generators	\
++    rosidl-core-generators	\
++    rosidl-cmake	\
++    rosidl-generator-dds-idl    \
++    rosidl-typesupport-c    \
++    rosidl-typesupport-cpp  \
++"
++
++
++
++####other
++RZ_ROS_SDK_TARGET_PACKAGES += " \
++    sudo    \
++    foonathan-memory-staticdev  \
++	builtin-interfaces  \
++	common-interfaces   \
++	ros-environment \
++	ros-workspace   \
++	pluginlib   \
++	python3-catkin-pkg  \
++	python-cmake-module \
++	geometry-msgs   \
++	std-msgs    \
++	sensor-msgs \
++	action-msgs \
++	yaml-cpp    \
++	foxglove-msgs   \
++	iceoryx-introspection   \
++	gz-cmake-vendor \
++	gz-math-vendor  \
++	gz-utils-vendor \
++	osrf-testing-tools-cpp  \
++	image-common    \
++	laser-geometry  \
++	point-cloud-transport   \
++	automotive-navigation-msgs  \
++	keyboard-handler    \
++	interactive-markers \
++	tango-icons-vendor  \
++	kdl-parser  \
++	resource-retriever  \
++	robot-state-publisher   \
++	packagegroup-ros2-demos \
++	rttest  \
++	tlsf-cpp    \
++	ros-testing \
++	rosbag2 \
++	test-interface-files    \
++	tlsf    \
++	yaml-cpp-vendor \
++	performance-test-fixture    \
++    control-msgs    \
++    geometry2   \
++    eigen-stl-containers    \
++    octomap-msgs    \
++    object-recognition-msgs \
++    random-numbers  \
++    srdfdom \
++    urdf-parser-plugin  \
++    urdfdom-py  \
++    octomap \
++    eigen3-cmake-module \
++    image-geometry  \
++    cmake   \
++    python3-numpy   \
++    ros-core    \
++    demo-nodes-cpp  \
++"
++#TOOLCHAIN_TARGET_TASK:append = " geometric-shapes"
++#TOOLCHAIN_TARGET_TASK:append = " ros2-control"
++#TOOLCHAIN_TARGET_TASK:append = " urdf-parser-py"
++
++
++
++
++
++#### rmw
++RZ_ROS_SDK_TARGET_PACKAGES += "     \
++    rmw \
++    rmw-implementation  \
++    rmw-implementation-cmake    \
++    rmw-cyclonedds-cpp  \
++    rmw-dds-common  \
++    rmw-fastrtps-cpp    \
++    rmw-fastrtps-dynamic-cpp    \
++    rmw-fastrtps-shared-cpp \
++    fastcdr \
++    fastrtps    \
++    fastrtps-cmake-module   \
++    libyaml \ 
++    libyaml-dev \
++    libyaml-vendor  \
++    libyaml-vendor-dev   \
++    foonathan-memory    \
++    foonathan-memory-vendor    \
++"
++
++
++
++#### tf/tf2
++#TOOLCHAIN_TARGET_TASK:append = " tf-transformations"
++RZ_ROS_SDK_TARGET_PACKAGES += "     \
++	tf2 \
++	tf2-bullet  \
++	tf2-eigen   \
++	tf2-eigen-kdl   \
++	tf2-geometry-msgs   \
++	tf2-kdl \
++	tf2-msgs    \
++	tf2-py  \
++	tf2-ros \
++	tf2-ros-py  \
++	tf2-sensor-msgs \
++"
++
+diff --git a/yocto_rzsbc_board/meta-rz-features-ros/meta-rzv2h-ros-jazzy/conf/layer.conf b/yocto_rzsbc_board/meta-rz-features-ros/meta-rzv2h-ros-jazzy/conf/layer.conf
+new file mode 100644
+index 0000000..c89d199
+--- /dev/null
++++ b/yocto_rzsbc_board/meta-rz-features-ros/meta-rzv2h-ros-jazzy/conf/layer.conf
+@@ -0,0 +1,16 @@
++# We have a conf and classes directory, add to BBPATH
++BBPATH .= ":${LAYERDIR}"
++
++# We have recipes-* directories, add to BBFILES
++BBFILES += "${LAYERDIR}/recipes-*/*/*.bb \
++            ${LAYERDIR}/recipes-*/*/*.bbappend"
++
++BBFILE_COLLECTIONS += "meta-rzv2h-ros-jazzy"
++BBFILE_PATTERN_meta-rzv2h-ros-jazzy = "^${LAYERDIR}/"
++BBFILE_PRIORITY_meta-rzv2h-ros-jazzy = "99"
++
++LAYERDEPENDS_meta-rzv2h-ros-jazzy = "core"
++LAYERSERIES_COMPAT_meta-rzv2h-ros-jazzy = "styhead"
++
++require conf/include/toolchain_host.inc
++require conf/include/toolchain_target.inc
+\ No newline at end of file
+diff --git a/yocto_rzsbc_board/meta-rz-features-ros/meta-rzv2h-ros-jazzy/recipes-core/images/core-image-%.bbappend b/yocto_rzsbc_board/meta-rz-features-ros/meta-rzv2h-ros-jazzy/recipes-core/images/core-image-%.bbappend
+new file mode 100644
+index 0000000..92b9e13
+--- /dev/null
++++ b/yocto_rzsbc_board/meta-rz-features-ros/meta-rzv2h-ros-jazzy/recipes-core/images/core-image-%.bbappend
+@@ -0,0 +1,10 @@
++#TEST creat SDK
++######
++TOOLCHAIN_TARGET_TASK:append = " opencv opencv-dev"
++PACKAGECONFIG:append:pn-opencv = " gtk"
++PACKAGECONFIG:append:pn-nativesdk-opencv = " gtk"
++TOOLCHAIN_TARGET_TASK:append = " libgomp libgomp-dev libgomp-staticdev"
++
++# ros package for SDK
++TOOLCHAIN_TARGET_TASK:append = "${RZ_ROS_SDK_TARGET_PACKAGES}"
++TOOLCHAIN_HOST_TASK:append = "${RZ_ROS_SDK_HOST_PACKAGES}"
+\ No newline at end of file
+-- 
+2.43.0
+

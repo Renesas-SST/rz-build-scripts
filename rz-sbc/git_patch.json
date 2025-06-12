@@ -23,7 +23,19 @@
 		"branch": "styhead/rzv2h-evk-ver1",
 		"tag": "",
 		"commit": "",
-		"patches": [],
+		"patches": ["patches/meta-ros/0001-Add-layer-meta-ros.patch"],
+		"type": "git",
+		"enable": "true"
+	},
+	"meta-ros": {
+		"url": "https://github.com/ros/meta-ros.git",
+		"branch": "styhead",
+		"tag": "",
+		"commit": "",
+		"patches": ["patches/meta-ros/0001-Fixcompatible-recipes-Build-Fail-PythonPackages-hatchling.patch",
+					"patches/meta-ros/0002-Fixcompatible-recipes-Addlibs-SkipCheckBuildpath-Adddepend.patch",
+					"patches/meta-ros/0003-Fixcompatible-recipes-Add_ROS_UNRESOLVED_DEP.patch"
+					],
 		"type": "git",
 		"enable": "true"
 	},
@@ -94,6 +106,11 @@
 		"patches": ["patches/meta-rz-features/support-video-codec-for-styhead.patch",
 					"patches/meta-rz-features/support-opencva-for-styhead.patch",
 					"patches/meta-rz-features/support-drpai-for-styhead.patch"],
+		"type": "local",
+		"enable": "true"
+	},
+	"meta-rz-features-ros": {
+		"patches": ["patches/meta-rz-features-ros/support-ros2-jazzy-package-styhead.patch"],
 		"type": "local",
 		"enable": "true"
 	}

@@ -1,0 +1,60 @@
+diff --git a/meta-ros-common/recipes-devtools/python/python3-flake8-builtins_2.2.0.bb b/meta-ros-common/recipes-devtools/python/python3-flake8-builtins_2.2.0.bb
+index 95e1fe77c..db4e40985 100644
+--- a/meta-ros-common/recipes-devtools/python/python3-flake8-builtins_2.2.0.bb
++++ b/meta-ros-common/recipes-devtools/python/python3-flake8-builtins_2.2.0.bb
+@@ -3,10 +3,12 @@ HOMEPAGE = "https://github.com/gforcada/flake8-builtins"
+ SECTION = "devel/python"
+ LICENSE = "GPL-2.0-or-later"
+ LIC_FILES_CHKSUM = "file://LICENSE;md5=b234ee4d69f5fce4486a80fdaf4a4263"
++DEPENDS += "python3-hatchling-native"
+ 
+ PYPI_PACKAGE = "flake8_builtins"
+ SRC_URI[sha256sum] = "392d5af3a0720c5a863aa93dc47f48c879081345a143fe9f20d995fe9ff5686a"
++DEPENDS += "python3-hatchling-native"
+ 
+-inherit pypi
++inherit pypi python_hatchling
+ 
+ BBCLASSEXTEND = "native"
+diff --git a/meta-ros-common/recipes-devtools/python/python3-flake8-comprehensions_3.14.0.bb b/meta-ros-common/recipes-devtools/python/python3-flake8-comprehensions_3.14.0.bb
+index cc9416bfc..669bfbc9a 100644
+--- a/meta-ros-common/recipes-devtools/python/python3-flake8-comprehensions_3.14.0.bb
++++ b/meta-ros-common/recipes-devtools/python/python3-flake8-comprehensions_3.14.0.bb
+@@ -7,6 +7,8 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=dd54c94e040946267bc2300dbc7d7e6d"
+ PYPI_PACKAGE = "flake8_comprehensions"
+ SRC_URI[sha256sum] = "81768c61bfc064e1a06222df08a2580d97de10cb388694becaf987c331c6c0cf"
+ 
+-inherit pypi
++DEPENDS += "python3-hatchling-native"
++
++inherit pypi python_hatchling
+ 
+ BBCLASSEXTEND = "native"
+diff --git a/meta-ros-common/recipes-devtools/python/python3-flake8-docstrings_1.7.0.bb b/meta-ros-common/recipes-devtools/python/python3-flake8-docstrings_1.7.0.bb
+index 23dd9bd70..34048bd01 100644
+--- a/meta-ros-common/recipes-devtools/python/python3-flake8-docstrings_1.7.0.bb
++++ b/meta-ros-common/recipes-devtools/python/python3-flake8-docstrings_1.7.0.bb
+@@ -7,6 +7,8 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=a34bc20b983e1104e2d50423b224b087"
+ PYPI_PACKAGE = "flake8_docstrings"
+ SRC_URI[sha256sum] = "4c8cc748dc16e6869728699e5d0d685da9a10b0ea718e090b1ba088e67a941af"
+ 
+-inherit pypi
++DEPENDS += "python3-hatchling-native"
++
++inherit pypi python_hatchling
+ 
+ BBCLASSEXTEND = "native"
+diff --git a/meta-ros-common/recipes-devtools/python/python3-flake8-quotes_3.3.2.bb b/meta-ros-common/recipes-devtools/python/python3-flake8-quotes_3.3.2.bb
+index 2e04c2c2b..fbbcfcea8 100644
+--- a/meta-ros-common/recipes-devtools/python/python3-flake8-quotes_3.3.2.bb
++++ b/meta-ros-common/recipes-devtools/python/python3-flake8-quotes_3.3.2.bb
+@@ -7,6 +7,8 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=838c366f69b72c5df05c96dff79b35f2"
+ PYPI_PACKAGE = "flake8-quotes"
+ SRC_URI[sha256sum] = "6e26892b632dacba517bf27219c459a8396dcfac0f5e8204904c5a4ba9b480e1"
+ 
+-inherit pypi
++DEPENDS += "python3-hatchling-native"
++
++inherit pypi python_hatchling
+ 
+ BBCLASSEXTEND = "native"
