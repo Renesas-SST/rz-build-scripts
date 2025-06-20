@@ -37,8 +37,11 @@ IMAGES_JSON="${TOP_DIR}/images.json"
 #  - all-supported-images (build all images listed in images.json)
 #  - all-supported-<build>-images ( builds all images in a particular base list such as yocto / ubuntu)
 
-# Default is core-image-weston
+# Default image is core-image-weston
 : ${IMAGE:=core-image-weston}
+
+# Default machine is rz-cmn
+: ${MACHINE:=rz-cmn}
 
 # ------------------------------------------------------------------------------
 
@@ -89,15 +92,18 @@ guideline() {
 	echo ""
 	echo "========="
 	echo "Build yocto/ubuntu"
-	echo "$ IMAGE=<target_image> DISTRO=<target_distro> ./rzsbc_builder.sh <target_build> <target_dir>"
+	echo "$ MACHINE=<machine_name> IMAGE=<target_image> DISTRO=<target_distro> ./rzsbc_builder.sh <target_build> <target_dir>"
 	echo "--------------------------"
 	echo " - <target_image>: the target Yocto build image. It can be one from the following list of supported images"
+	echo " - <machine_name>: the target machine name (e.g., rzg2l-sbc, rz-cmn, etc.)."
 	# Print numbered values
 	while IFS= read -r VALUE; do
 		echo "	$COUNTER. $VALUE"
 		((COUNTER++))
 	done <<< "$VALUES"
-	echo "Note: If IMAGE is not set, the default image is core-image-qt."
+	echo "Note:"
+	echo "	- If IMAGE is not set, the default image is core-image-qt."
+	echo "	- If MACHINE is not set, the default is 'rz-cmn'."
 	echo "Special cases:"
 	echo "	- If IMAGE is set to 'all-yocto-images', all the supported images from the yocto lineup will be built."
 	echo "	- If IMAGE is set to 'all-ubuntu-images', all the supported images from the ubuntu lineup above will be built."
@@ -105,18 +111,18 @@ guideline() {
 	echo "	NOTE: for all special cases, DISTRO value is subjective and may end up mixing packages from both the IMAGE & DISTRO parameter."
 	echo "Parameters:"
 	echo "-----------"
-	echo " - <target_build>: the build options. It can be an image build (1) or a SDK build (2) as follows"
-	echo "     1. build"
-	echo "     2. build-sdk"
-	echo " - <target_dir>: the build directory"
-	echo "     If not set <target_dir>: current directory will be selected"
-	echo " - <target_distro>: the target Yocto distribution. Common options include:"
-	echo "     1. poky"
-	echo "     2. ubuntu-tiny"
+	echo "	- <target_build>: the build options. It can be an image build (1) or a SDK build (2) as follows"
+	echo "		1. build"
+	echo "		2. build-sdk"
+	echo "	- <target_dir>: the build directory"
+	echo " 		If not set <target_dir>: current directory will be selected"
+	echo "	- <target_distro>: the target Yocto distribution. Common options include:"
+	echo "		1. poky"
+	echo "		2. ubuntu-tiny"
 	echo "Note: If DISTRO is not set, 'poky' will be selected by default."
 	echo ""
 	echo "For example: "
-	echo "$ IMAGE=renesas-core-image-cli ./rzsbc_builder.sh build ~/yocto-build"
+	echo "$ MACHINE=rz-cmn IMAGE=renesas-core-image-cli ./rzsbc_builder.sh build ~/yocto-build"
 	echo "--------------------------------------------------------------------------------------------------"
 }
 
@@ -643,12 +649,8 @@ setup_conf(){
 	#source poky/oe-init-build-env
 	echo "Env setup completed. pwd = ${PWD}"
 
-	# Legacy style
-	#cp ../meta-renesas/docs/template/conf/rzg2l-sbc/* conf/
-	#bitbake core-image-qt
-
 	# New style
-	TEMPLATECONF=$PWD/meta-renesas/conf/templates/rzg2l-sbc/ . ./poky/oe-init-build-env build
+	TEMPLATECONF=$PWD/meta-renesas/conf/templates/${MACHINE}/ . ./poky/oe-init-build-env build
 
 	# Remove templateconf.cfg as it will reference the old workspace directory when installing the eSDK on another host PC
 	rm -f "conf/templateconf.cfg"
@@ -657,7 +659,7 @@ setup_conf(){
 	if [ ! -e "$WORKSPACE/site.conf" ]; then
 		echo "Local site.conf file not present in this workspace ($WORKSPACE). Assuming developer default build!"
 		# Copy default template overrides file as yocto doesnt copy site.conf.sample
-		cp ../meta-renesas/conf/templates/rzg2l-sbc/site.conf.sample conf/site.conf
+		cp ../meta-renesas/conf/templates/${MACHINE}/site.conf.sample conf/site.conf
 		echo "This build is a common build for rzsbc. It is not based on any release tag. Target image: ${IMAGE}"
 	else
 		# Copy local overrides file to yocto build conf folder
@@ -720,12 +722,12 @@ build_sdk() {
 			# Extract and iterate through the JSON array for the given key
 			${JQ} -r --arg key "yocto" '.[$key][]' "${IMAGES_JSON}" | while IFS= read -r img; do
 				log_info "Now building SDK for '${img}'"
-				MACHINE=rzg2l-sbc bitbake ${img} -c populate_sdk_ext
+				MACHINE=${MACHINE} bitbake ${img} -c populate_sdk_ext
 			done
 
 			log_info "Building Yocto-based SDK targeting supported Ubuntu images..."
 
-			MACHINE=rzg2l-sbc DISTRO=ubuntu-tiny bitbake renesas-ubuntu -c populate_sdk_ext
+			MACHINE=${MACHINE} DISTRO=ubuntu-tiny bitbake renesas-ubuntu -c populate_sdk_ext
 
 			log_info "Finished building SDK for all supported yocto based images."
 			log_info "========================================================================"
@@ -734,7 +736,7 @@ build_sdk() {
 			# If IMAGE is set to 'all-ubuntu-images', build SDK for all ubuntu images
 			log_info "Building Yocto-based SDK targeting supported Ubuntu images..."
 
-			MACHINE=rzg2l-sbc DISTRO=ubuntu-tiny bitbake renesas-ubuntu -c populate_sdk_ext
+			MACHINE=${MACHINE} DISTRO=ubuntu-tiny bitbake renesas-ubuntu -c populate_sdk_ext
 
 			log_info "Finished building SDK for all supported ubuntu based images."
 			log_info "========================================================================"
@@ -747,7 +749,7 @@ build_sdk() {
 			# Extract and iterate through the JSON array for the given key
 			${JQ} -r --arg key "yocto" '.[$key][]' "${IMAGES_JSON}" | while IFS= read -r img; do
 				log_info "Now building SDK for '${img}'"
-				MACHINE=rzg2l-sbc bitbake "${img}" -c populate_sdk_ext
+				MACHINE=${MACHINE} bitbake "${img}" -c populate_sdk_ext
 			done
 
 			log_info "Finished building SDK for all supported yocto based images."
@@ -763,12 +765,12 @@ build_sdk() {
 			${JQ} -r --arg value "${IMAGE}" 'to_entries | map(select(.value | index($value) != null)) | .[].key' "${IMAGES_JSON}" | while IFS= read -r entry; do
 				if [ "${entry}" = "yocto" ]; then
 					log_info "Building SDK for ${IMAGE}"
-					MACHINE=rzg2l-sbc bitbake "${IMAGE}" -c populate_sdk_ext
+					MACHINE=${MACHINE} bitbake "${IMAGE}" -c populate_sdk_ext
 					echo "Finished building SDK for ${IMAGE}"
 				elif [ "${entry}" = "ubuntu" ]; then
 					log_info "Building Yocto-based SDK targeting supported Ubuntu images..."
 
-					MACHINE=rzg2l-sbc DISTRO=ubuntu-tiny bitbake renesas-ubuntu -c populate_sdk_ext
+					MACHINE=${MACHINE} DISTRO=ubuntu-tiny bitbake renesas-ubuntu -c populate_sdk_ext
 
 					log_info "Finished building SDK for ${IMAGE}"
 				else
@@ -803,7 +805,7 @@ build() {
 			# Extract and iterate through the JSON array for the given key
 			${JQ} -r --arg key "yocto" '.[$key][]' "${IMAGES_JSON}" | while IFS= read -r img; do
 				log_info "Now building '${img}'"
-				MACHINE=rzg2l-sbc bitbake ${img}
+				MACHINE=${MACHINE} bitbake ${img}
 			done
 
 			log_info "Building all supported 'ubuntu' images..."
@@ -814,7 +816,7 @@ build() {
 				log_info "Building ${img} now..."
 
 				# Build prerequisite artifacts for the Ubuntu image
-				MACHINE=rzg2l-sbc DISTRO=ubuntu-tiny bitbake renesas-ubuntu
+				MACHINE=${MACHINE} DISTRO=ubuntu-tiny bitbake renesas-ubuntu
 
 				# Navigate back to workspace
 				cd ${WORKSPACE}
@@ -822,7 +824,7 @@ build() {
 				# Call Ubuntu build function to build ubuntu image
 				sudo IMAGE="${img}" RZ_TARGET_DIR="$RZ_TARGET_DIR" bash -c '
 						. ubuntu/setup_ubuntu_environment.sh
-						check_yocto_artifacts "${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/target/images/rootfs"
+						check_yocto_artifacts "${RZ_TARGET_DIR}/build/tmp/deploy/images/${MACHINE}/target/images/rootfs"
 						run_ubuntu_build "${IMAGE}"
 				'
 
@@ -843,7 +845,7 @@ build() {
 				log_info "Building ${img} now..."
 
 				# Build prerequisite artifacts for the Ubuntu image
-				MACHINE=rzg2l-sbc DISTRO=ubuntu-tiny bitbake renesas-ubuntu
+				MACHINE=${MACHINE} DISTRO=ubuntu-tiny bitbake renesas-ubuntu
 
 				# Navigate back to workspace
 				cd ${WORKSPACE}
@@ -851,7 +853,7 @@ build() {
 				# Call Ubuntu build function to build ubuntu image
 				sudo IMAGE="${img}" RZ_TARGET_DIR="$RZ_TARGET_DIR" bash -c '
 					. ubuntu/setup_ubuntu_environment.sh
-					check_yocto_artifacts "${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/target/images/rootfs"
+					check_yocto_artifacts "${RZ_TARGET_DIR}/build/tmp/deploy/images/${MACHINE}/target/images/rootfs"
 					run_ubuntu_build "${IMAGE}"
 				'
 
@@ -869,7 +871,7 @@ build() {
 			# Extract and iterate through the JSON array for the given key
 			${JQ} -r --arg key "yocto" '.[$key][]' "${IMAGES_JSON}" | while IFS= read -r img; do
 				log_info "Now building '${img}'"
-				MACHINE=rzg2l-sbc bitbake "${img}"
+				MACHINE=${MACHINE} bitbake "${img}"
 			done
 
 			log_info "Finished building all supported yocto based images."
@@ -885,13 +887,13 @@ build() {
 			${JQ} -r --arg value "${IMAGE}" 'to_entries | map(select(.value | index($value) != null)) | .[].key' "${IMAGES_JSON}" | while IFS= read -r entry; do
 				if [ "${entry}" = "yocto" ]; then
 					log_info "Building ${IMAGE} for ${entry}"
-					MACHINE=rzg2l-sbc bitbake "${IMAGE}"
+					MACHINE=${MACHINE} bitbake "${IMAGE}"
 					echo "Finished building ${IMAGE}"
 				elif [ "${entry}" = "ubuntu" ]; then
 					log_info "Building ${IMAGE} now..."
 
 					# Build prerequisite artifacts for the Ubuntu image
-					MACHINE=rzg2l-sbc DISTRO=ubuntu-tiny bitbake renesas-ubuntu
+					MACHINE=${MACHINE} DISTRO=ubuntu-tiny bitbake renesas-ubuntu
 
 					# Navigate back to workspace
 					cd ${WORKSPACE}
@@ -899,7 +901,7 @@ build() {
 					# Call Ubuntu build function to build ubuntu image
 					sudo IMAGE="${IMAGE}" RZ_TARGET_DIR="$RZ_TARGET_DIR" bash -c '
 						. ubuntu/setup_ubuntu_environment.sh
-						check_yocto_artifacts "${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/target/images/rootfs"
+						check_yocto_artifacts "${RZ_TARGET_DIR}/build/tmp/deploy/images/${MACHINE}/target/images/rootfs"
 						run_ubuntu_build "${IMAGE}"
 					'
 					log_info "Finished building ${IMAGE}"
@@ -920,7 +922,7 @@ build() {
 
 deploy_build_assets() {
 	log_info "Deploying yocto build artifacts"
-	local target_dir="${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/host/src/rz-cmn-srp"
+	local target_dir="${RZ_TARGET_DIR}/build/tmp/deploy/images/${MACHINE}/host/src/rz-cmn-srp"
 
 	# Check if the src directory already exists
 	if [ ! -d "${target_dir}" ];then
@@ -942,7 +944,7 @@ deploy_build_assets() {
 deploy_ubuntu_build_assets() {
 	log_info "Deploying ubuntu build artifacts"
 
-	local target_dir="${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/host/src/rz-cmn-srp/ubuntu"
+	local target_dir="${RZ_TARGET_DIR}/build/tmp/deploy/images/${MACHINE}/host/src/rz-cmn-srp/ubuntu"
 
 	# Check if the src directory already exists
 	if [ ! -d "${target_dir}" ];then
@@ -968,14 +970,14 @@ output() {
 
 	# Collect final output
 	cd ${OUTPUT}
-	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/target/images/fip-rzg2l-sbc.srec $OUTPUT
-	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/target/images/dtbs/rzg2l-sbc.dtb $OUTPUT
-	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/README.md $OUTPUT
-	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/target/env/uEnv.txt $OUTPUT
-	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/target/images/Image $OUTPUT
-	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/target/images/bl2_bp-rzg2l-sbc.srec $OUTPUT
-	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/target/images/Flash_Writer_SCIF_rzg2l-sbc.mot $OUTPUT
-	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/rzg2l-sbc/${IMAGE}-rzg2l-sbc.tar.bz2 $OUTPUT
+	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/${MACHINE}/target/images/fip-${MACHINE}.srec $OUTPUT
+	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/${MACHINE}/target/images/dtbs/*.dtb $OUTPUT
+	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/${MACHINE}/README.md $OUTPUT
+	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/${MACHINE}/target/env/uEnv.txt $OUTPUT
+	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/${MACHINE}/target/images/Image $OUTPUT
+	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/${MACHINE}/target/images/bl2_bp-${MACHINE}.srec $OUTPUT
+	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/${MACHINE}/target/images/Flash_Writer_SCIF_${MACHINE}.mot $OUTPUT
+	cp ${RZ_TARGET_DIR}/build/tmp/deploy/images/${MACHINE}/${IMAGE}.tar.bz2 $OUTPUT
 
 	echo "The output located at: $OUTPUT"
 	ls -la $OUTPUT
