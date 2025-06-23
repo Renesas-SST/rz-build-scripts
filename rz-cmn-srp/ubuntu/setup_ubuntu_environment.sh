@@ -19,12 +19,10 @@ source_env(){
 		. ${SCRIPT_DIR}/include/ubuntu_core/prepare_env.sh
 		. ${SCRIPT_DIR}/include/ubuntu_core/prepare_rootfs_qt.sh
 		. ${SCRIPT_DIR}/include/ubuntu_core/prepare_conf.sh
-		. ${SCRIPT_DIR}/include/ubuntu_core/mount.sh
 		. ${SCRIPT_DIR}/include/ubuntu_core/setup_dns.sh
 	elif [ "$UBUNTU_TYPE" = "LXDE" ]; then
 		. ${SCRIPT_DIR}/include/ubuntu_lxde/prepare_rootfs_qt.sh
 		. ${SCRIPT_DIR}/include/ubuntu_lxde/prepare_conf.sh
-		. ${SCRIPT_DIR}/include/ubuntu_lxde/mount.sh
 		. ${SCRIPT_DIR}/include/ubuntu_lxde/create_swap.sh
 	else
 		echo "Invalid value passed for UBUNTU_TYPE . Set UBUNTU_TYPE to proper value (CORE / LXDE) in config.ini file."
@@ -32,6 +30,7 @@ source_env(){
 	fi
 }
 . ${SCRIPT_DIR}/include/common/create_wic.sh
+. ${SCRIPT_DIR}/include/common/mount.sh
 . ${SCRIPT_DIR}/include/common/install_gstreamer.sh
 . ${SCRIPT_DIR}/include/common/install_weston.sh
 . ${SCRIPT_DIR}/include/common/yocto_working.sh
@@ -84,6 +83,7 @@ main_ubuntu_core(){
 		exit 1
 	fi
 
+
 	# Set configuration files
 	set_config
 	if [ $? -eq 1 ]; then
@@ -94,22 +94,25 @@ main_ubuntu_core(){
 	# Prepare env file for rootfs
 	prepare_env_rootfs "${SCRIPT_DIR}/config.ini"
 
+	# Run script to fix dpkg install lock if any
+	chroot_run_1_script ${UBUNTU_COMMON_SCRIPT_PATH} "dpkg-install-lock-fix.sh"
+
 	# Run the script 'apt_install_base.sh' inside chroot environment
-	chroot_run_1_script "apt_install_base.sh"
+	chroot_run_1_script ${UBUNTU_CORE_SCRIPT_PATH} "apt_install_base.sh"
 	if [ $? -eq 1 ]; then
 		echo "set_config failed."
 		exit 1
 	fi
 
 	# Run the script 'set_root_password.sh' inside chroot environment
-	chroot_run_1_script "set_root_password.sh"
+	chroot_run_1_script ${UBUNTU_CORE_SCRIPT_PATH} "set_root_password.sh"
 	if [ $? -eq 1 ]; then
 		echo "set_root_password failed."
 		exit 1
 	fi
 
 	# Run the script 'link_to_leagcy_iptables.sh' inside chroot environment
-	chroot_run_1_script "link_to_leagcy_iptables.sh"
+	chroot_run_1_script ${UBUNTU_CORE_SCRIPT_PATH} "link_to_leagcy_iptables.sh"
 	if [ $? -eq 1 ]; then
 		echo "link_to_leagcy_iptables failed."
 		exit 1
@@ -215,22 +218,25 @@ main_ubuntu_lxde(){
 	# Prepare env file for rootfs
 	prepare_env_rootfs "${SCRIPT_DIR}/config.ini"
 
+	# Run script to fix dpkg install lock if any
+	chroot_run_1_script ${UBUNTU_COMMON_SCRIPT_PATH} "dpkg-install-lock-fix.sh"
+
 	# Mount chroot to install basic package
-	chroot_run_1_script "apt_install_base.sh"
+	chroot_run_1_script ${UBUNTU_LXDE_SCRIPT_PATH} "apt_install_base.sh"
 	if [ $? -eq 1 ]; then
 		echo "apt_install_base failed."
 		exit 1
 	fi
 
 	# Create user - normal user
-	chroot_run_1_script "create_user.sh"
+	chroot_run_1_script ${UBUNTU_LXDE_SCRIPT_PATH} "create_user.sh"
 	if [ $? -eq 1 ]; then
 		echo "create_user failed."
 		exit 1
 	fi
 
 	# Set root password
-	chroot_run_1_script "set_root_password.sh"
+	chroot_run_1_script ${UBUNTU_LXDE_SCRIPT_PATH} "set_root_password.sh"
 	if [ $? -eq 1 ]; then
 		echo "set_root_password failed."
 		exit 1
@@ -244,14 +250,14 @@ main_ubuntu_lxde(){
 	fi
 
 	# Install wifi and bluetooth packages
-	chroot_run_1_script "apt_wifi_ble.sh"
+	chroot_run_1_script ${UBUNTU_LXDE_SCRIPT_PATH} "apt_wifi_ble.sh"
 	if [ $? -eq 1 ]; then
 		echo "apt_wifi_ble failed."
 		exit 1
 	fi
 
 	# Install lxde desktop
-	chroot_run_1_script "apt_lxde_desktop.sh"
+	chroot_run_1_script ${UBUNTU_LXDE_SCRIPT_PATH} "apt_lxde_desktop.sh"
 	if [ $? -eq 1 ]; then
 		echo "apt_lxde_desktop failed."
 		exit 1
@@ -263,7 +269,7 @@ main_ubuntu_lxde(){
 	major_version=$(echo "$version" | cut -d '.' -f 1)
 
 	if [ "$major_version" -ge 20 ]; then
-		chroot_run_1_script "apt_blueman.sh"
+		chroot_run_1_script ${UBUNTU_LXDE_SCRIPT_PATH} "apt_blueman.sh"
 	fi
 	if [ $? -eq 1 ]; then
 		echo "apt_blueman failed."
@@ -271,7 +277,7 @@ main_ubuntu_lxde(){
 	fi
 
 	# Install audio and video packages
-	chroot_run_1_script "apt_audio_video.sh"
+	chroot_run_1_script ${UBUNTU_LXDE_SCRIPT_PATH} "apt_audio_video.sh"
 	if [ $? -eq 1 ]; then
 		echo "apt_audio_video failed."
 		exit 1

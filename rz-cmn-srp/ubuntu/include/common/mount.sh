@@ -65,17 +65,17 @@ umount_chroot() {
 #######################################
 copy_script() {
 	# Define local variables
-	input_folder="${SCRIPT_DIR}/script/ubuntu_lxde"
-	destination="./rootfs/script/ubuntu_lxde"
+	input_folder="${SCRIPT_DIR}/${1}/${2}"
+	destination="./rootfs/${1}"
 
 	# Check input script
-	if [ ! -e $input_folder/"$1" ]; then
-		echo "File $input_folder/$1 not found"
+	if [ ! -e $input_folder ]; then
+		echo "File $input_folder not found"
 		return 1
 	fi
 
 	# Change permission
-	chmod a+x $input_folder/"$1"
+	chmod a+x $input_folder
 
 	# Create target folder
 	if [ ! -d "$destination" ]; then
@@ -90,7 +90,7 @@ copy_script() {
 	fi
 
 	# Copy script to target folder
-	cp "$input_folder/$1" "$destination" || { echo "Failed to copy $input_folder/$1"; return 1; }
+	cp "$input_folder" "$destination" || { echo "Failed to copy $input_folder"; return 1; }
 	return 0
 
 }
@@ -103,29 +103,27 @@ copy_script() {
 #   None
 #######################################
 chroot_run_1_script() {
-	# Copy script to rootfs
-	copy_script "$1"
+	trap 'echo "Caught Ctrl+C, running umount_chroot..."; umount_chroot; exit 1' INT
+	script_path="${1}/${2}"
+	script_name="${2}"
+
+	copy_script ${1} ${2}
 	if [ $? -eq 1 ]; then
-		echo "copy_script $1 failed."
+		echo "copy_script ${script_path} failed."
 		exit 1
 	fi
 
-	# Mount chroot
-	mount_chroot
-	script_dir="/script/ubuntu_lxde"
+	mount_chroot || { echo "Error: Failed to mount chroot"; return 1; }
 
-	# Create command file script
-	script_commands="$script_dir/$1; "
+	echo "Running script '$script_name' inside chroot..."
 
 	# Chroot and excute script
 	sudo chroot ./rootfs /bin/bash -c "
 		chmod 777 /tmp
-		chmod 777 $script_dir/$1
+		chmod 777 '$script_path'
 		cd /
-		$script_commands
+		'$script_path'
 	" || { echo "Failed to execute scripts in chroot"; umount_chroot; return 1; }
-
-	# Unmount chroot
 	umount_chroot
 
 	return 0
