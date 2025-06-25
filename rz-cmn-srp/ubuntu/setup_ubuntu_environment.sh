@@ -146,6 +146,12 @@ main_ubuntu_core(){
 		exit 1
 	fi
 
+	chroot_run_1_script ${UBUNTU_COMMON_SCRIPT_PATH} "setup_dns_and_time.sh"
+	if [ $? -eq 1 ]; then
+		echo "setup dns and time failed."
+		exit 1
+	fi
+
 	# Package the root filesystem into a compressed archive (tarball)
 	package_rootfs
 	if [ $? -eq 1 ]; then
@@ -282,6 +288,12 @@ main_ubuntu_lxde(){
 		echo "apt_audio_video failed."
 		exit 1
 	fi
+
+	chroot_run_1_script ${UBUNTU_COMMON_SCRIPT_PATH} "setup_dns_and_time.sh"
+	if [ $? -eq 1 ]; then
+                echo "setup dns and time failed."
+                exit 1
+        fi
 
 	# Package rootfs to tar file
 	package_rootfs
