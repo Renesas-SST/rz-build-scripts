@@ -2,6 +2,11 @@
 
 # Refresh sudo timestamp to prevent password prompts during script execution
 sudo -v
+while true; do
+	sudo -n true
+	sleep 60
+	kill -0 "$$" || exit
+done 2>/dev/null &
 
 # Version: Default
 # -----------------------------Yocto package------------------------------------
@@ -102,7 +107,7 @@ guideline() {
 		((COUNTER++))
 	done <<< "$VALUES"
 	echo "Note:"
-	echo "	- If IMAGE is not set, the default image is core-image-qt."
+	echo "	- If IMAGE is not set, the default image is core-image-weston."
 	echo "	- If MACHINE is not set, the default is 'rz-cmn'."
 	echo "Special cases:"
 	echo "	- If IMAGE is set to 'all-yocto-images', all the supported images from the yocto lineup will be built."
@@ -899,7 +904,7 @@ build() {
 					cd ${WORKSPACE}
 
 					# Call Ubuntu build function to build ubuntu image
-					sudo IMAGE="${IMAGE}" RZ_TARGET_DIR="$RZ_TARGET_DIR" bash -c '
+					sudo MACHINE="${MACHINE}" IMAGE="${IMAGE}" RZ_TARGET_DIR="$RZ_TARGET_DIR" bash -c '
 						. ubuntu/setup_ubuntu_environment.sh
 						check_yocto_artifacts "${RZ_TARGET_DIR}/build/tmp/deploy/images/${MACHINE}/target/images/rootfs"
 						run_ubuntu_build "${IMAGE}"
