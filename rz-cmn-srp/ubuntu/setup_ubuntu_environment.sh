@@ -350,8 +350,8 @@ run_ubuntu_build() {
 	case "$ubuntu_type" in
 		ubuntu-core)
 			UBUNTU_TYPE="CORE"
-			OUTPUT_ROOTFS="ubuntu-core-image-rzg2l-sbc"
-			OUTPUT_WIC="ubuntu-core-image-rzg2l-sbc.wic"
+			OUTPUT_ROOTFS="ubuntu-core-image"
+			OUTPUT_WIC="ubuntu-core-image.wic"
 			cleanup_ubuntu_artifacts
 
 			source_env
@@ -359,8 +359,8 @@ run_ubuntu_build() {
 			;;
 		ubuntu-lxde)
 			UBUNTU_TYPE="LXDE"
-			OUTPUT_ROOTFS="ubuntu-lxde-image-rzg2l-sbc"
-			OUTPUT_WIC="ubuntu-lxde-image-rzg2l-sbc.wic"
+			OUTPUT_ROOTFS="ubuntu-lxde-image"
+			OUTPUT_WIC="ubuntu-lxde-image.wic"
 			cleanup_ubuntu_artifacts
 
 			source_env
@@ -368,8 +368,8 @@ run_ubuntu_build() {
 			;;
 		all-ubuntu-images)
 			UBUNTU_TYPE="CORE"
-			OUTPUT_ROOTFS="ubuntu-core-image-rzg2l-sbc"
-			OUTPUT_WIC="ubuntu-core-image-rzg2l-sbc.wic"
+			OUTPUT_ROOTFS="ubuntu-core-image"
+			OUTPUT_WIC="ubuntu-core-image.wic"
 			cleanup_ubuntu_artifacts
 
 			source_env
@@ -379,8 +379,8 @@ run_ubuntu_build() {
 			cleanup_ubuntu_artifacts
 
 			UBUNTU_TYPE="LXDE"
-			OUTPUT_ROOTFS="ubuntu-lxde-image-rzg2l-sbc"
-			OUTPUT_WIC="ubuntu-lxde-image-rzg2l-sbc.wic"
+			OUTPUT_ROOTFS="ubuntu-lxde-image"
+			OUTPUT_WIC="ubuntu-lxde-image.wic"
 			source_env
 			main_ubuntu_lxde
 			;;

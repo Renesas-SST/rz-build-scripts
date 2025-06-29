@@ -19,8 +19,8 @@ create_wic() {
 	sudo apt-get install -y parted multipath-tools kpartx dosfstools e2fsprogs
 
 	ROOTFS_DIR="./rootfs"
-	# Set output wic file name to ubuntu-image-rzg2l-sbc.wic by default if not defined
-	OUTPUT_WIC="${OUTPUT_WIC:=ubuntu-image-rzg2l-sbc.wic}"
+	# Set output wic file name to ubuntu-image.wic by default if not defined
+	OUTPUT_WIC="${OUTPUT_WIC:=ubuntu-image.wic}"
 
 	# Set boot size to 200MB by default if not defined
 	BOOT_SIZE_MB=${BOOT_SIZE_MB:-200}
@@ -77,7 +77,7 @@ create_wic() {
 	sudo mount "$BOOT_PART" "$MOUNT_DIR"
 	sudo cp -r "$ROOTFS_DIR/boot/"* "$MOUNT_DIR"
 	sudo mv "$MOUNT_DIR/Image"* "$MOUNT_DIR/Image"
-	sudo mv "$MOUNT_DIR/dtb/renesas/rzg2l-sbc"* "$MOUNT_DIR/dtb/renesas/rzg2l-sbc.dtb"
+	sudo mv "$MOUNT_DIR/dtb/renesas/"*.dtb "$MOUNT_DIR/dtb/renesas/"
 	sync
 	echo "Partition Boot has :"
 	ls "$MOUNT_DIR"
