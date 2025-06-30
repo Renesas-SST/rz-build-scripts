@@ -124,7 +124,7 @@ Then rerun the build script and it will take care of everything else.
 
 ## Build output
 
-The following output is an example of the build artifacts generated for the `all-supported-images` target. These images will be located in the `tmp/deploy/images/rzg2l-sbc/` directory within your Yocto build folder. If you use the default build location and run the script with only the `build` argument, the images will be found at `yocto_rzsbc_board/build/tmp/deploy/images/rzg2l-sbc/`
+The following output is an example of the build artifacts generated for the `all-supported-images` target. These images will be located in the `tmp/deploy/images/<machine_name>/` directory within your Yocto build folder. If you use the default build location and run the script with only the `build` argument, the images will be found at `yocto_rzcmn_board/build/tmp/deploy/images/<machine_name>/`
 
 ```
 .
@@ -133,38 +133,38 @@ The following output is an example of the build artifacts generated for the `all
 |-- host
 |   |-- Readme.md
 |   |-- build
-|   |   |-- core-image-bsp-rzg2l-sbc-20250617013925.rootfs.manifest
-|   |   |-- core-image-bsp-rzg2l-sbc-20250617013925.testdata.json
-|   |   |-- core-image-bsp-rzg2l-sbc.manifest -> core-image-bsp-rzg2l-sbc-20250617013925.rootfs.manifest
-|   |   |-- core-image-bsp-rzg2l-sbc.testdata.json -> core-image-bsp-rzg2l-sbc-20250617013925.testdata.json
-|   |   |-- core-image-minimal-rzg2l-sbc-20250617004355.rootfs.manifest
-|   |   |-- core-image-minimal-rzg2l-sbc-20250617004355.testdata.json
-|   |   |-- core-image-minimal-rzg2l-sbc.manifest -> core-image-minimal-rzg2l-sbc-20250617004355.rootfs.manifest
-|   |   |-- core-image-minimal-rzg2l-sbc.testdata.json -> core-image-minimal-rzg2l-sbc-20250617004355.testdata.json
-|   |   |-- core-image-weston-rzg2l-sbc-20250617015258.rootfs.manifest
-|   |   |-- core-image-weston-rzg2l-sbc-20250617015258.testdata.json
-|   |   |-- core-image-weston-rzg2l-sbc.manifest -> core-image-weston-rzg2l-sbc-20250617015258.rootfs.manifest
-|   |   |-- core-image-weston-rzg2l-sbc.testdata.json -> core-image-weston-rzg2l-sbc-20250617015258.testdata.json
-|   |   |-- renesas-core-image-cli-rzg2l-sbc-20250617031009.rootfs.manifest
-|   |   |-- renesas-core-image-cli-rzg2l-sbc-20250617031009.testdata.json
-|   |   |-- renesas-core-image-cli-rzg2l-sbc.manifest -> renesas-core-image-cli-rzg2l-sbc-20250617031009.rootfs.manifest
-|   |   |-- renesas-core-image-cli-rzg2l-sbc.testdata.json -> renesas-core-image-cli-rzg2l-sbc-20250617031009.testdata.json
-|   |   |-- renesas-core-image-weston-rzg2l-sbc-20250617122026.rootfs.manifest
-|   |   |-- renesas-core-image-weston-rzg2l-sbc-20250617122026.testdata.json
-|   |   |-- renesas-core-image-weston-rzg2l-sbc.manifest -> renesas-core-image-weston-rzg2l-sbc-20250617122026.rootfs.manifest
-|   |   |-- renesas-core-image-weston-rzg2l-sbc.testdata.json -> renesas-core-image-weston-rzg2l-sbc-20250617122026.testdata.json
-|   |   |-- renesas-quickboot-cli-rzg2l-sbc-20250617070736.rootfs.manifest
-|   |   |-- renesas-quickboot-cli-rzg2l-sbc-20250617070736.testdata.json
-|   |   |-- renesas-quickboot-cli-rzg2l-sbc.manifest -> renesas-quickboot-cli-rzg2l-sbc-20250617070736.rootfs.manifest
-|   |   |-- renesas-quickboot-cli-rzg2l-sbc.testdata.json -> renesas-quickboot-cli-rzg2l-sbc-20250617070736.testdata.json
-|   |   |-- renesas-quickboot-wayland-rzg2l-sbc-20250617134453.rootfs.manifest
-|   |   |-- renesas-quickboot-wayland-rzg2l-sbc-20250617134453.testdata.json
-|   |   |-- renesas-quickboot-wayland-rzg2l-sbc.manifest -> renesas-quickboot-wayland-rzg2l-sbc-20250617134453.rootfs.manifest
-|   |   |-- renesas-quickboot-wayland-rzg2l-sbc.testdata.json -> renesas-quickboot-wayland-rzg2l-sbc-20250617134453.testdata.json
-|   |   |-- renesas-ubuntu-rzg2l-sbc-20250618035225.rootfs.manifest
-|   |   |-- renesas-ubuntu-rzg2l-sbc-20250618035225.testdata.json
-|   |   |-- renesas-ubuntu-rzg2l-sbc.manifest -> renesas-ubuntu-rzg2l-sbc-20250618035225.rootfs.manifest
-|   |   `-- renesas-ubuntu-rzg2l-sbc.testdata.json -> renesas-ubuntu-rzg2l-sbc-20250618035225.testdata.json
+|   |   |-- core-image-bsp-<timestamp>.rootfs.manifest
+|   |   |-- core-image-bsp-<timestamp>.testdata.json
+|   |   |-- core-image-bsp.manifest -> core-image-bsp-<timestamp>.rootfs.manifest
+|   |   |-- core-image-bsp.testdata.json -> core-image-bsp-<timestamp>.testdata.json
+|   |   |-- core-image-minimal-<timestamp>.rootfs.manifest
+|   |   |-- core-image-minimal-<timestamp>.testdata.json
+|   |   |-- core-image-minimal.manifest -> core-image-minimal-<timestamp>.rootfs.manifest
+|   |   |-- core-image-minimal.testdata.json -> core-image-minimal-<timestamp>.testdata.json
+|   |   |-- core-image-weston-<timestamp>.rootfs.manifest
+|   |   |-- core-image-weston-<timestamp>.testdata.json
+|   |   |-- core-image-weston.manifest -> core-image-weston-<timestamp>.rootfs.manifest
+|   |   |-- core-image-weston.testdata.json -> core-image-weston-<timestamp>.testdata.json
+|   |   |-- renesas-core-image-cli-<timestamp>.rootfs.manifest
+|   |   |-- renesas-core-image-cli-<timestamp>.testdata.json
+|   |   |-- renesas-core-image-cli.manifest -> renesas-core-image-cli-<timestamp>.rootfs.manifest
+|   |   |-- renesas-core-image-cli.testdata.json -> renesas-core-image-cli-<timestamp>.testdata.json
+|   |   |-- renesas-core-image-weston-<timestamp>.rootfs.manifest
+|   |   |-- renesas-core-image-weston-<timestamp>.testdata.json
+|   |   |-- renesas-core-image-weston.manifest -> renesas-core-image-weston-<timestamp>.rootfs.manifest
+|   |   |-- renesas-core-image-weston.testdata.json -> renesas-core-image-weston-<timestamp>.testdata.json
+|   |   |-- renesas-quickboot-cli-<timestamp>.rootfs.manifest
+|   |   |-- renesas-quickboot-cli-<timestamp>.testdata.json
+|   |   |-- renesas-quickboot-cli.manifest -> renesas-quickboot-cli-<timestamp>.rootfs.manifest
+|   |   |-- renesas-quickboot-cli.testdata.json -> renesas-quickboot-cli-<timestamp>.testdata.json
+|   |   |-- renesas-quickboot-wayland-<timestamp>.rootfs.manifest
+|   |   |-- renesas-quickboot-wayland-<timestamp>.testdata.json
+|   |   |-- renesas-quickboot-wayland.manifest -> renesas-quickboot-wayland-<timestamp>.rootfs.manifest
+|   |   |-- renesas-quickboot-wayland.testdata.json -> renesas-quickboot-wayland-<timestamp>.testdata.json
+|   |   |-- renesas-ubuntu-<timestamp>.rootfs.manifest
+|   |   |-- renesas-ubuntu-<timestamp>.testdata.json
+|   |   |-- renesas-ubuntu.manifest -> renesas-ubuntu-<timestamp>.rootfs.manifest
+|   |   `-- renesas-ubuntu.testdata.json -> renesas-ubuntu-<timestamp>.testdata.json
 |   |-- env
 |   |   |-- Readme.md
 |   |   |-- core-image-bsp.env
@@ -240,6 +240,7 @@ The following output is an example of the build artifacts generated for the `all
 |   |           |   |-- common
 |   |           |   |   |-- allow_empty_password.sh
 |   |           |   |   |-- create_wic.sh
+|   |           |       |-- mount.sh
 |   |           |   |   |-- install_gstreamer.sh
 |   |           |   |   |-- install_weston.sh
 |   |           |   |   |-- prepare_env.sh
@@ -247,17 +248,18 @@ The following output is an example of the build artifacts generated for the `all
 |   |           |   |   |-- prepare_ubuntu_base.sh
 |   |           |   |   `-- yocto_working.sh
 |   |           |   |-- ubuntu_core
-|   |           |   |   |-- mount.sh
 |   |           |   |   |-- prepare_conf.sh
 |   |           |   |   |-- prepare_env.sh
 |   |           |   |   |-- prepare_rootfs_qt.sh
 |   |           |   |   `-- setup_dns.sh
 |   |           |   `-- ubuntu_lxde
 |   |           |       |-- create_swap.sh
-|   |           |       |-- mount.sh
 |   |           |       |-- prepare_conf.sh
 |   |           |       `-- prepare_rootfs_qt.sh
 |   |           |-- script
+|   |           |   |-- common
+|   |           |   |   |-- dpkg-install-lock-fix.sh
+|   |           |   |   `-- setup_dns_and_time.sh
 |   |           |   |-- ubuntu_core
 |   |           |   |   |-- apt_install_base.sh
 |   |           |   |   |-- link_to_leagcy_iptables.sh
@@ -338,7 +340,8 @@ The following output is an example of the build artifacts generated for the `all
 |-- license
 |   |-- Disclaimer051.pdf
 |   `-- Disclaimer052.pdf
-|-- r12uz0158eu0102-rz-g2l-sbc-single-board-computer.pdf
+|-- r11qs0062eu0200-rz-srp-yocto5-um-quick-start-guide.pdf
+|-- r12uz0177eu0200-rz-srp-yocto5-um.pdf
 `-- target
     |-- Readme.md
     |-- env
@@ -347,15 +350,15 @@ The following output is an example of the build artifacts generated for the `all
     `-- images
         |-- Flash_Writer_SCIF_rzg2l-sbc.mot
         |-- Flash_Writer_SCIF_rzg2l-sbc_PMIC.mot
-        |-- Image -> Image--6.10.14+git0+af06ad75b8_bbe3d1be4e-r0-rzg2l-sbc-20250617004355.bin
-        |-- Image--6.10.14+git0+af06ad75b8_bbe3d1be4e-r0-rzg2l-sbc-20250617004355.bin
+        |-- Image -> Image--6.10.14+git0+<commit-hash>-r0-rz-cmn-<timestamp>.bin
+        |-- Image--6.10.14+git0+<commit-hash>-r0-rz-cmn-<timestamp>.bin
         |-- Readme.md
         |-- bl2-rzg2l-sbc.bin
         |-- bl2_bp-rzg2l-sbc.bin
         |-- bl2_bp-rzg2l-sbc.srec
-        |-- core-image-bsp-rzg2l-sbc.wic
-        |-- core-image-minimal-rzg2l-sbc.wic
-        |-- core-image-weston-rzg2l-sbc.wic
+        |-- core-image-bsp.wic
+        |-- core-image-minimal.wic
+        |-- core-image-weston.wic
         |-- dtbs
         |   |-- Readme.md
         |   |-- overlays
@@ -365,28 +368,28 @@ The following output is an example of the build artifacts generated for the `all
         |   |   |-- rzg2l-sbc-ext-i2c.dtbo
         |   |   |-- rzg2l-sbc-ext-spi.dtbo
         |   |   `-- rzg2l-sbc-ov5640.dtbo
-        |   |-- rzg2l-sbc--6.10.14+git0+af06ad75b8_bbe3d1be4e-r0-rzg2l-sbc-20250617004355.dtbo
-        |   `-- rzg2l-sbc.dtb -> rzg2l-sbc--6.10.14+git0+af06ad75b8_bbe3d1be4e-r0-rzg2l-sbc-20250617004355.dtbo
+        |   |-- rzg2l-sbc--6.10.14+git0+<commit-hash>-r0-rzg2l-sbc-<timestamp>.dtbo
+        |   `-- rzg2l-sbc.dtb -> rzg2l-sbc--6.10.14+git0+<commit-hash>-r0-rzg2l-sbc-<timestamp>.dtbo
         |-- fip-rzg2l-sbc.bin
         |-- fip-rzg2l-sbc.srec
-        |-- renesas-core-image-cli-rzg2l-sbc.wic
-        |-- renesas-core-image-weston-rzg2l-sbc.wic
-        |-- renesas-quickboot-cli-rzg2l-sbc.wic
-        |-- renesas-quickboot-wayland-rzg2l-sbc.wic
+        |-- renesas-core-image-cli.wic
+        |-- renesas-core-image-weston.wic
+        |-- renesas-quickboot-cli.wic
+        |-- renesas-quickboot-wayland.wic
         |-- rootfs
         |   |-- Readme.md
-        |   |-- core-image-bsp-rzg2l-sbc.tar.bz2
-        |   |-- core-image-minimal-rzg2l-sbc.tar.bz2
-        |   |-- core-image-weston-rzg2l-sbc.tar.bz2
-        |   |-- renesas-core-image-cli-rzg2l-sbc.tar.bz2
-        |   |-- renesas-core-image-weston-rzg2l-sbc.tar.bz2
-        |   |-- renesas-quickboot-cli-rzg2l-sbc.tar.bz2
-        |   |-- renesas-quickboot-wayland-rzg2l-sbc.tar.bz2
-        |   |-- renesas-ubuntu-rzg2l-sbc.tar.bz2
-        |   |-- ubuntu-core-image-rzg2l-sbc.tar.bz2
-        |   `-- ubuntu-lxde-image-rzg2l-sbc.tar.bz2
-        |-- ubuntu-core-image-rzg2l-sbc.wic.gz
-        `-- ubuntu-lxde-image-rzg2l-sbc.wic.gz
+        |   |-- core-image-bsp.tar.bz2
+        |   |-- core-image-minimal.tar.bz2
+        |   |-- core-image-weston.tar.bz2
+        |   |-- renesas-core-image-cli.tar.bz2
+        |   |-- renesas-core-image-weston.tar.bz2
+        |   |-- renesas-quickboot-cli.tar.bz2
+        |   |-- renesas-quickboot-wayland.tar.bz2
+        |   |-- renesas-ubuntu.tar.bz2
+        |   |-- ubuntu-core-image.tar.bz2
+        |   `-- ubuntu-lxde-image.tar.bz2
+        |-- ubuntu-core-image.wic.gz
+        `-- ubuntu-lxde-image.wic.gz
 
 43 directories, 216 files
 

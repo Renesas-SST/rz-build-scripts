@@ -1,16 +1,17 @@
 # rz-sbc build package
 
-This directory (ubuntu/) provides an organized framework to create Ubuntu-based images (e.g., Ubuntu Core, Ubuntu LXDE) for Renesas RZ/G2L-SBC platforms. The main script acts as a controller that **includes and invokes modular scripts** to perform image creation tasks.
+This directory (ubuntu/) provides an organized framework to create Ubuntu-based images (e.g., Ubuntu Core, Ubuntu LXDE) for Renesas RZ boards. The main script acts as a controller that **includes and invokes modular scripts** to perform image creation tasks.
 
 ## Hierarchy
 
 ```
-ubuntu/
+.
 ├── config
 │   ├── ubuntu_core
-│   │   ├── resolved.conf
-│   │   └── network_interfaces.conf
+│   │   ├── network_interfaces.conf
+│   │   └── resolved.conf
 │   └── ubuntu_lxde
+│       ├── connman-gtk.desktop
 │       ├── interfaces
 │       ├── lightdm.conf
 │       ├── NetworkManager.conf
@@ -59,36 +60,42 @@ ubuntu/
 │   │   ├── create_wic.sh
 │   │   ├── install_gstreamer.sh
 │   │   ├── install_weston.sh
+│   │   ├── mount.sh
+│   │   ├── prepare_env_rootfs.sh
+│   │   ├── prepare_env.sh
 │   │   ├── prepare_ubuntu_base.sh
 │   │   └── yocto_working.sh
 │   ├── ubuntu_core
-│   │   ├── mount.sh
 │   │   ├── prepare_conf.sh
 │   │   ├── prepare_env.sh
-│   │   └── prepare_rootfs_qt.sh
+│   │   ├── prepare_rootfs_qt.sh
+│   │   └── setup_dns.sh
 │   └── ubuntu_lxde
 │       ├── create_swap.sh
-│       ├── mount.sh
 │       ├── prepare_conf.sh
 │       └── prepare_rootfs_qt.sh
 ├── README.md
-├── setup_ubuntu_environment.sh
-└── script
-    ├── ubuntu_core
-    │   ├── apt_install_base.sh
-    │   └── set_root_password.sh
-    └── ubuntu_lxde
-        ├── apt_audio_video.sh
-        ├── apt_blueman.sh
-        ├── apt_install_base.sh
-        ├── apt_lxde_desktop.sh
-        ├── apt_wifi_ble.sh
-        ├── create_user.sh
-        ├── set_root_password.sh
-        ├── set_swap_enable.sh
-        └── setup-set-permissions.sh
+├── script
+│   ├── common
+│   │   ├── dpkg-install-lock-fix.sh
+│   │   └── setup_dns_and_time.sh
+│   ├── ubuntu_core
+│   │   ├── apt_install_base.sh
+│   │   ├── link_to_leagcy_iptables.sh
+│   │   └── set_root_password.sh
+│   └── ubuntu_lxde
+│       ├── apt_audio_video.sh
+│       ├── apt_blueman.sh
+│       ├── apt_install_base.sh
+│       ├── apt_lxde_desktop.sh
+│       ├── apt_wifi_ble.sh
+│       ├── create_user.sh
+│       ├── set_root_password.sh
+│       ├── set_swap_enable.sh
+│       └── setup-set-permissions.sh
+└── setup_ubuntu_environment.sh
 
-14 directories, 67 files
+16 directories, 73 files
 ``` 
 
 ## Organization:
