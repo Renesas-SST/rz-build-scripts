@@ -247,7 +247,7 @@ check_and_set_dir() {
 	fi
 	WORKSPACE=$(pwd)
 	export WORKSPACE
-	RZ_TARGET_DIR="${TARGET_DIR}/yocto_rzsbc_board"
+	RZ_TARGET_DIR="${TARGET_DIR}/yocto_rzcmn_board"
 	export RZ_TARGET_DIR
 }
 
@@ -827,10 +827,10 @@ build() {
 				cd ${WORKSPACE}
 
 				# Call Ubuntu build function to build ubuntu image
-				sudo IMAGE="${img}" RZ_TARGET_DIR="$RZ_TARGET_DIR" bash -c '
-						. ubuntu/setup_ubuntu_environment.sh
-						check_yocto_artifacts "${RZ_TARGET_DIR}/build/tmp/deploy/images/${MACHINE}/target/images/rootfs"
-						run_ubuntu_build "${IMAGE}"
+				sudo MACHINE="${MACHINE}" IMAGE="${img}" RZ_TARGET_DIR="$RZ_TARGET_DIR" bash -c '
+					. ubuntu/setup_ubuntu_environment.sh
+					check_yocto_artifacts "${RZ_TARGET_DIR}/build/tmp/deploy/images/${MACHINE}/target/images/rootfs"
+					run_ubuntu_build "${IMAGE}"
 				'
 
 				log_info "Finished building ${img}"
@@ -856,7 +856,7 @@ build() {
 				cd ${WORKSPACE}
 
 				# Call Ubuntu build function to build ubuntu image
-				sudo IMAGE="${img}" RZ_TARGET_DIR="$RZ_TARGET_DIR" bash -c '
+				sudo MACHINE="${MACHINE}" IMAGE="${img}" RZ_TARGET_DIR="$RZ_TARGET_DIR" bash -c '
 					. ubuntu/setup_ubuntu_environment.sh
 					check_yocto_artifacts "${RZ_TARGET_DIR}/build/tmp/deploy/images/${MACHINE}/target/images/rootfs"
 					run_ubuntu_build "${IMAGE}"

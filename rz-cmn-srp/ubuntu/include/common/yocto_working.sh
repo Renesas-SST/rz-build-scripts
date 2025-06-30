@@ -7,7 +7,7 @@
 
 move_ubuntu_to_yocto_output(){
 	# Check output folder availability
-	DIR="yocto_rzsbc_board/build/tmp/deploy/images/${MACHINE}/target/images"
+	DIR="yocto_rzcmn_board/build/tmp/deploy/images/${MACHINE}/target/images"
 	if [ -d "$DIR" ]; then
 		echo "Found output yocto folder"
 		mv "$OUTPUT_WIC"* $DIR
@@ -16,7 +16,7 @@ move_ubuntu_to_yocto_output(){
 		return 1
 	fi
 
-	DIR_ROOTFS="yocto_rzsbc_board/build/tmp/deploy/images/${MACHINE}/target/images/rootfs"
+	DIR_ROOTFS="yocto_rzcmn_board/build/tmp/deploy/images/${MACHINE}/target/images/rootfs"
 	if [ -d "$DIR_ROOTFS" ]; then
 		echo "Found output yocto rootfs folder"
 		mv "$OUTPUT_ROOTFS"* $DIR_ROOTFS

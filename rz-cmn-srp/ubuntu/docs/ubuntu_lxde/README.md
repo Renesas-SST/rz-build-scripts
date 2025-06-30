@@ -193,7 +193,7 @@ ubuntu/
 │   └── ubuntu_lxde
 └── ubuntu-base-24.04-base-arm64.tar.gz
 
-yocto_rzsbc_board/build/tmp/deploy/images/rzg2l-sbc/target/images
+yocto_rzcmn_board/build/tmp/deploy/images/rzg2l-sbc/target/images
 ├── rootfs
 |   └── ubuntu-lxde-image-rzg2l-sbc.tar.bz2         <---- Output compressed rootfs
 └──  ubuntu-lxde-image-rzg2l-sbc.wic.gz             <---- Output compressed WIC
