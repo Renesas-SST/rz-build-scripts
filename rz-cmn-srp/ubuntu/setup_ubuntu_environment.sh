@@ -17,7 +17,7 @@ PARENT_DIR=`realpath ..`
 source_env(){
 	if [ "$UBUNTU_TYPE" = "CORE" ]; then
 		. ${SCRIPT_DIR}/include/ubuntu_core/prepare_env.sh
-		. ${SCRIPT_DIR}/include/ubuntu_core/prepare_rootfs_qt.sh
+		. ${SCRIPT_DIR}/include/ubuntu_core/prepare_rootfs.sh
 		. ${SCRIPT_DIR}/include/ubuntu_core/prepare_conf.sh
 		. ${SCRIPT_DIR}/include/ubuntu_core/setup_dns.sh
 	elif [ "$UBUNTU_TYPE" = "LXDE" ]; then
@@ -76,10 +76,10 @@ main_ubuntu_core(){
 		exit 1
 	fi
 
-	# Prepare qt_rootfs_source by copying relevant binaries and folders to the Ubuntu OS
-	rootfs_qt
+	# Prepare rootfs by copying relevant binaries and folders to the Ubuntu OS
+	prepare_rootfs
 	if [ $? -eq 1 ]; then
-		echo "rootfs_qt failed."
+		echo "prepare_rootfs failed."
 		exit 1
 	fi
 
@@ -133,14 +133,14 @@ main_ubuntu_core(){
 	fi
 
 	# Install gstreamer to ubuntu
-	install_gstreamer "rootfs" "qt_rootfs_source"
+	install_gstreamer "rootfs" "artifacts_rootfs_source"
 	if [ $? -eq 1 ]; then
 		echo "install_gstreamer failed."
 		exit 1
 	fi
 
 	# Install weston to ubuntu
-	install_weston "rootfs" "qt_rootfs_source"
+	install_weston "rootfs" "artifacts_rootfs_source"
 	if [ $? -eq 1 ]; then
 		echo "install_weston failed."
 		exit 1
@@ -291,9 +291,16 @@ main_ubuntu_lxde(){
 
 	chroot_run_1_script ${UBUNTU_COMMON_SCRIPT_PATH} "setup_dns_and_time.sh"
 	if [ $? -eq 1 ]; then
-                echo "setup dns and time failed."
-                exit 1
-        fi
+		echo "setup dns and time failed."
+		exit 1
+	fi
+
+	# Set up configuration after install packages
+	set_config_after_install
+	if [ $? -eq 1 ]; then
+		echo "set_config_after_install failed."
+		exit 1
+	fi
 
 	# Package rootfs to tar file
 	package_rootfs
