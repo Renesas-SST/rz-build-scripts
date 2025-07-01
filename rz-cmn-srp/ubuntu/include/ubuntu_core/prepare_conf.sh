@@ -93,7 +93,7 @@ function set_lightdm_config() {
 	return 0
 }
 
-# 5. Configure network interfaces
+# 5. Configure network
 function set_network_config() {
 	echo "Configuring network interfaces..."
 
@@ -122,6 +122,21 @@ function set_network_config() {
 	# copy network config
 	sudo cp "$NETWORK_CONFIG_FILE" "$NETWORK_CONF" || { echo "Failed to copy $NETWORK_CONFIG_FILE to $NETWORK_CONF"; return 1; }
 
+	# NetworkManager.conf setting
+	NETWORK_MANAGER_CONF="$ETC_PATH/NetworkManager"
+	# Check and create folder
+	mkdir -p "$(dirname "$NETWORK_MANAGER_CONF")" || { echo "Failed to create $(dirname "$NETWORK_MANAGER_CONF")"; return 1; }
+
+	# Check exist file network config
+	NETWORK_MANAGER_CONFIG_FILE="${SCRIPT_DIR}/config/ubuntu_core/NetworkManager.conf"
+	if [[ ! -f "$NETWORK_MANAGER_CONFIG_FILE" ]]; then
+		echo "Configuration file $NETWORK_MANAGER_CONFIG_FILE not found"
+		return 1
+	fi
+
+	# copy NetworkManager.conf config
+	sudo cp "$NETWORK_MANAGER_CONFIG_FILE" "$NETWORK_MANAGER_CONF" || { echo "Failed to copy $NETWORK_MANAGER_CONFIG_FILE to $NETWORK_MANAGER_CONF"; return 1; }
+
 	echo "Network interfaces configured successfully."
 	return 0
 }
@@ -133,7 +148,7 @@ function set_network_config() {
 # 2. Copy resolv.conf
 # 3. Set up log file for syslog
 # 4. Set LightDM configuration
-# 5. Configure network interfaces
+# 5. Configure network
 # --------------------------------------------------------------------------#
 # Function set_config
 function set_config() {
@@ -164,10 +179,10 @@ function set_config() {
 		return 1
 	fi
 
-	# Call Function to set up network interfaces
+	# Call Function to set up network
 	set_network_config
 	if [[ $? -eq 1 ]]; then
-		echo "Failed to configure network interfaces. Exiting."
+		echo "Failed to configure network. Exiting."
 		return 1
 	fi
 

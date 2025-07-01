@@ -295,6 +295,13 @@ main_ubuntu_lxde(){
                 exit 1
         fi
 
+	# Set up configuration after install packages
+	set_config_after_install
+	if [ $? -eq 1 ]; then
+		echo "set_config_after_install failed."
+		exit 1
+	fi
+
 	# Package rootfs to tar file
 	package_rootfs
 	if [ $? -eq 1 ]; then
