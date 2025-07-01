@@ -124,6 +124,37 @@ copy_file_conf() {
 }
 
 #######################################
+# Function check_and_remove_file use to check and remove file in ubuntu os.
+# Globals:
+#   WORK_DIR
+# Arguments:
+#    - file name in folder config
+#    - target folder in ubuntu os
+#######################################
+check_and_remove_file() {
+	file_path="$1"
+
+	# Change dir WORK_DIR
+	echo "Current working directory is: $WORK_DIR"
+	cd "$WORK_DIR" || { echo "Failed to change to WORK_DIR"; return 1; }
+
+	# Check if the file exists in the target folder
+	if [ -f "${file_path}" ]; then
+		echo "File ${file_path} exists. Removing it..."
+		rm "${file_path}"
+		if [ $? -ne 0 ]; then
+			echo "Failed to remove file ${file_path}."
+			return 1
+		fi
+		echo "File ${file_path} removed successfully."
+	else
+		echo "File ${file_path} does not exist. Skipping removal."
+	fi
+
+	return 0
+}
+
+#######################################
 # Function set_config use to copy config file to ubuntu os.
 # 1. Copy qemu-aarch64-static
 # 2. Copy resolv.conf
@@ -200,3 +231,37 @@ set_config() {
 	return 0
 }
 
+#######################################
+# Some configs need to be set after install
+#######################################
+set_config_after_install() {
+	echo "Setting configuration after install..."
+
+	# Change dir WORK_DIR
+	echo "Current working directory is: $WORK_DIR"
+	cd "$WORK_DIR" || { echo "Failed to change to WORK_DIR"; return 1; }
+
+	# Configure lxpanel LXDE
+	copy_file_conf "panel" "${ROOTFS}/etc/xdg/lxpanel/LXDE/panels/panel" "644"
+	if [ $? -eq 1 ]; then
+		echo "Failed to configure lxpanel LXDE setting. Exiting."
+		return 1
+	fi
+
+	# Configure lxpanel default
+	copy_file_conf "panel" "${ROOTFS}/etc/xdg/lxpanel/default/panels/panel" "644"
+	if [ $? -eq 1 ]; then
+		echo "Failed to configure lxpanel default setting. Exiting."
+		return 1
+	fi
+
+	# Remove blueman-aplet icon
+	check_and_remove_file "${ROOTFS}/etc/xdg/autostart/blueman.desktop"
+	if [ $? -eq 1 ]; then
+		echo "Failed to Remove blueman-aplet icon. Exiting."
+		return 1
+	fi
+
+	echo "Configuration completed successfully."
+	return 0
+}

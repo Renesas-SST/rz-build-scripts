@@ -2,6 +2,11 @@
 
 # Refresh sudo timestamp to prevent password prompts during script execution
 sudo -v
+while true; do
+	sudo -n true
+	sleep 60
+	kill -0 "$$" || exit
+done 2>/dev/null &
 
 # Version: Default
 # -----------------------------Yocto package------------------------------------
@@ -97,7 +102,7 @@ guideline() {
 		echo "	$COUNTER. $VALUE"
 		((COUNTER++))
 	done <<< "$VALUES"
-	echo "Note: If IMAGE is not set, the default image is core-image-qt."
+	echo "Note: If IMAGE is not set, the default image is core-image-weston."
 	echo "Special cases:"
 	echo "	- If IMAGE is set to 'all-yocto-images', all the supported images from the yocto lineup will be built."
 	echo "	- If IMAGE is set to 'all-ubuntu-images', all the supported images from the ubuntu lineup above will be built."
@@ -1034,4 +1039,3 @@ if [ ${image_found} = 0 ]; then
 fi
 
 exit 1
-
