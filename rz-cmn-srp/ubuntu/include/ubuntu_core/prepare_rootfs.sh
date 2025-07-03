@@ -2,7 +2,7 @@
 # --------------------------------------------------------------------------#
 # Description:
 # This script prepares the Ubuntu OS environment by copying necessary binaries
-# and files from the QT rootfs source to the target Ubuntu system.
+# and files from the rootfs source to the target Ubuntu system.
 # --------------------------------------------------------------------------#
 
 # Define global variable:
@@ -13,8 +13,8 @@ function extract_renesas_ubuntu_input() {
 	echo "Extracting ${renesas_ubuntu_input_name}..."
 
 	local file_name="$renesas_ubuntu_input_name"
-	local target_dir="qt_rootfs_source"
-	local check_file="qt_rootfs_source/home"
+	local target_dir="artifacts_rootfs_source"
+	local check_file="artifacts_rootfs_source/home"
 
 	# Change dir WORK_DIR
 	echo "Current working directory is: $WORK_DIR"
@@ -65,7 +65,7 @@ function copy_boot_folder() {
 	echo "Current working directory is: $WORK_DIR"
 	cd "$WORK_DIR" || { echo "Failed to change to WORK_DIR"; return 1; }
 
-	local src_boot="qt_rootfs_source/boot"
+	local src_boot="artifacts_rootfs_source/boot"
 	local target_dir="rootfs/boot"
 
 	# Check folder src
@@ -100,7 +100,7 @@ function copy_kernel_modules() {
 	# Change dir WORK_DIR
 	echo "Current working directory is: $WORK_DIR"
 	cd "$WORK_DIR" || { echo "Failed to change to WORK_DIR"; return 1; }
-	local src_dir="qt_rootfs_source/lib/modules/"
+	local src_dir="artifacts_rootfs_source/lib/modules/"
 	local target_dir="rootfs/lib"
 	# Check folder src
 	if [[ ! -d "$src_dir" ]]; then
@@ -125,29 +125,6 @@ function copy_kernel_modules() {
 	return 0
 }
 
-# 3. Copy QT folder
-function copy_qt() {
-	echo "Copying qt files..."
-
-	# Change dir WORK_DIR
-	echo "Current working directory is: $WORK_DIR"
-	cd "$WORK_DIR" || { echo "Failed to change to WORK_DIR"; return 1; }
-
-	local src_qt="qt_rootfs_source/usr"
-	local target_dir="rootfs/usr"
-
-	# Copy folder boot
-	# cp -rd "$src_qt/share/qt"* "$target_dir/share" || { echo "Failed to copy 'qt lib' directory"; return 1; }
-	cp -rd "$src_qt/lib/qml/qt"* "$target_dir/lib/aarch64-linux-gnu/" || { echo "Failed to copy 'aarch64-linux-gnu' directory"; return 1; }
-	cp -rd "$src_qt/lib/libQt"* "$target_dir/lib/aarch64-linux-gnu/" || { echo "Failed to copy 'aarch64-linux-gnu' directory"; return 1; }
-	mkdir -p "$target_dir/lib/aarch64-linux-gnu/pkgconfig/" || { echo "Failed to mkdir 'lib/aarch64-linux-gnu/pkgconfig' directory"; return 1; }
-	cp -rd "$src_qt/lib/pkgconfig/Qt"* "$target_dir/lib/aarch64-linux-gnu/pkgconfig/" || { echo "Failed to copy 'pkgconfig' directory"; return 1; }
-	echo "Copied contents."
-
-	echo "copy completed successfully."
-	return 0
-}
-
 # 4. Copy wifi firmware folder
 function copy_wifi_firmware() {
 	echo "Copying wifi_firmware files..."
@@ -156,12 +133,12 @@ function copy_wifi_firmware() {
 	echo "Current working directory is: $WORK_DIR"
 	cd "$WORK_DIR" || { echo "Failed to change to WORK_DIR"; return 1; }
 
-	local src_qt="qt_rootfs_source/lib/firmware"
+	local artifacts_src="artifacts_rootfs_source/lib/firmware"
 	local target_dir="rootfs/lib"
 
 	# Copy folder
 	mkdir -p "$target_dir/firmware" || { echo "Failed to mkdir '/lib/firmware' directory"; return 1; }
-	cp -rd "$src_qt/"* "$target_dir/firmware/" || { echo "Failed to copy 'firmware' directory"; return 1; }
+	cp -rd "$artifacts_src/"* "$target_dir/firmware/" || { echo "Failed to copy 'firmware' directory"; return 1; }
 	echo "Copied contents."
 
 	echo "copy completed successfully."
@@ -169,14 +146,14 @@ function copy_wifi_firmware() {
 }
 
 # --------------------------------------------------------------------------#
-# function rootfs_qt use to copy binaries of qt_rootfs_source to ubuntu os.
-# function rootfs_qt contain 2 steps:
+# function prepare_rootfs use to copy binaries of artifacts_rootfs_source to ubuntu os.
+# function prepare_rootfs contain 2 steps:
 # 1. Extract file renesas-ubuntu (yocto input)
 # 2. Copy boot folder, qt library, wifi firmware folder
 # --------------------------------------------------------------------------#
 
 # Function main
-function rootfs_qt() {
+function prepare_rootfs() {
 	echo "4. Starting extract_renesas_ubuntu_input..."
 	# Call extract_renesas_ubuntu_input to create a tarball of the core image for the QT system
 	extract_renesas_ubuntu_input
@@ -186,18 +163,11 @@ function rootfs_qt() {
 	fi
 	echo "extract_renesas_ubuntu_input completed successfully."
 
-	echo "5. Starting copy_boot_folder and copy_qt, copy_wifi_firmware..."
+	echo "5. Starting copy_boot_folder and copy_wifi_firmware..."
 	# Call copy_boot_folder to copy necessary boot files for the system
 	copy_boot_folder
 	if [[ $? -eq 1 ]]; then
 		echo "copy_boot_folder failed."
-		return 1
-	fi
-
-	# Call copy_qt to copy the QT binaries and libraries needed for the system
-	copy_qt
-	if [[ $? -eq 1 ]]; then
-		echo "copy_qt failed."
 		return 1
 	fi
 
@@ -207,7 +177,7 @@ function rootfs_qt() {
 		echo "copy_wifi_firmware failed."
 		return 1
 	fi
-	echo "copy_boot_folder and copy_qt, copy_wifi_firmware completed successfully."
+	echo "copy_boot_folder and copy_wifi_firmware completed successfully."
 
 	echo "6. Starting copy_kernel_modules..."
 	# Call copy_kernel_modules to copy the kernel modules to the target system

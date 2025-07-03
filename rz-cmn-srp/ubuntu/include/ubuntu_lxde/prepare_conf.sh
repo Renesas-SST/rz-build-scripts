@@ -242,14 +242,14 @@ set_config_after_install() {
 	cd "$WORK_DIR" || { echo "Failed to change to WORK_DIR"; return 1; }
 
 	# Configure lxpanel LXDE
-	copy_file_conf "panel" "${ROOTFS}/etc/xdg/lxpanel/LXDE/panels/panel" "644"
+	copy_file_conf "panel" "${ROOTFS}/etc/xdg/lxpanel/LXDE/panels" "644"
 	if [ $? -eq 1 ]; then
 		echo "Failed to configure lxpanel LXDE setting. Exiting."
 		return 1
 	fi
 
 	# Configure lxpanel default
-	copy_file_conf "panel" "${ROOTFS}/etc/xdg/lxpanel/default/panels/panel" "644"
+	copy_file_conf "panel" "${ROOTFS}/etc/xdg/lxpanel/default/panels" "644"
 	if [ $? -eq 1 ]; then
 		echo "Failed to configure lxpanel default setting. Exiting."
 		return 1
