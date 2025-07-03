@@ -35,7 +35,8 @@ The `config.ini` file is used for configuring the script that builds an Ubuntu i
 - **UBUNTU_TYPE**: Type of target Ubuntu. Available types are "**CORE**", "**LXDE**", and "**ALL**". The "ALL" option will build all Ubuntu types.
 - **CLEAN_ALL**: Set to 0 to keep the current build (not recommended).
 - **BOOT_SIZE_MB**: Size of the boot partition in MB. It should be larger than 100 MB.
-- **ROOTFS_SPACE**: Additional space for the rootfs partition in MB.
+- **WIC_ROOTFS_PARTITION_OVERHEAD_FACTOR**: Overhead factor for the rootfs partition in WIC. Default is 1.3 (30%) is a common default for WIC. Use 1.0 to disable overhead.
+- **DEFAULT_ROOTFS_INTERNAL_FREE_SPACE_MB**: Default extra *free* space to add *inside* the root filesystem (in MB). This space is available to the user/system after booting.
 - **renesas_ubuntu_input_name**: Input rootfs (contains Qt libraries, bootloader, kernel, etc. - generated from Yocto) file name.
 - **UBUNTU_BASE_FILE_NAME**: The file name of the Ubuntu base that will be downloaded.
 - **UBUNTU_BASE_LINK**: The link to download the Ubuntu base file.

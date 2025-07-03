@@ -22,15 +22,26 @@ create_wic() {
 	# Set output wic file name to ubuntu-image.wic by default if not defined
 	OUTPUT_WIC="${OUTPUT_WIC:=ubuntu-image.wic}"
 
+	# EXTRA_BUFFER_MB provides a small safety buffer (default 4MB) to accommodate
+	# partition table overhead, alignment, and rounding issues.
+	EXTRA_BUFFER_MB=${EXTRA_BUFFER_MB:-4}
+
+	# Overhead factor for the rootfs partition in WIC.
+	WIC_ROOTFS_PARTITION_OVERHEAD_FACTOR="${WIC_ROOTFS_PARTITION_OVERHEAD_FACTOR:-1.3}"
+
 	# Set boot size to 200MB by default if not defined
 	BOOT_SIZE_MB=${BOOT_SIZE_MB:-200}
 
-	# Set rootfs size to 5000MB by default if not defined
-	ROOTFS_SPACE=${ROOTFS_SPACE:-5000}
+	# Set rootfs size to 1024MB by default if not defined
 	ROOTFS_SIZE_MB=$(du -s -B 1048576 "$ROOTFS_DIR" 2>/dev/null |awk '{print $1}')
 
+	# Calculate the *total size required for the filesystem content + internal free space*.
+	# This is the minimum size the filesystem itself needs to be.
+	REQUIRED_FILESYSTEM_SIZE_MB=$((ROOTFS_SIZE_MB + ROOTFS_INTERNAL_FREE_SPACE_MB))
+
 	# Calculate total size for WIC, add space
-	TOTAL_SIZE_MB=$((BOOT_SIZE_MB + ROOTFS_SIZE_MB + ROOTFS_SPACE))
+	TOTAL_SIZE_MB=$(echo "${BOOT_SIZE_MB} + (${REQUIRED_FILESYSTEM_SIZE_MB} * ${WIC_ROOTFS_PARTITION_OVERHEAD_FACTOR}) + ${EXTRA_BUFFER_MB}" | bc)
+	TOTAL_SIZE_MB=${TOTAL_SIZE_MB%.*}
 
 	# Step 1: Create blank *.wic
 	echo "Creating blank WIC file : ${TOTAL_SIZE_MB}MB..."
