@@ -338,12 +338,11 @@ The following output is an example of the build artifacts generated for the `all
 │               │   └── uload-flash_bootloader.ttl
 │               └── uload-flash_bootloader.bat
 ├── license
-│   ├── Disclaimer051.pdf
-│   └── Disclaimer052.pdf
+│   └── Disclaimer051.pdf
 ├── <code>-rz-srp-<yocto-version>-um-quick-start-guide.pdf 
 ├── <code>-rz-srp-<yocto-version>-um.pdf
 ├── README.md
-├── RZG2L-SBC_Evaluation_license.pdf
+├── RZ_System_Release_Package_Evaluation_license.pdf
 └── target
     ├── env
     │   ├── Readme.md
