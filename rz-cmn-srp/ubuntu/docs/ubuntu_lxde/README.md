@@ -81,14 +81,15 @@ Here are the packages preinstalled after running the script:
 ubuntu/
 ├── config
 │   ├── ubuntu_core
-│   │   ├── resolved.conf
-│   │   ├── NetworkManager.conf
-│   │   └── network_interfaces.conf
+│   │   ├── network_interfaces.conf
+│   │   ├── NetworkManager.conf
+│   │   └── resolved.conf
 │   └── ubuntu_lxde
-│       ├── interfaces
 │       ├── connman-gtk.desktop
+│       ├── interfaces
 │       ├── lightdm.conf
 │       ├── NetworkManager.conf
+│       ├── panel
 │       ├── rsyslog
 │       ├── ttyS0.conf
 │       └── v4l2-init.sh
@@ -142,34 +143,32 @@ ubuntu/
 │   ├── ubuntu_core
 │   │   ├── prepare_conf.sh
 │   │   ├── prepare_env.sh
-│   │   ├── prepare_rootfs_qt.sh
+│   │   ├── prepare_rootfs.sh
 │   │   └── setup_dns.sh
 │   └── ubuntu_lxde
 │       ├── create_swap.sh
 │       ├── prepare_conf.sh
 │       └── prepare_rootfs_qt.sh
 ├── README.md
-├── setup_ubuntu_environment.sh
-└── script
-    ├── common
-    │   ├── dpkg-install-lock-fix.sh
-    │   └── setup_dns_and_time.sh
-    ├── ubuntu_core
-    │   ├── apt_install_base.sh
-    │   ├── link_to_leagcy_iptables.sh
-    │   └── set_root_password.sh
-    └── ubuntu_lxde
-        ├── apt_audio_video.sh
-        ├── apt_blueman.sh
-        ├── apt_install_base.sh
-        ├── apt_lxde_desktop.sh
-        ├── apt_wifi_ble.sh
-        ├── create_user.sh
-        ├── set_root_password.sh
-        ├── set_swap_enable.sh
-        └── setup-set-permissions.sh
-
-16 directories, 74 files
+├── script
+│   ├── common
+│   │   ├── dpkg-install-lock-fix.sh
+│   │   └── setup_dns_and_time.sh
+│   ├── ubuntu_core
+│   │   ├── apt_install_base.sh
+│   │   ├── link_to_leagcy_iptables.sh
+│   │   └── set_root_password.sh
+│   └── ubuntu_lxde
+│       ├── apt_audio_video.sh
+│       ├── apt_blueman.sh
+│       ├── apt_install_base.sh
+│       ├── apt_lxde_desktop.sh
+│       ├── apt_wifi_ble.sh
+│       ├── create_user.sh
+│       ├── set_root_password.sh
+│       ├── set_swap_enable.sh
+│       └── setup-set-permissions.sh
+└── setup_ubuntu_environment.sh
 ```
 
 **Output folder outline and build process:**

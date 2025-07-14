@@ -51,6 +51,7 @@ $ tree -L 3
 | images.json           | Contains the available build image options grouped by build type, including Yocto images, Ubuntu images, and static image collections (all-yocto-images, all-ubuntu-images, all-supported-images).|
 | jq-linux-amd64        | JSON querry oss binary to perform reads of git_patch.json from shell script.                                                                                    |
 | patches/              | Folder containing patches. This should ideally be organized into sub directories named after the json key.                                                      |
+| files_to_add/              | A folder containing additional files that need to be added to the meta layer. These files are specified in the `add_files` field of `git_patch.json`, which defines their source locations and target destinations. For example: <br><br>**meta-rz-features/** <br>• 0001-rzg2l-sbc-Bring-compat_alloc_user_space-back.patch<br>• 0004-rzg2l-sbc-Get-interrupt-number.patch|
 | rzsbc_builder.sh      | The main build script that performs setup, configuration, and build operations for both Ubuntu and Yocto build processes.                                       |
 | site.conf [optional]  | An optional overrride site.conf. If present, this will be used as the override file. If not, the template conf site.conf will be used from meta-renesas layer.  |
 | ubuntu/               | Directory containing files and scripts related to building Ubuntu-based images for the platform, supporting variants such as ubuntu_core and ubuntu_lxde.  |
@@ -172,109 +173,114 @@ The following output is an example of the build artifacts generated for the `all
 │   │   ├── renesas-quickboot-cli.env
 │   │   └── renesas-quickboot-wayland.env
 │   ├── Readme.md
-│   ├── src
-│   │   └── rz-cmn-srp
-│   │       ├── git_patch.json
-│   │       ├── images.json
-│   │       ├── jq-linux-amd64
-│   │       ├── patches
-│   │       │   ├── meta-rz-features
-│   │       │   │   └── 0001-support-codec-for-linux-6.10-and-yocto-styhead.patch
-│   │       │   └── meta-summit-radio
-│   │       │       ├── 0001-rz-sbc-meta-summit-radio-Support-build-in-yocto-styh.patch
-│   │       │       └── 0002-rz-sbc-summit-radio-support-eSDK-build.patch
-│   │       ├── README.md
-│   │       ├── rzsbc_builder.sh
-│   │       └── ubuntu
-│   │           ├── config
-│   │           │   ├── ubuntu_core
-│   │           │   │   ├── network_interfaces.conf
-│   │           │   │   ├── NetworkManager.conf
-│   │           │   │   └── resolved.conf
-│   │           │   └── ubuntu_lxde
-│   │           │       ├── connman-gtk.desktop
-│   │           │       ├── interfaces
-│   │           │       ├── lightdm.conf
-│   │           │       ├── NetworkManager.conf
-│   │           │       ├── panel
-│   │           │       ├── rsyslog
-│   │           │       ├── ttyS0.conf
-│   │           │       └── v4l2-init.sh
-│   │           ├── config.ini
-│   │           ├── docs
-│   │           │   ├── ubuntu_core
-│   │           │   │   └── README.md
-│   │           │   └── ubuntu_lxde
-│   │           │       ├── Pictures
-│   │           │       │   ├── audacity.png
-│   │           │       │   ├── bluetooth_0.png
-│   │           │       │   ├── bluetooth_1.png
-│   │           │       │   ├── bluetooth_2.png
-│   │           │       │   ├── bluetooth_3.png
-│   │           │       │   ├── bluetooth_4.png
-│   │           │       │   ├── csi_0.png
-│   │           │       │   ├── csi_1.png
-│   │           │       │   ├── csi_2.png
-│   │           │       │   ├── eth_1.png
-│   │           │       │   ├── eth_2.png
-│   │           │       │   ├── eth_3.png
-│   │           │       │   ├── eth_4.png
-│   │           │       │   ├── eth_5.png
-│   │           │       │   ├── eth.png
-│   │           │       │   ├── save_audio_0.png
-│   │           │       │   ├── save_audio_1.png
-│   │           │       │   ├── save_audio_2.png
-│   │           │       │   ├── vlc_open_0.png
-│   │           │       │   ├── vlc_open_1.png
-│   │           │       │   ├── vlc_open_2.png
-│   │           │       │   ├── vlc.png
-│   │           │       │   ├── vlc_video_1.png
-│   │           │       │   ├── vlc_video.png
-│   │           │       │   ├── web_1.png
-│   │           │       │   ├── web_2.png
-│   │           │       │   ├── web_lxterm_htop.png
-│   │           │       │   ├── web.png
-│   │           │       │   └── wifi_0.png
-│   │           │       └── README.md
-│   │           ├── include
-│   │           │   ├── common
-│   │           │   │   ├── allow_empty_password.sh
-│   │           │   │   ├── create_wic.sh
-│   │           │   │   ├── install_gstreamer.sh
-│   │           │   │   ├── install_weston.sh
-│   │           │   │   ├── mount.sh
-│   │           │   │   ├── prepare_env_rootfs.sh
-│   │           │   │   ├── prepare_env.sh
-│   │           │   │   ├── prepare_ubuntu_base.sh
-│   │           │   │   └── yocto_working.sh
-│   │           │   ├── ubuntu_core
-│   │           │   │   ├── prepare_conf.sh
-│   │           │   │   ├── prepare_env.sh
-│   │           │   │   ├── prepare_rootfs.sh
-│   │           │   │   └── setup_dns.sh
-│   │           │   └── ubuntu_lxde
-│   │           │       ├── create_swap.sh
-│   │           │       ├── prepare_conf.sh
-│   │           │       └── prepare_rootfs_qt.sh
-│   │           ├── script
-│   │           │   ├── common
-│   │           │   │   ├── dpkg-install-lock-fix.sh
-│   │           │   │   └── setup_dns_and_time.sh
-│   │           │   ├── ubuntu_core
-│   │           │   │   ├── apt_install_base.sh
-│   │           │   │   ├── link_to_leagcy_iptables.sh
-│   │           │   │   └── set_root_password.sh
-│   │           │   └── ubuntu_lxde
-│   │           │       ├── apt_audio_video.sh
-│   │           │       ├── apt_blueman.sh
-│   │           │       ├── apt_install_base.sh
-│   │           │       ├── apt_lxde_desktop.sh
-│   │           │       ├── apt_wifi_ble.sh
-│   │           │       ├── create_user.sh
-│   │           │       ├── set_root_password.sh
-│   │           │       ├── set_swap_enable.sh
-│   │           │       └── setup-set-permissions.sh
-│   │           └── setup_ubuntu_environment.sh
+│   ├── src
+│   │   └── rz-cmn-srp
+│   │       ├── files_to_add
+│   │       │   └── meta-rz-features
+│   │       │       ├── 0001-rzg2l-sbc-Bring-compat_alloc_user_space-back.patch
+│   │       │       └── 0004-rzg2l-sbc-Get-interrupt-number.patch
+│   │       ├── git_patch.json
+│   │       ├── images.json
+│   │       ├── jq-linux-amd64
+│   │       ├── patches
+│   │       │   ├── meta-rz-features
+│   │       │   │   └── 0001-support-codec-for-linux-6.10-and-yocto-styhead.patch
+│   │       │   └── meta-summit-radio
+│   │       │       ├── 0001-rz-sbc-meta-summit-radio-Support-build-in-yocto-styh.patch
+│   │       │       └── 0002-rz-sbc-summit-radio-support-eSDK-build.patch
+│   │       ├── README.md
+│   │       ├── rzsbc_builder.sh
+│   │       └── ubuntu
+│   │           ├── config
+│   │           │   ├── ubuntu_core
+│   │           │   │   ├── network_interfaces.conf
+│   │           │   │   ├── NetworkManager.conf
+│   │           │   │   └── resolved.conf
+│   │           │   └── ubuntu_lxde
+│   │           │       ├── connman-gtk.desktop
+│   │           │       ├── interfaces
+│   │           │       ├── lightdm.conf
+│   │           │       ├── NetworkManager.conf
+│   │           │       ├── panel
+│   │           │       ├── rsyslog
+│   │           │       ├── ttyS0.conf
+│   │           │       └── v4l2-init.sh
+│   │           ├── config.ini
+│   │           ├── docs
+│   │           │   ├── ubuntu_core
+│   │           │   │   └── README.md
+│   │           │   └── ubuntu_lxde
+│   │           │       ├── Pictures
+│   │           │       │   ├── audacity.png
+│   │           │       │   ├── bluetooth_0.png
+│   │           │       │   ├── bluetooth_1.png
+│   │           │       │   ├── bluetooth_2.png
+│   │           │       │   ├── bluetooth_3.png
+│   │           │       │   ├── bluetooth_4.png
+│   │           │       │   ├── csi_0.png
+│   │           │       │   ├── csi_1.png
+│   │           │       │   ├── csi_2.png
+│   │           │       │   ├── eth_1.png
+│   │           │       │   ├── eth_2.png
+│   │           │       │   ├── eth_3.png
+│   │           │       │   ├── eth_4.png
+│   │           │       │   ├── eth_5.png
+│   │           │       │   ├── eth.png
+│   │           │       │   ├── save_audio_0.png
+│   │           │       │   ├── save_audio_1.png
+│   │           │       │   ├── save_audio_2.png
+│   │           │       │   ├── vlc_open_0.png
+│   │           │       │   ├── vlc_open_1.png
+│   │           │       │   ├── vlc_open_2.png
+│   │           │       │   ├── vlc.png
+│   │           │       │   ├── vlc_video_1.png
+│   │           │       │   ├── vlc_video.png
+│   │           │       │   ├── web_1.png
+│   │           │       │   ├── web_2.png
+│   │           │       │   ├── web_lxterm_htop.png
+│   │           │       │   ├── web.png
+│   │           │       │   └── wifi_0.png
+│   │           │       └── README.md
+│   │           ├── include
+│   │           │   ├── common
+│   │           │   │   ├── allow_empty_password.sh
+│   │           │   │   ├── create_wic.sh
+│   │           │   │   ├── install_gstreamer.sh
+│   │           │   │   ├── install_weston.sh
+│   │           │   │   ├── mount.sh
+│   │           │   │   ├── prepare_env_rootfs.sh
+│   │           │   │   ├── prepare_env.sh
+│   │           │   │   ├── prepare_ubuntu_base.sh
+│   │           │   │   └── yocto_working.sh
+│   │           │   ├── ubuntu_core
+│   │           │   │   ├── prepare_conf.sh
+│   │           │   │   ├── prepare_env.sh
+│   │           │   │   ├── prepare_rootfs.sh
+│   │           │   │   └── setup_dns.sh
+│   │           │   └── ubuntu_lxde
+│   │           │       ├── create_swap.sh
+│   │           │       ├── prepare_conf.sh
+│   │           │       └── prepare_rootfs_qt.sh
+│   │           ├── README.md
+│   │           ├── script
+│   │           │   ├── common
+│   │           │   │   ├── dpkg-install-lock-fix.sh
+│   │           │   │   └── setup_dns_and_time.sh
+│   │           │   ├── ubuntu_core
+│   │           │   │   ├── apt_install_base.sh
+│   │           │   │   ├── link_to_leagcy_iptables.sh
+│   │           │   │   └── set_root_password.sh
+│   │           │   └── ubuntu_lxde
+│   │           │       ├── apt_audio_video.sh
+│   │           │       ├── apt_blueman.sh
+│   │           │       ├── apt_install_base.sh
+│   │           │       ├── apt_lxde_desktop.sh
+│   │           │       ├── apt_wifi_ble.sh
+│   │           │       ├── create_user.sh
+│   │           │       ├── set_root_password.sh
+│   │           │       ├── set_swap_enable.sh
+│   │           │       └── setup-set-permissions.sh
+│   │           └── setup_ubuntu_environment.sh
 │   └── tools
 │       ├── bootloader-flasher
 │       │   ├── linux

@@ -8,12 +8,15 @@ This directory (ubuntu/) provides an organized framework to create Ubuntu-based 
 ubuntu/
 ├── config
 │   ├── ubuntu_core
-│   │   ├── resolved.conf
-│   │   └── network_interfaces.conf
+│   │   ├── network_interfaces.conf
+│   │   ├── NetworkManager.conf
+│   │   └── resolved.conf
 │   └── ubuntu_lxde
+│       ├── connman-gtk.desktop
 │       ├── interfaces
 │       ├── lightdm.conf
 │       ├── NetworkManager.conf
+│       ├── panel
 │       ├── rsyslog
 │       ├── ttyS0.conf
 │       └── v4l2-init.sh
@@ -59,36 +62,40 @@ ubuntu/
 │   │   ├── create_wic.sh
 │   │   ├── install_gstreamer.sh
 │   │   ├── install_weston.sh
+│   │   ├── mount.sh
+│   │   ├── prepare_env_rootfs.sh
+│   │   ├── prepare_env.sh
 │   │   ├── prepare_ubuntu_base.sh
 │   │   └── yocto_working.sh
 │   ├── ubuntu_core
-│   │   ├── mount.sh
 │   │   ├── prepare_conf.sh
 │   │   ├── prepare_env.sh
-│   │   └── prepare_rootfs_qt.sh
+│   │   ├── prepare_rootfs.sh
+│   │   └── setup_dns.sh
 │   └── ubuntu_lxde
 │       ├── create_swap.sh
-│       ├── mount.sh
 │       ├── prepare_conf.sh
 │       └── prepare_rootfs_qt.sh
 ├── README.md
-├── setup_ubuntu_environment.sh
-└── script
-    ├── ubuntu_core
-    │   ├── apt_install_base.sh
-    │   └── set_root_password.sh
-    └── ubuntu_lxde
-        ├── apt_audio_video.sh
-        ├── apt_blueman.sh
-        ├── apt_install_base.sh
-        ├── apt_lxde_desktop.sh
-        ├── apt_wifi_ble.sh
-        ├── create_user.sh
-        ├── set_root_password.sh
-        ├── set_swap_enable.sh
-        └── setup-set-permissions.sh
-
-14 directories, 67 files
+├── script
+│   ├── common
+│   │   ├── dpkg-install-lock-fix.sh
+│   │   └── setup_dns_and_time.sh
+│   ├── ubuntu_core
+│   │   ├── apt_install_base.sh
+│   │   ├── link_to_leagcy_iptables.sh
+│   │   └── set_root_password.sh
+│   └── ubuntu_lxde
+│       ├── apt_audio_video.sh
+│       ├── apt_blueman.sh
+│       ├── apt_install_base.sh
+│       ├── apt_lxde_desktop.sh
+│       ├── apt_wifi_ble.sh
+│       ├── create_user.sh
+│       ├── set_root_password.sh
+│       ├── set_swap_enable.sh
+│       └── setup-set-permissions.sh
+└── setup_ubuntu_environment.sh
 ``` 
 
 ## Organization:
@@ -98,6 +105,7 @@ ubuntu/
 | config/       | The folder that holds configuration files for different Ubuntu variants.                                                                                    |
 | docs/             | Contains documentation detailing supported features and usage instructions for each Ubuntu image variant.                                                      |
 | script/       | The folder that contains all scripts related to Ubuntu image creation.                                                                                          |
+| include/       | Contains scripts related to Ubuntu (e.g., for creating WIC files, packaging the root filesystem, preparing the environment, etc.) |
 | setup_ubuntu_environment.sh | **Main entry-point script** (acts like a dispatcher/header). It sources and sequences logic from the modular scripts under `script/`. It does **not** build anything by itself.|
 | config.ini            | Configuration file that defines key parameters for the Ubuntu image build process, such as the Ubuntu variant, base image, output filenames, and system settings.|
 | README.md            | This README (the current document).|
@@ -129,5 +137,5 @@ PASSWORD=1
 ```
 
 > [!IMPORTANT]
-> These credentials will be used in the generated image, and are required for login..
+> These credentials will be used in the generated image, and are required for login.
 > Update them before the build if you require a different user or stronger security.
