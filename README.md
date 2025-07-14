@@ -17,6 +17,7 @@ $ tree -L 3
     ├── git_patch.json          <---- JSON definitions for managing repositories and patches
     ├── images.json             <---- Image definitions grouped by build type
     ├── jq-linux-amd64          <---- Local copy of `jq` for JSON processing
+    ├── site.conf               /* (optional) */
     ├── patches/                <---- Patch sets organized by target layer
     │   ├── meta-summit-radio/
     │   └── meta-rz-features/

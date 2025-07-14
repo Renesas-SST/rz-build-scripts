@@ -36,7 +36,7 @@ The `config.ini` file is used for configuring the script that builds an Ubuntu i
 - **CLEAN_ALL**: Set to 0 to keep the current build (not recommended).
 - **BOOT_SIZE_MB**: Size of the boot partition in MB. It should be larger than 100 MB.
 - **WIC_ROOTFS_PARTITION_OVERHEAD_FACTOR**: Overhead factor for the rootfs partition in WIC. Default is 1.3 (30%) is a common default for WIC. Use 1.0 to disable overhead.
-- **DEFAULT_ROOTFS_INTERNAL_FREE_SPACE_MB**: Default extra *free* space to add *inside* the root filesystem (in MB). This space is available to the user/system after booting.
+- **ROOTFS_INTERNAL_FREE_SPACE_MB**: Default extra *free* space to add *inside* the root filesystem (in MB). This space is available to the user/system after booting.
 - **renesas_ubuntu_input_name**: Input rootfs (contains Qt libraries, bootloader, kernel, etc. - generated from Yocto) file name.
 - **UBUNTU_BASE_FILE_NAME**: The file name of the Ubuntu base that will be downloaded.
 - **UBUNTU_BASE_LINK**: The link to download the Ubuntu base file.
@@ -66,31 +66,95 @@ Here are the packages preinstalled after running the script:
 ```
 ubuntu/
 ├── config
-│   └── ubuntu_core
-│       ├── resolved.conf
-│       └── network_interfaces.conf
+│   ├── ubuntu_core
+│   │   ├── network_interfaces.conf
+│   │   ├── NetworkManager.conf
+│   │   └── resolved.conf
+│   └── ubuntu_lxde
+│       ├── connman-gtk.desktop
+│       ├── interfaces
+│       ├── lightdm.conf
+│       ├── NetworkManager.conf
+│       ├── panel
+│       ├── rsyslog
+│       ├── ttyS0.conf
+│       └── v4l2-init.sh
 ├── config.ini
 ├── docs
-│   └── ubuntu_core
-│       └── README.md
+│   ├── ubuntu_core
+│   │   └── README.md
+│   └── ubuntu_lxde
+│       ├── Pictures
+│       │   ├── audacity.png
+│       │   ├── bluetooth_0.png
+│       │   ├── bluetooth_1.png
+│       │   ├── bluetooth_2.png
+│       │   ├── bluetooth_3.png
+│       │   ├── bluetooth_4.png
+│       │   ├── csi_0.png
+│       │   ├── csi_1.png
+│       │   ├── csi_2.png
+│       │   ├── eth_1.png
+│       │   ├── eth_2.png
+│       │   ├── eth_3.png
+│       │   ├── eth_4.png
+│       │   ├── eth_5.png
+│       │   ├── eth.png
+│       │   ├── save_audio_0.png
+│       │   ├── save_audio_1.png
+│       │   ├── save_audio_2.png
+│       │   ├── vlc_open_0.png
+│       │   ├── vlc_open_1.png
+│       │   ├── vlc_open_2.png
+│       │   ├── vlc.png
+│       │   ├── vlc_video_1.png
+│       │   ├── vlc_video.png
+│       │   ├── web_1.png
+│       │   ├── web_2.png
+│       │   ├── web_lxterm_htop.png
+│       │   ├── web.png
+│       │   └── wifi_0.png
+│       └── README.md
 ├── include
-│   ├── common
-│   │   ├── allow_empty_password.sh
-│   │   ├── create_wic.sh
-│   │   ├── install_gstreamer.sh
-│   │   ├── install_weston.sh
-│   │   ├── prepare_env.sh
-│   │   ├── prepare_ubuntu_base.sh
-│   │   └── yocto_working.sh
-│   └── ubuntu_core
-│       ├── mount.sh
-│       ├── prepare_conf.sh
-│       └── prepare_rootfs_qt.sh
-├── setup_ubuntu_environment.sh
-└── script
-    └── ubuntu_core
-        ├── apt_install_base.sh
-        └── set_root_password.sh
+│   ├── common
+│   │   ├── allow_empty_password.sh
+│   │   ├── create_wic.sh
+│   │   ├── install_gstreamer.sh
+│   │   ├── install_weston.sh
+│   │   ├── mount.sh
+│   │   ├── prepare_env_rootfs.sh
+│   │   ├── prepare_env.sh
+│   │   ├── prepare_ubuntu_base.sh
+│   │   └── yocto_working.sh
+│   ├── ubuntu_core
+│   │   ├── prepare_conf.sh
+│   │   ├── prepare_env.sh
+│   │   ├── prepare_rootfs.sh
+│   │   └── setup_dns.sh
+│   └── ubuntu_lxde
+│       ├── create_swap.sh
+│       ├── prepare_conf.sh
+│       └── prepare_rootfs_qt.sh
+├── README.md
+├── script
+│   ├── common
+│   │   ├── dpkg-install-lock-fix.sh
+│   │   └── setup_dns_and_time.sh
+│   ├── ubuntu_core
+│   │   ├── apt_install_base.sh
+│   │   ├── link_to_leagcy_iptables.sh
+│   │   └── set_root_password.sh
+│   └── ubuntu_lxde
+│       ├── apt_audio_video.sh
+│       ├── apt_blueman.sh
+│       ├── apt_install_base.sh
+│       ├── apt_lxde_desktop.sh
+│       ├── apt_wifi_ble.sh
+│       ├── create_user.sh
+│       ├── set_root_password.sh
+│       ├── set_swap_enable.sh
+│       └── setup-set-permissions.sh
+└── setup_ubuntu_environment.sh
 ```
 
 **Output folder outline:**
