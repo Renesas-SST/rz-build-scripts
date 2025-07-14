@@ -73,6 +73,7 @@ ubuntu/
 │       ├── interfaces
 │       ├── lightdm.conf
 │       ├── NetworkManager.conf
+│       ├── panel
 │       ├── rsyslog
 │       ├── ttyS0.conf
 │       └── v4l2-init.sh
@@ -126,7 +127,7 @@ ubuntu/
 │   ├── ubuntu_core
 │   │   ├── prepare_conf.sh
 │   │   ├── prepare_env.sh
-│   │   ├── prepare_rootfs_qt.sh
+│   │   ├── prepare_rootfs.sh
 │   │   └── setup_dns.sh
 │   └── ubuntu_lxde
 │       ├── create_swap.sh
@@ -152,8 +153,6 @@ ubuntu/
 │       ├── set_swap_enable.sh
 │       └── setup-set-permissions.sh
 └── setup_ubuntu_environment.sh
-
-16 directories, 73 files
 ```
 
 **Output folder outline:**
