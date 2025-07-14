@@ -941,6 +941,7 @@ deploy_build_assets() {
 	cp "${IMAGES_JSON}" "${target_dir}"
 	cp "${JQ}" "${target_dir}"
 	cp -r "${TOP_DIR}/patches" "${target_dir}"
+	cp -r "${TOP_DIR}/files_to_add" "${target_dir}"
 	cp "${TOP_DIR}/rzsbc_builder.sh" "${target_dir}"
 	if [ -e "${TOP_DIR}/site.conf" ]; then
 		cp "${TOP_DIR}/site.conf" "${target_dir}"
@@ -965,6 +966,7 @@ deploy_ubuntu_build_assets() {
 	cp -r "${TOP_DIR}/ubuntu/script" "${target_dir}"
 	cp "${TOP_DIR}/ubuntu/config.ini" "${target_dir}"
 	cp "${TOP_DIR}/ubuntu/setup_ubuntu_environment.sh" "${target_dir}"
+	cp "${TOP_DIR}/ubuntu/README.md" "${target_dir}"
 }
 
 # Main output
