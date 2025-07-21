@@ -242,7 +242,13 @@ This default setting ensures that users immediately benefit from the lightweight
 
   <img src="Pictures/audacity.png" alt="Audacity" width="700" />
 
-To use Audacity, we need to select **audio-da7219** for both the microphone and audio hardware options. Additionally, set the **Project Rate** to **48000** to accommodate hardware limitations. After that, click the red circle button to start recording. Please note that user also need to go to `Edit -> Preferences -> Audio` to set the **Project Sample Rate** and **Default Sample Rate** to 48000 Hz.
+To properly configure Audacity for the system:
+1.	In Audacity, click **Audio Setup** in the top-right corner, then select **Audio Settings**.
+2.	In the window that opens, set both the **Playback** and **Recording Device** to **audio-da7219**.
+  <img src="Pictures/audio_settings.png" alt="Audio Settings" width="700" />
+3.	Set the **Project Sample Rate** and **Default Sample Rate** at the bottom left to 48000 Hz to match the hardware's requirements.
+
+Click OK to save the settings. Then, click the red circle button to begin recording. 
 
 To export as MP3, follow the steps in the images below.
   <img src="Pictures/save_audio_0.png" alt="Audacity" width="700" />
