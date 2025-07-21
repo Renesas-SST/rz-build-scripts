@@ -663,8 +663,10 @@ setup_conf(){
 	# Check local overrides file
 	if [ ! -e "$WORKSPACE/site.conf" ]; then
 		echo "Local site.conf file not present in this workspace ($WORKSPACE). Assuming developer default build!"
-		# Copy default template overrides file as yocto doesnt copy site.conf.sample
-		cp ../meta-renesas/conf/templates/${MACHINE}/site.conf.sample conf/site.conf
+		if [ -e "../meta-renesas/conf/templates/${MACHINE}/site.conf.sample" ]; then
+			# Copy default template overrides file as yocto doesnt copy site.conf.sample
+			cp ../meta-renesas/conf/templates/${MACHINE}/site.conf.sample conf/site.conf
+		fi
 		echo "This build is a common build for rzsbc. It is not based on any release tag. Target image: ${IMAGE}"
 	else
 		# Copy local overrides file to yocto build conf folder
