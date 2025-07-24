@@ -21,7 +21,7 @@ $ tree -L 3
 │       ├── 0001-rz-sbc-meta-summit-radio-Support-build-in-yocto-styh.patch
 │       └── 0002-rz-sbc-summit-radio-support-eSDK-build.patch
 ├── README.md
-├── rzsbc_builder.sh
+├── rz_builder.sh
 └── ubuntu
     ├── config
     │   ├── ubuntu_core
@@ -52,7 +52,7 @@ $ tree -L 3
 | jq-linux-amd64        | JSON querry oss binary to perform reads of git_patch.json from shell script.                                                                                    |
 | patches/              | Folder containing patches. This should ideally be organized into sub directories named after the json key.                                                      |
 | files_to_add/              | A folder containing additional files that need to be added to the meta layer. These files are specified in the `add_files` field of `git_patch.json`, which defines their source locations and target destinations. For example: <br><br>**meta-rz-features/** <br>• 0001-rzg2l-sbc-Bring-compat_alloc_user_space-back.patch<br>• 0004-rzg2l-sbc-Get-interrupt-number.patch|
-| rzsbc_builder.sh      | The main build script that performs setup, configuration, and build operations for both Ubuntu and Yocto build processes.                                       |
+| rz_builder.sh      | The main build script that performs setup, configuration, and build operations for both Ubuntu and Yocto build processes.                                       |
 | site.conf [optional]  | An optional overrride site.conf. If present, this will be used as the override file. If not, the template conf site.conf will be used from meta-renesas layer.  |
 | ubuntu/               | Directory containing files and scripts related to building Ubuntu-based images for the platform, supporting variants such as ubuntu_core and ubuntu_lxde.  |
 | README.md             | This document. This document provides an overview of the rz-sbc build package. It serves as a guide for users to understand how to set up and execute the Yocto build process, as well as how to manage and utilize the build artifacts and patches.|
@@ -114,8 +114,8 @@ To perform yocto build with all RZ SOc's IP's functioning, you will need to down
 | RTK0EF0045Z15001ZJ-v1.1.0_EN.zip | RZ codec driver and HAL package.    |
 
 > [!IMPORTANT]
-> Simply running the script `rzsbc_builder.sh` will tell you the command options.
-> Running the script with `build` parameter (`rzsbc_builder.sh build`) will give you the download url's of the missing packages.
+> Simply running the script `rz_builder.sh` will tell you the command options.
+> Running the script with `build` parameter (`rz_builder.sh build`) will give you the download url's of the missing packages.
 
 > [!IMPORTANT]
 > Please ensure that you are making this build in an ubuntu 24.04 OS environment through docker/VM/native-OS installations.
@@ -189,7 +189,7 @@ The following output is an example of the build artifacts generated for the `all
 │   │       │       ├── 0001-rz-sbc-meta-summit-radio-Support-build-in-yocto-styh.patch
 │   │       │       └── 0002-rz-sbc-summit-radio-support-eSDK-build.patch
 │   │       ├── README.md
-│   │       ├── rzsbc_builder.sh
+│   │       ├── rz_builder.sh
 │   │       └── ubuntu
 │   │           ├── config
 │   │           │   ├── ubuntu_core

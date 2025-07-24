@@ -13,7 +13,7 @@ $ tree -L 3
     ├── files_to_add/		<---- Additional files to be copied into build environment.
     │   └── meta-rz-features/
     ├── README.md               <---- Detailed guide for Ubuntu and Yocto builds.
-    ├── rzsbc_builder.sh        <---- Unified entry point for both Yocto and Ubuntu builds
+    ├── rz_builder.sh        <---- Unified entry point for both Yocto and Ubuntu builds
     ├── git_patch.json          <---- JSON definitions for managing repositories and patches
     ├── images.json             <---- Image definitions grouped by build type
     ├── jq-linux-amd64          <---- Local copy of `jq` for JSON processing
@@ -34,15 +34,15 @@ $ tree -L 3
 
 ## Build Systems Overview
 
-The unified build script `rzsbc_builder.sh` located in the `rz-cmn-srp` folder manages both Yocto and Ubuntu build workflows.
+The unified build script `rz_builder.sh` located in the `rz-cmn-srp` folder manages both Yocto and Ubuntu build workflows.
 
 ### Yocto
 
-The Yocto build workflow is handled through `rzsbc_builder.sh`, which configures and executes all Yocto-specific tasks.
+The Yocto build workflow is handled through `rz_builder.sh`, which configures and executes all Yocto-specific tasks.
 
 #### JQuerry
 
-The build script `rzsbc_builder.sh` uses the open-source tool jq (https://jqlang.github.io/jq/) to process JSON data, enabling efficient management of off-tree patching and configuration.
+The build script `rz_builder.sh` uses the open-source tool jq (https://jqlang.github.io/jq/) to process JSON data, enabling efficient management of off-tree patching and configuration.
 
 #### Patching
 
@@ -57,7 +57,7 @@ The build script includes functionality to detect and apply new patches as they 
 
 ### Ubuntu
 
-Ubuntu-related build logic and configurations reside under the `rz-cmn-srp/ubuntu/` directory. The unified build script `rzsbc_builder.sh` also manages Ubuntu image creation by sourcing the necessary environment setup scripts and executing Ubuntu-specific workflows.
+Ubuntu-related build logic and configurations reside under the `rz-cmn-srp/ubuntu/` directory. The unified build script `rz_builder.sh` also manages Ubuntu image creation by sourcing the necessary environment setup scripts and executing Ubuntu-specific workflows.
 
 This repository supports building two Ubuntu image types for RZ boards:
 - ubuntu-core: A minimal, headless Ubuntu image tailored for embedded systems. It includes Qt framework support for developing Qt-based applications in a resource-efficient environment.
