@@ -97,7 +97,7 @@ guideline() {
 	echo ""
 	echo "========="
 	echo "Build yocto/ubuntu"
-	echo "$ MACHINE=<machine_name> IMAGE=<target_image> DISTRO=<target_distro> ./rzsbc_builder.sh <target_build> <target_dir>"
+	echo "$ MACHINE=<machine_name> IMAGE=<target_image> DISTRO=<target_distro> ./rz_builder.sh <target_build> <target_dir>"
 	echo "--------------------------"
 	echo " - <target_image>: the target Yocto build image. It can be one from the following list of supported images"
 	echo " - <machine_name>: the target machine name (e.g., rzg2l-sbc, rz-cmn, etc.)."
@@ -127,7 +127,7 @@ guideline() {
 	echo "Note: If DISTRO is not set, 'poky' will be selected by default."
 	echo ""
 	echo "For example: "
-	echo "$ MACHINE=rz-cmn IMAGE=renesas-core-image-cli ./rzsbc_builder.sh build ~/yocto-build"
+	echo "$ MACHINE=rz-cmn IMAGE=renesas-core-image-cli ./rz_builder.sh build ~/yocto-build"
 	echo "--------------------------------------------------------------------------------------------------"
 }
 
@@ -942,7 +942,7 @@ deploy_build_assets() {
 	cp "${JQ}" "${target_dir}"
 	cp -r "${TOP_DIR}/patches" "${target_dir}"
 	cp -r "${TOP_DIR}/files_to_add" "${target_dir}"
-	cp "${TOP_DIR}/rzsbc_builder.sh" "${target_dir}"
+	cp "${TOP_DIR}/rz_builder.sh" "${target_dir}"
 	if [ -e "${TOP_DIR}/site.conf" ]; then
 		cp "${TOP_DIR}/site.conf" "${target_dir}"
 	fi

@@ -172,12 +172,12 @@ ubuntu/
 
 **Output folder outline and build process:**
 
-The image build is controlled by the main build script `rzsbc_builder.sh` located at the root of the repository. Running this script initiates the complete build process, producing the output images and root filesystem archives as shown below.
+The image build is controlled by the main build script `rz_builder.sh` located at the root of the repository. Running this script initiates the complete build process, producing the output images and root filesystem archives as shown below.
 
 To build the Ubuntu LXDE image, run the main build script with the following command:
 
 ```shell
-IMAGE=ubuntu-lxde ./rzsbc_builder.sh build
+IMAGE=ubuntu-lxde ./rz_builder.sh build
 ```
 
 ```

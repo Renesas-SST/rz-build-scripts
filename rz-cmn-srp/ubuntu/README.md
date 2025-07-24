@@ -116,7 +116,7 @@ This directory contains the resources necessary to prepare for building Ubuntu i
 To build Ubuntu images with full RZ SoC IP support, you must first manually download the required proprietary components. These files are gated behind click-through license agreements.
 
 > [!IMPORTANT]
-> The script `setup_ubuntu_environment.sh` is a helper script that prepares the Ubuntu environment and dependencies. It assists the main build process but does not perform the full build itself, which is handled by the `rzsbc_builder.sh` script.
+> The script `setup_ubuntu_environment.sh` is a helper script that prepares the Ubuntu environment and dependencies. It assists the main build process but does not perform the full build itself, which is handled by the `rz_builder.sh` script.
 > Please ensure that you are making this build in an Ubuntu 24.04 OS environment through docker/VM/native-OS installations.
 
 For more details on each Ubuntu image, please refer to its README:
