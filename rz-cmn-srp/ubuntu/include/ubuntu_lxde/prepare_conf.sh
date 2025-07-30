@@ -220,6 +220,13 @@ set_config() {
 		return 1
 	fi
 
+	# Configure audio
+	copy_file_conf "audio-init.sh" "rootfs/etc/profile.d" "755"
+	if [ $? -eq 1 ]; then
+	        echo "Failed to configure audio-init. Exiting."
+	        return 1
+	fi
+
 	# Configure connman-gtk to appear at System Tray
 	copy_file_conf "connman-gtk.desktop" "rootfs/etc/xdg/autostart" "755"
 	if [ $? -eq 1 ]; then
