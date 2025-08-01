@@ -1,0 +1,12 @@
+[Unit]
+Description=Force Xorg to use display device if GPU and Display both present
+After=local-fs.target
+Before=graphical.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/force-display-xorg.sh
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target

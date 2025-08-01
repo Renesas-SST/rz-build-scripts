@@ -301,6 +301,12 @@ main_ubuntu_lxde(){
 		echo "set_config_after_install failed."
 		exit 1
 	fi
+	# Execute some commands right after modifying config
+	chroot_run_1_script ${UBUNTU_LXDE_SCRIPT_PATH} "enable_service.sh"
+	if [ $? -eq 1 ]; then
+		echo "enable_service failed."
+		exit 1
+	fi
 
 	# Package rootfs to tar file
 	package_rootfs
