@@ -124,6 +124,37 @@ copy_file_conf() {
 }
 
 #######################################
+# Copy qt lib from renesas-ubuntu (yocto output) to rootfs
+# Globals:
+#   WORK_DIR
+# Arguments:
+#   None
+#######################################
+copy_qt() {
+	echo "Copying qt files..."
+
+	# Change dir WORK_DIR
+	echo "Current working directory is: $WORK_DIR"
+	cd "$WORK_DIR" || { echo "Failed to change to WORK_DIR"; return 1; }
+
+	local src_qt="rootfs_qt/usr"
+	local target_dir="rootfs/usr"
+
+	# Copy folder boot
+	cp -rd "$src_qt/share/qt"* "$target_dir/share" || { echo "Failed to copy 'qt lib' directory"; return 1; }
+	cp -rd "$src_qt/libexec/qt"* "$target_dir/libexec" || { echo "Failed to copy 'qt libexec' directory"; return 1; }
+	cp -rd "$src_qt/lib/libQt"* "$target_dir/lib/aarch64-linux-gnu/" || { echo "Failed to copy 'aarch64-linux-gnu' directory"; return 1; }
+	mkdir -p "$target_dir/lib/aarch64-linux-gnu/pkgconfig/" || { echo "Failed to mkdir 'lib/aarch64-linux-gnu/pkgconfig' directory"; return 1; }
+	cp -rd "$src_qt/lib/pkgconfig/Qt"* "$target_dir/lib/aarch64-linux-gnu/pkgconfig/" || { echo "Failed to copy 'pkgconfig' directory"; return 1; }
+	cp -rd "$src_qt/lib/libicui18n.so.75" "$src_qt/lib/libicuuc.so.75" "$src_qt/lib/libicudata.so.75" "$src_qt/lib/libxcb"* "$target_dir/lib/aarch64-linux-gnu/" || { echo "Failed to copy to directory"; return 1; }
+	mkdir -p "$target_dir/lib/plugins" || { echo "Failed to mkdir 'lib/plugins' directory"; return 1; }
+	cp -rd "$src_qt/lib/plugins/qt"* "$target_dir/lib/plugins/"
+
+	echo "copy completed successfully."
+	return 0
+}
+
+#######################################
 # Function check_and_remove_file use to check and remove file in ubuntu os.
 # Globals:
 #   WORK_DIR
@@ -262,12 +293,33 @@ set_config_after_install() {
 		return 1
 	fi
 
+	# Configure force xorg display service
+	copy_file_conf "force-display-xorg.sh" "${ROOTFS}/usr/local/bin/" "755"
+	if [ $? -eq 1 ]; then
+		echo "Failed to copy force-display-xorg.sh to /usr/local/bin. Exiting."
+		return 1
+	fi
+	copy_file_conf "force-xorg-display.service" "${ROOTFS}/etc/systemd/system/" "755"
+	if [ $? -eq 1 ]; then
+		echo "Failed to configure force-xorg-display.service. Exiting."
+		return 1
+	fi
+
 	# Remove blueman-aplet icon
 	check_and_remove_file "${ROOTFS}/etc/xdg/autostart/blueman.desktop"
 	if [ $? -eq 1 ]; then
 		echo "Failed to Remove blueman-aplet icon. Exiting."
 		return 1
 	fi
+
+	echo "Starting copy_qt..."
+	# Call copy_qt to copy qt files for the system
+	copy_qt
+	if [[ $? -eq 1 ]]; then
+		echo "copy_qt failed."
+		return 1
+	fi
+	echo "copy_qt completed successfully."
 
 	echo "Configuration completed successfully."
 	return 0
