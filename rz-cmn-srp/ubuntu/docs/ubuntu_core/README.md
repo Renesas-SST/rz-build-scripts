@@ -67,11 +67,15 @@ Here are the packages preinstalled after running the script:
 ubuntu/
 ├── config
 │   ├── ubuntu_core
+│   │   ├── audio-init-core.sh
 │   │   ├── network_interfaces.conf
 │   │   ├── NetworkManager.conf
 │   │   └── resolved.conf
 │   └── ubuntu_lxde
+│       ├── audio-init-lxde.sh
 │       ├── connman-gtk.desktop
+│       ├── force-display-xorg.sh
+│       ├── force-xorg-display.service
 │       ├── interfaces
 │       ├── lightdm.conf
 │       ├── NetworkManager.conf
@@ -86,6 +90,7 @@ ubuntu/
 │   └── ubuntu_lxde
 │       ├── Pictures
 │       │   ├── audacity.png
+│       │   ├── audio_settings.png
 │       │   ├── bluetooth_0.png
 │       │   ├── bluetooth_1.png
 │       │   ├── bluetooth_2.png
@@ -151,6 +156,7 @@ ubuntu/
 │       ├── apt_lxde_desktop.sh
 │       ├── apt_wifi_ble.sh
 │       ├── create_user.sh
+│       ├── enable_service.sh
 │       ├── set_root_password.sh
 │       ├── set_swap_enable.sh
 │       └── setup-set-permissions.sh
