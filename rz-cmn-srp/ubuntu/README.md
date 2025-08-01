@@ -8,13 +8,19 @@ This directory (ubuntu/) provides an organized framework to create Ubuntu-based 
 .
 ├── config
 │   ├── ubuntu_core
+│   │   ├── audio-init-core.sh
 │   │   ├── network_interfaces.conf
+│   │   ├── NetworkManager.conf
 │   │   └── resolved.conf
 │   └── ubuntu_lxde
+│       ├── audio-init-lxde.sh
 │       ├── connman-gtk.desktop
+│       ├── force-display-xorg.sh
+│       ├── force-xorg-display.service
 │       ├── interfaces
 │       ├── lightdm.conf
 │       ├── NetworkManager.conf
+│       ├── panel
 │       ├── rsyslog
 │       ├── ttyS0.conf
 │       └── v4l2-init.sh
@@ -25,6 +31,7 @@ This directory (ubuntu/) provides an organized framework to create Ubuntu-based 
 │   └── ubuntu_lxde
 │       ├── Pictures
 │       │   ├── audacity.png
+│       │   ├── audio_settings.png
 │       │   ├── bluetooth_0.png
 │       │   ├── bluetooth_1.png
 │       │   ├── bluetooth_2.png
@@ -68,7 +75,7 @@ This directory (ubuntu/) provides an organized framework to create Ubuntu-based 
 │   ├── ubuntu_core
 │   │   ├── prepare_conf.sh
 │   │   ├── prepare_env.sh
-│   │   ├── prepare_rootfs_qt.sh
+│   │   ├── prepare_rootfs.sh
 │   │   └── setup_dns.sh
 │   └── ubuntu_lxde
 │       ├── create_swap.sh
@@ -90,12 +97,11 @@ This directory (ubuntu/) provides an organized framework to create Ubuntu-based 
 │       ├── apt_lxde_desktop.sh
 │       ├── apt_wifi_ble.sh
 │       ├── create_user.sh
+│       ├── enable_service.sh
 │       ├── set_root_password.sh
 │       ├── set_swap_enable.sh
 │       └── setup-set-permissions.sh
 └── setup_ubuntu_environment.sh
-
-16 directories, 73 files
 ``` 
 
 ## Organization:

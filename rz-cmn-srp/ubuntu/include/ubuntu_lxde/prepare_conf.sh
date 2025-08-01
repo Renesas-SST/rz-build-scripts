@@ -76,54 +76,6 @@ copy_resolv_conf() {
 }
 
 #######################################
-# Function copy_file_conf use to copy conf target dir in ubuntu os.
-# Globals:
-#   WORK_DIR
-# Arguments:
-#    - file name in folder config
-#    - target folder in ubuntu os
-#    - permission of file
-#######################################
-copy_file_conf() {
-	file_name="$1"
-	target_folder="$2"
-	file_permission="$3"
-
-	# Check if file exists in the config folder
-	if [ ! -f "${SCRIPT_DIR}/config/ubuntu_lxde/${file_name}" ]; then
-		echo "File ${file_name} does not exist in the config folder."
-		return 1
-	fi
-
-	# Check if target folder exists
-	if [ ! -d "${target_folder}" ]; then
-		echo "Target folder ${target_folder} does not exist. Creating it..."
-		mkdir -p "${target_folder}"
-		if [ $? -ne 0 ]; then
-			echo "Failed to create target folder ${target_folder}."
-			return 1
-		fi
-	fi
-
-	# Copy the file to the target folder
-	cp "${SCRIPT_DIR}/config/ubuntu_lxde/${file_name}" "${target_folder}"
-	if [ $? -ne 0 ]; then
-		echo "Failed to copy file ${file_name} to ${target_folder}."
-		return 1
-	fi
-
-	# Set the permissions of the copied file
-	chmod "${file_permission}" "${target_folder}/${file_name}"
-	if [ $? -ne 0 ]; then
-		echo "Failed to set permissions for file ${target_folder}/${file_name}."
-		return 1
-	fi
-
-	echo "File ${file_name} successfully copied to ${target_folder} with permissions ${file_permission}."
-	return 0
-}
-
-#######################################
 # Copy qt lib from renesas-ubuntu (yocto output) to rootfs
 # Globals:
 #   WORK_DIR
@@ -217,49 +169,49 @@ set_config() {
 	fi
 
 	# Set up rsyslog file
-	copy_file_conf "rsyslog" "rootfs/var/log" "666"
+	copy_file_conf "ubuntu_lxde" "rsyslog" "${ROOTFS}/var/log" "666"
 	if [ $? -eq 1 ]; then
 		echo "Failed to set up log file. Exiting."
 		return 1
 	fi
 
 	# Set LightDM configuration
-	copy_file_conf "lightdm.conf" "rootfs/etc/lightdm" "644"
+	copy_file_conf "ubuntu_lxde" "lightdm.conf" "${ROOTFS}/etc/lightdm" "644"
 	if [ $? -eq 1 ]; then
 		echo "Failed to configure LightDM. Exiting."
 		return 1
 	fi
 
 	# Configure network interfaces
-	copy_file_conf "interfaces" "rootfs/etc/network" "644"
+	copy_file_conf "ubuntu_lxde" "interfaces" "${ROOTFS}/etc/network" "644"
 	if [ $? -eq 1 ]; then
 		echo "Failed to configure network interfaces. Exiting."
 		return 1
 	fi
 
 	# Configure network manager
-	copy_file_conf "NetworkManager.conf" "rootfs/etc/NetworkManager" "644"
+	copy_file_conf "ubuntu_lxde" "NetworkManager.conf" "${ROOTFS}/etc/NetworkManager" "644"
 	if [ $? -eq 1 ]; then
 		echo "Failed to configure network manager. Exiting."
 		return 1
 	fi
 
 	# Configure camera ov5640
-	copy_file_conf "v4l2-init.sh" "rootfs/etc/profile.d" "755"
+	copy_file_conf "ubuntu_lxde" "v4l2-init.sh" "${ROOTFS}/etc/profile.d" "755"
 	if [ $? -eq 1 ]; then
 		echo "Failed to configure camera ov5640. Exiting."
 		return 1
 	fi
 
 	# Configure audio
-	copy_file_conf "audio-init.sh" "rootfs/etc/profile.d" "755"
+	copy_file_conf "ubuntu_lxde" "audio-init-lxde.sh" "${ROOTFS}/etc/profile.d" "755"
 	if [ $? -eq 1 ]; then
-	        echo "Failed to configure audio-init. Exiting."
-	        return 1
+		echo "Failed to configure audio-init. Exiting."
+		return 1
 	fi
 
 	# Configure connman-gtk to appear at System Tray
-	copy_file_conf "connman-gtk.desktop" "rootfs/etc/xdg/autostart" "755"
+	copy_file_conf "ubuntu_lxde" "connman-gtk.desktop" "${ROOTFS}/etc/xdg/autostart" "755"
 	if [ $? -eq 1 ]; then
 		echo "Failed to configure connman-gtk. Exiting."
 		return 1
@@ -280,14 +232,14 @@ set_config_after_install() {
 	cd "$WORK_DIR" || { echo "Failed to change to WORK_DIR"; return 1; }
 
 	# Configure lxpanel LXDE
-	copy_file_conf "panel" "${ROOTFS}/etc/xdg/lxpanel/LXDE/panels" "644"
+	copy_file_conf "ubuntu_lxde" "panel" "${ROOTFS}/etc/xdg/lxpanel/LXDE/panels" "644"
 	if [ $? -eq 1 ]; then
 		echo "Failed to configure lxpanel LXDE setting. Exiting."
 		return 1
 	fi
 
 	# Configure lxpanel default
-	copy_file_conf "panel" "${ROOTFS}/etc/xdg/lxpanel/default/panels" "644"
+	copy_file_conf "ubuntu_lxde" "panel" "${ROOTFS}/etc/xdg/lxpanel/default/panels" "644"
 	if [ $? -eq 1 ]; then
 		echo "Failed to configure lxpanel default setting. Exiting."
 		return 1
@@ -299,6 +251,7 @@ set_config_after_install() {
 		echo "Failed to copy force-display-xorg.sh to /usr/local/bin. Exiting."
 		return 1
 	fi
+
 	copy_file_conf "force-xorg-display.service" "${ROOTFS}/etc/systemd/system/" "755"
 	if [ $? -eq 1 ]; then
 		echo "Failed to configure force-xorg-display.service. Exiting."

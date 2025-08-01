@@ -43,26 +43,6 @@ set_config_wm8978() {
 	amixer -q set 'ALC Capture Attack' 10
 }
 
-# Function to disable pulseaudio service
-function disable_pulseaudio() {
-	systemctl --user stop pulseaudio.socket
-	systemctl --user stop pulseaudio.service
-	systemctl --user disable pulseaudio.service
-	systemctl --user disable pulseaudio.socket
-	systemctl --user mask pulseaudio.service
-	systemctl --user mask pulseaudio.socket
-}
-
-# Function to enable pulseaudio service
-function enable_pulseaudio() {
-	systemctl --user unmask pulseaudio.service
-	systemctl --user unmask pulseaudio.socket
-	systemctl --user start pulseaudio.socket
-	systemctl --user start pulseaudio.service
-	systemctl --user enable pulseaudio.service
-	systemctl --user enable pulseaudio.socket
-}
-
 # Main function
 main() {
 	# Get audio device name (content inside square brackets)
@@ -78,7 +58,6 @@ main() {
 	case "$DEVICE_NAME" in
 			*wm8978*)
 				# WM8978 audio card detected
-				disable_pulseaudio
 				set_config_wm8978
 				;;
 			*da7213*)

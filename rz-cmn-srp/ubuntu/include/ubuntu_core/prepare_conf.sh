@@ -13,6 +13,8 @@ ETC_PATH="$ROOTFS/etc"
 LOG_PATH="$ROOTFS/var/log"
 BOOT_PATH="$ROOTFS/boot"
 
+source "${SCRIPT_DIR}/include/common/prepare_env.sh"
+
 # 1. Copy qemu-aarch64-static
 function copy_qemu() {
 	echo "Copying qemu-aarch64-static..."
@@ -183,6 +185,13 @@ function set_config() {
 	set_network_config
 	if [[ $? -eq 1 ]]; then
 		echo "Failed to configure network. Exiting."
+		return 1
+	fi
+
+	# Configure audio
+	copy_file_conf "ubuntu_core" "audio-init-core.sh" "${ROOTFS}/etc/profile.d" "755"
+	if [ $? -eq 1 ]; then
+		echo "Failed to configure audio-init. Exiting."
 		return 1
 	fi
 
