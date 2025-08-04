@@ -244,9 +244,15 @@ This default setting ensures that users immediately benefit from the lightweight
 
 To properly configure Audacity for the system:
 1.	In Audacity, click **Audio Setup** in the top-right corner, then select **Audio Settings**.
-2.	In the window that opens, set both the **Playback** and **Recording Device** to **audio-da7219**.
+
+2.	In the window that opens, set both the **Playback** and **Recording Device** to the appropriate sound card for the current board in use (e.g., for the RZG2L-SBC, select the corresponding device).
   <img src="Pictures/audio_settings.png" alt="Audio Settings" width="700" />
-3.	Set the **Project Sample Rate** and **Default Sample Rate** at the bottom left to 48000 Hz to match the hardware's requirements.
+
+3.	Set the **Project Sample Rate** and **Default Sample Rate** in Edit -> Preference to 48000 Hz to match the hardware's requirements.
+
+4.	If recording or playback issues persist after applying the above configurations, consider increasing the **Buffer Length** in Edit -> Preferences to a value greater than the default of 100 ms (10000 ms is recommended).
+
+**Note:** The **Buffer Length** specifies the amount of audio data processed by the system during each read. Increasing the buffer size can give the system more time to process audio data, which may help **reduce glitches, latency, or dropout** — particularly on embedded devices, systems under high load, or with less optimized drivers.
 
 Click OK to save the settings. Then, click the red circle button to begin recording. 
 
