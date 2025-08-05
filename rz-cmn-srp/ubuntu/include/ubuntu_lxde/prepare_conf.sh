@@ -16,6 +16,8 @@ ROOTFS="./rootfs"
 BIN_PATH="$ROOTFS/usr/bin"
 ETC_PATH="$ROOTFS/etc"
 
+source "${SCRIPT_DIR}/include/common/prepare_env.sh"
+
 #######################################
 # Function copy_qemu use to copy qemu-aarch64-static to ubuntu os.
 # Globals:
@@ -246,13 +248,13 @@ set_config_after_install() {
 	fi
 
 	# Configure force xorg display service
-	copy_file_conf "force-display-xorg.sh" "${ROOTFS}/usr/local/bin/" "755"
+	copy_file_conf "ubuntu_lxde" "force-display-xorg.sh" "${ROOTFS}/usr/local/bin/" "755"
 	if [ $? -eq 1 ]; then
 		echo "Failed to copy force-display-xorg.sh to /usr/local/bin. Exiting."
 		return 1
 	fi
 
-	copy_file_conf "force-xorg-display.service" "${ROOTFS}/etc/systemd/system/" "755"
+	copy_file_conf "ubuntu_lxde" "force-xorg-display.service" "${ROOTFS}/etc/systemd/system/" "755"
 	if [ $? -eq 1 ]; then
 		echo "Failed to configure force-xorg-display.service. Exiting."
 		return 1
