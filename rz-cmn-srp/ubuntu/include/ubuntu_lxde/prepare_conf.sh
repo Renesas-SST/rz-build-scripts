@@ -100,7 +100,7 @@ copy_qt() {
 	cp -rd "$src_qt/lib/libQt"* "$target_dir/lib/aarch64-linux-gnu/" || { echo "Failed to copy 'aarch64-linux-gnu' directory"; return 1; }
 	mkdir -p "$target_dir/lib/aarch64-linux-gnu/pkgconfig/" || { echo "Failed to mkdir 'lib/aarch64-linux-gnu/pkgconfig' directory"; return 1; }
 	cp -rd "$src_qt/lib/pkgconfig/Qt"* "$target_dir/lib/aarch64-linux-gnu/pkgconfig/" || { echo "Failed to copy 'pkgconfig' directory"; return 1; }
-	cp -rd "$src_qt/lib/libicui18n.so.75" "$src_qt/lib/libicuuc.so.75" "$src_qt/lib/libicudata.so.75" "$src_qt/lib/libxcb"* "$target_dir/lib/aarch64-linux-gnu/" || { echo "Failed to copy to directory"; return 1; }
+	cp -rd "$src_qt/lib/libicui18n.so.75"* "$src_qt/lib/libicuuc.so.75"* "$src_qt/lib/libicudata.so.75"* "$src_qt/lib/libxcb"* "$target_dir/lib/aarch64-linux-gnu/" || { echo "Failed to copy to directory"; return 1; }
 	mkdir -p "$target_dir/lib/plugins" || { echo "Failed to mkdir 'lib/plugins' directory"; return 1; }
 	cp -rd "$src_qt/lib/plugins/qt"* "$target_dir/lib/plugins/"
 
