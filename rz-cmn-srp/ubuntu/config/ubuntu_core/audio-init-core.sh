@@ -21,7 +21,7 @@ set_config_da7213() {
 	amixer -q sset 'Mic 2' 90% on
 	amixer -q sset 'Lineout' 80% on
 	amixer -q set "Headphone" 100% on
-	amixer -q set 'DVC In',0 100%
+	amixer -q set 'DVC In',0 10%
 	amixer -q set 'Mixin PGA' 40% on
 }
 
@@ -45,13 +45,19 @@ set_config_wm8978() {
 
 # Main function
 main() {
+	# Check if 'aplay' command is available
+	if ! command -v aplay >/dev/null 2>&1; then
+		echo "Warning: 'aplay' command not found, skipping audio device check"
+		return 0
+	fi
+
 	# Get audio device name (content inside square brackets)
 	DEVICE_NAME=$(aplay -l | grep -A 2 "^card 0:" | grep "device 0:" | awk -F' device 0: ' '{print $2}'|awk '{print $1}')
 
 	# Check if device was not found
 	if [ -z "$DEVICE_NAME" ]; then
 		echo "Error: No audio device detected"
-		exit 1
+		return 0
 	fi
 
 	# If device was found
