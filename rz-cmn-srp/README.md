@@ -434,14 +434,8 @@ The following output is an example of the build artifacts generated for the `all
         │   │   ├── renesas-quickboot-wayland.tar.bz2
         │   │   ├── ubuntu-core-image.tar.bz2
         │   │   └── ubuntu-lxde-image.tar.bz2
-        │   ├── rzg2l-evk-platform-settings.bin
-        │   ├── rzg2l-evk-platform-settings.srec
-        │   ├── rzg2l-sbc-platform-settings.bin
-        │   ├── rzg2l-sbc-platform-settings.srec
-        │   ├── rzv2h-evk-platform-settings.bin
-        │   ├── rzv2h-evk-platform-settings.srec
-        │   ├── rzv2l-evk-platform-settings.bin
-        │   └── rzv2l-evk-platform-settings.srec
+        │   ├── <board-name>[-ver<revision>]-platform-settings.bin
+        │   └── <board-name>[-ver<revision>]-platform-settings.srec
         └── Readme.md
 ```
 ## User Manual
