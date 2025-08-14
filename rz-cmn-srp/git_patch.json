@@ -20,7 +20,7 @@
 	},
 	"meta-renesas": {
 		"url": "https://github.com/Renesas-SST/meta-renesas.git",
-		"branch": "styhead/rz-cmn",
+		"branch": "styhead/rz-cmn-support-v2h-rdk",
 		"tag": "",
 		"commit": "",
 		"patches": [],
