@@ -1,0 +1,39 @@
+{
+	"machine": [
+		"rz-cmn",
+		"rzg2l-sbc"
+	],
+	"images": {
+		"yocto": [
+			"core-image-minimal",
+			"core-image-bsp",
+			"core-image-weston",
+			"renesas-core-image-cli",
+			"renesas-core-image-weston",
+			"renesas-quickboot-cli",
+			"renesas-quickboot-wayland"
+		],
+		"ubuntu": [
+			"ubuntu-core",
+			"ubuntu-lxde"
+		],
+		"static": [
+			[
+				"all-yocto-images",
+				"all the supported images from the yocto lineup will be built."
+			],
+			[
+				"all-ubuntu-images",
+				"all the supported images from the ubuntu lineup above will be built."
+			],
+			[
+				"all-supported-images",
+				"all the images listed above will be built."
+			]
+		]
+	},
+	"defaults": {
+		"machine": "rz-cmn",
+		"image": "core-image-weston"
+	}
+}

@@ -33,8 +33,10 @@ TOP_DIR=$(pwd)
 
 JQ="${TOP_DIR}/jq-linux-amd64"
 PATCH_FILE="${TOP_DIR}/git_patch.json"
-IMAGES_JSON="${TOP_DIR}/images.json"
+CONFIG_JSON="${TOP_DIR}/config.json"
 
+DEFAULT_MACHINE=$("${JQ}" -r '.defaults.machine' "$CONFIG_JSON")
+DEFAULT_IMG=$("${JQ}" -r '.defaults.image' "$CONFIG_JSON")
 # Target image for the build
 # List of supported images in images.json:
 
@@ -79,13 +81,13 @@ log_info_header(){
 # Currently, this script supports for RZ SBC board
 guideline() {
 	# Check if the JSON file exists
-	if [[ ! -f "$IMAGES_JSON" ]]; then
-		echo "JSON file '$IMAGES_JSON' not found!"
+	if [[ ! -f "$CONFIG_JSON" ]]; then
+		echo "JSON file '$CONFIG_JSON' not found!"
 		exit 1
 	fi
 
 	# Extract all values from the JSON file and number them
-	VALUES=$("${JQ}" -r '.. | select(type == "string" or type == "number")' "$IMAGES_JSON")
+	VALUES=$("${JQ}" -r '.images | del(.static) | .. | select(type == "string" or type == "number")' "$CONFIG_JSON")
 
 	# Initialize counter
 	COUNTER=1
@@ -99,29 +101,42 @@ guideline() {
 	echo "Build yocto/ubuntu"
 	echo "$ MACHINE=<machine_name> IMAGE=<target_image> DISTRO=<target_distro> ./rz_builder.sh <target_build> <target_dir>"
 	echo "--------------------------"
-	echo " - <target_image>: the target Yocto build image. It can be one from the following list of supported images"
 	echo " - <machine_name>: the target machine name (e.g., rzg2l-sbc, rz-cmn, etc.)."
+	echo " - <target_image>: the target Yocto build image. It can be one from the following list of supported images"
+
 	# Print numbered values
 	while IFS= read -r VALUE; do
 		echo "	$COUNTER. $VALUE"
 		((COUNTER++))
 	done <<< "$VALUES"
+
+	VALUES=$("${JQ}" -r '.images.static[][0] | .. | select(type == "string" or type == "number")' "$CONFIG_JSON")
+	while IFS= read -r VALUE; do
+		echo "	$COUNTER. $VALUE"
+		((COUNTER++))
+	done <<< "$VALUES"
 	echo "Note:"
-	echo "	- If IMAGE is not set, the default image is core-image-weston."
-	echo "	- If MACHINE is not set, the default is 'rz-cmn'."
+	echo "	- If IMAGE is not set, the default image is '${DEFAULT_IMG}'."
+	echo "	- If MACHINE is not set, the default is '${DEFAULT_MACHINE}'."
 	echo "Special cases:"
-	echo "	- If IMAGE is set to 'all-yocto-images', all the supported images from the yocto lineup will be built."
-	echo "	- If IMAGE is set to 'all-ubuntu-images', all the supported images from the ubuntu lineup above will be built."
-	echo "	- If IMAGE is set to 'all-supported-images', all the images listed above will be built."
-	echo "	NOTE: for all special cases, DISTRO value is subjective and may end up mixing packages from both the IMAGE & DISTRO parameter."
+	NUM_CASES=$("${JQ}" -r '.images.static | length' "$CONFIG_JSON")
+	COUNTER=0
+	while [ "$COUNTER" -lt "$NUM_CASES" ]; do
+		VALUES=$("${JQ}" -r --argjson index "$COUNTER" '.images.static[$index][] | .. | select(type == "string" or type == "number")' "$CONFIG_JSON")
+		IMG=$(echo "$VALUES" | head -n1)
+		DESC=$(echo "$VALUES" | tail -n +2 | tr '\n' ' ')
+		echo "	- If IMAGE is set to '${IMG}', ${DESC}."
+		((COUNTER++))
+	done
+	echo "	NOTE: For all special cases, DISTRO value is subjective and may end up mixing packages from both the IMAGE & DISTRO parameter."
 	echo "Parameters:"
 	echo "-----------"
-	echo "	- <target_build>: the build options. It can be an image build (1) or a SDK build (2) as follows"
+	echo "	- <target_build>: specific  build action. It can be an image build (1) or a SDK build (2) as follows"
 	echo "		1. build"
 	echo "		2. build-sdk"
 	echo "	- <target_dir>: the build directory"
-	echo " 		If not set <target_dir>: current directory will be selected"
-	echo "	- <target_distro>: the target Yocto distribution. Common options include:"
+	echo " 		If <target_dir> is not set, current directory will be selected"
+	echo "	- <target_distro>: The target Yocto distribution. Common options include:"
 	echo "		1. poky"
 	echo "		2. ubuntu-tiny"
 	echo "Note: If DISTRO is not set, 'poky' will be selected by default."
@@ -727,7 +742,7 @@ build_sdk() {
 
 			# Iterate over all values in the JSON for given key 'yocto'
 			# Extract and iterate through the JSON array for the given key
-			${JQ} -r --arg key "yocto" '.[$key][]' "${IMAGES_JSON}" | while IFS= read -r img; do
+			${JQ} -r --arg key "yocto" '.[$key][]' "${CONFIG_JSON}" | while IFS= read -r img; do
 				log_info "Now building SDK for '${img}'"
 				MACHINE=${MACHINE} bitbake ${img} -c populate_sdk_ext
 			done
@@ -754,7 +769,7 @@ build_sdk() {
 
 			# Iterate over all values in the JSON for given key 'yocto'
 			# Extract and iterate through the JSON array for the given key
-			${JQ} -r --arg key "yocto" '.[$key][]' "${IMAGES_JSON}" | while IFS= read -r img; do
+			${JQ} -r --arg key "yocto" '.[$key][]' "${CONFIG_JSON}" | while IFS= read -r img; do
 				log_info "Now building SDK for '${img}'"
 				MACHINE=${MACHINE} bitbake "${img}" -c populate_sdk_ext
 			done
@@ -769,7 +784,7 @@ build_sdk() {
 
 			# Logic to check for individual yocto or ubuntu image and build only that image
 			# Method: Find keys where the target value exists in the array and then use it to setup bitbake command
-			${JQ} -r --arg value "${IMAGE}" 'to_entries | map(select(.value | index($value) != null)) | .[].key' "${IMAGES_JSON}" | while IFS= read -r entry; do
+			${JQ} -r --arg value "${IMAGE}" 'to_entries | map(select(.value | index($value) != null)) | .[].key' "${CONFIG_JSON}" | while IFS= read -r entry; do
 				if [ "${entry}" = "yocto" ]; then
 					log_info "Building SDK for ${IMAGE}"
 					MACHINE=${MACHINE} bitbake "${IMAGE}" -c populate_sdk_ext
@@ -810,7 +825,7 @@ build() {
 
 			# Iterate over all values in the JSON for given key 'yocto'
 			# Extract and iterate through the JSON array for the given key
-			${JQ} -r --arg key "yocto" '.[$key][]' "${IMAGES_JSON}" | while IFS= read -r img; do
+			${JQ} -r --arg key "yocto" '.images | .[$key][]' "${CONFIG_JSON}" | while IFS= read -r img; do
 				log_info "Now building '${img}'"
 				MACHINE=${MACHINE} bitbake ${img}
 			done
@@ -819,7 +834,7 @@ build() {
 
 			# Iterate over all values in the JSON for given key 'yocto'
 			# Extract and iterate through the JSON array for the given key
-			${JQ} -r --arg key "ubuntu" '.[$key][]' "${IMAGES_JSON}" | while IFS= read -r img; do
+			${JQ} -r --arg key "ubuntu" '.images | .[$key][]' "${CONFIG_JSON}" | while IFS= read -r img; do
 				log_info "Building ${img} now..."
 
 				# Build prerequisite artifacts for the Ubuntu image
@@ -848,7 +863,7 @@ build() {
 
 			# Iterate over all values in the JSON for given key 'ubuntu'
 			# Extract and iterate through the JSON array for the given key
-			${JQ} -r --arg key "ubuntu" '.[$key][]' "${IMAGES_JSON}" | while IFS= read -r img; do
+			${JQ} -r --arg key "ubuntu" '.images | .[$key][]' "${CONFIG_JSON}" | while IFS= read -r img; do
 				log_info "Building ${img} now..."
 
 				# Build prerequisite artifacts for the Ubuntu image
@@ -876,7 +891,7 @@ build() {
 
 			# Iterate over all values in the JSON for given key 'yocto'
 			# Extract and iterate through the JSON array for the given key
-			${JQ} -r --arg key "yocto" '.[$key][]' "${IMAGES_JSON}" | while IFS= read -r img; do
+			${JQ} -r --arg key "yocto" '.images | .[$key][]' "${CONFIG_JSON}" | while IFS= read -r img; do
 				log_info "Now building '${img}'"
 				MACHINE=${MACHINE} bitbake "${img}"
 			done
@@ -891,7 +906,7 @@ build() {
 
 			# Logic to check for individual yocto or ubuntu image and build only that image
 			# Method: Find keys where the target value exists in the array and then use it to setup bitbake command
-			${JQ} -r --arg value "${IMAGE}" 'to_entries | map(select(.value | index($value) != null)) | .[].key' "${IMAGES_JSON}" | while IFS= read -r entry; do
+			${JQ} -r --arg value "${IMAGE}" '.images | to_entries | map(select(.value | index($value) != null)) | .[].key' "${CONFIG_JSON}" | while IFS= read -r entry; do
 				if [ "${entry}" = "yocto" ]; then
 					log_info "Building ${IMAGE} for ${entry}"
 					MACHINE=${MACHINE} bitbake "${IMAGE}"
@@ -938,7 +953,7 @@ deploy_build_assets() {
 
 	# Copy build assets to the src directory
 	cp "${PATCH_FILE}" "${target_dir}"
-	cp "${IMAGES_JSON}" "${target_dir}"
+	cp "${CONFIG_JSON}" "${target_dir}"
 	cp "${JQ}" "${target_dir}"
 	cp -r "${TOP_DIR}/patches" "${target_dir}"
 	cp -r "${TOP_DIR}/files_to_add" "${target_dir}"
@@ -1006,13 +1021,14 @@ if ! command -v ${JQ} >/dev/null 2>&1; then
 	exit 1
 fi
 
-# Check if the images.json file exists
-if [ ! -f "${IMAGES_JSON}" ]; then
-  echo "JSON file not found: ${IMAGES_JSON}"
+# Check if the config.json file exists
+if [ ! -f "${CONFIG_JSON}" ]; then
+  echo "JSON file not found: ${CONFIG_JSON}"
   exit 1
 fi
 
-${JQ} -r '.. | arrays | .[]' "${IMAGES_JSON}" > /tmp/build-images.lst
+${JQ} -r '.images | del(.static) | .. | arrays | .[]' "${CONFIG_JSON}" > /tmp/build-images.lst
+${JQ} -r '.images.static[][0]' "${CONFIG_JSON}" >> /tmp/build-images.lst
 
 image_found=0
 #option_error=0
