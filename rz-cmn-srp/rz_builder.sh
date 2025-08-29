@@ -37,12 +37,6 @@ CONFIG_JSON="${TOP_DIR}/config.json"
 
 DEFAULT_MACHINE=$("${JQ}" -r '.defaults.machine' "$CONFIG_JSON")
 DEFAULT_IMG=$("${JQ}" -r '.defaults.image' "$CONFIG_JSON")
-# Target image for the build
-# List of supported images in images.json:
-
-# Special case:
-#  - all-supported-images (build all images listed in images.json)
-#  - all-supported-<build>-images ( builds all images in a particular base list such as yocto / ubuntu)
 
 # Default image is core-image-weston
 : ${IMAGE:=core-image-weston}
@@ -78,7 +72,6 @@ log_info_header(){
 }
 #--------------------------------xxxxx------------------------------------------
 # Guidance
-# Currently, this script supports for RZ SBC board
 guideline() {
 	# Check if the JSON file exists
 	if [[ ! -f "$CONFIG_JSON" ]]; then
@@ -139,7 +132,9 @@ guideline() {
 	echo "	- <target_distro>: The target Yocto distribution. Common options include:"
 	echo "		1. poky"
 	echo "		2. ubuntu-tiny"
-	echo "Note: If DISTRO is not set, 'poky' will be selected by default."
+	echo "Note:"
+	echo "  - If DISTRO is not set, 'poky' will be selected by default."
+	echo "  - If IMAGE is set to one of type 'ubuntu', DISTRO is automatically overiden to 'ubuntu-tiny'."
 	echo ""
 	echo "For example: "
 	echo "$ MACHINE=rz-cmn IMAGE=renesas-core-image-cli ./rz_builder.sh build ~/yocto-build"
@@ -742,7 +737,7 @@ build_sdk() {
 
 			# Iterate over all values in the JSON for given key 'yocto'
 			# Extract and iterate through the JSON array for the given key
-			${JQ} -r --arg key "yocto" '.[$key][]' "${CONFIG_JSON}" | while IFS= read -r img; do
+			${JQ} -r --arg key "yocto" '.images | .[$key][]' "${CONFIG_JSON}" | while IFS= read -r img; do
 				log_info "Now building SDK for '${img}'"
 				MACHINE=${MACHINE} bitbake ${img} -c populate_sdk_ext
 			done
@@ -769,7 +764,7 @@ build_sdk() {
 
 			# Iterate over all values in the JSON for given key 'yocto'
 			# Extract and iterate through the JSON array for the given key
-			${JQ} -r --arg key "yocto" '.[$key][]' "${CONFIG_JSON}" | while IFS= read -r img; do
+			${JQ} -r --arg key "yocto" '.images | .[$key][]' "${CONFIG_JSON}" | while IFS= read -r img; do
 				log_info "Now building SDK for '${img}'"
 				MACHINE=${MACHINE} bitbake "${img}" -c populate_sdk_ext
 			done
@@ -784,7 +779,7 @@ build_sdk() {
 
 			# Logic to check for individual yocto or ubuntu image and build only that image
 			# Method: Find keys where the target value exists in the array and then use it to setup bitbake command
-			${JQ} -r --arg value "${IMAGE}" 'to_entries | map(select(.value | index($value) != null)) | .[].key' "${CONFIG_JSON}" | while IFS= read -r entry; do
+			${JQ} -r --arg value "${IMAGE}" '.images | to_entries | map(select(.value | index($value) != null)) | .[].key' "${CONFIG_JSON}" | while IFS= read -r entry; do
 				if [ "${entry}" = "yocto" ]; then
 					log_info "Building SDK for ${IMAGE}"
 					MACHINE=${MACHINE} bitbake "${IMAGE}" -c populate_sdk_ext

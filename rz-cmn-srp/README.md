@@ -7,40 +7,42 @@ This directory contains automated build scripts and resources for performing Yoc
 ```
 $ tree -L 3
 .
+├── config.json
 ├── files_to_add
-│   └── meta-rz-features
-│       ├── 0001-rzg2l-sbc-Bring-compat_alloc_user_space-back.patch
-│       └── 0004-rzg2l-sbc-Get-interrupt-number.patch
+│   └── meta-rz-features
+│       ├── 0001-rzg2l-sbc-Bring-compat_alloc_user_space-back.patch
+│       └── 0004-rzg2l-sbc-Get-interrupt-number.patch
 ├── git_patch.json
-├── images.json
 ├── jq-linux-amd64
 ├── patches
-│   ├── meta-rz-features
-│   │   └── 0001-support-codec-for-linux-6.10-and-yocto-styhead.patch
-│   └── meta-summit-radio
-│       ├── 0001-rz-sbc-meta-summit-radio-Support-build-in-yocto-styh.patch
-│       └── 0002-rz-sbc-summit-radio-support-eSDK-build.patch
+│   ├── meta-rz-features
+│   │   └── 0001-support-codec-for-linux-6.10-and-yocto-styhead.patch
+│   └── meta-summit-radio
+│       ├── 0001-rz-sbc-meta-summit-radio-Support-build-in-yocto-styh.patch
+│       └── 0002-rz-sbc-summit-radio-support-eSDK-build.patch
 ├── README.md
 ├── rz_builder.sh
 └── ubuntu
     ├── config
-    │   ├── ubuntu_core
-    │   └── ubuntu_lxde
+    │   ├── ubuntu_core
+    │   └── ubuntu_lxde
     ├── config.ini
     ├── docs
-    │   ├── ubuntu_core
-    │   └── ubuntu_lxde
+    │   ├── ubuntu_core
+    │   └── ubuntu_lxde
     ├── include
-    │   ├── common
-    │   ├── ubuntu_core
-    │   └── ubuntu_lxde
+    │   ├── common
+    │   ├── ubuntu_core
+    │   └── ubuntu_lxde
     ├── README.md
     ├── script
-    │   ├── ubuntu_core
-    │   └── ubuntu_lxde
+    │   ├── common
+    │   ├── ubuntu_core
+    │   └── ubuntu_lxde
     └── setup_ubuntu_environment.sh
 
-19 directories, 13 files
+21 directories, 13 files
+
 ``` 
 
 ## Organization:
@@ -48,7 +50,7 @@ $ tree -L 3
 | File                 | Description                                                                                                                                                     |
 |----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | git_patch.json        | Contains json keys and repository configuration such as: url, branch, tag, commit, repo type and patch paths to apply.                                          |
-| images.json           | Contains the available build image options grouped by build type, including Yocto images, Ubuntu images, and static image collections (all-yocto-images, all-ubuntu-images, all-supported-images).|
+| config.json           | Contains the config options including available build image options grouped by build type, including Yocto images, Ubuntu images, and static image collections (all-yocto-images, all-ubuntu-images, all-supported-images).|
 | jq-linux-amd64        | JSON querry oss binary to perform reads of git_patch.json from shell script.                                                                                    |
 | patches/              | Folder containing patches. This should ideally be organized into sub directories named after the json key.                                                      |
 | files_to_add/              | A folder containing additional files that need to be added to the meta layer. These files are specified in the `add_files` field of `git_patch.json`, which defines their source locations and target destinations. For example: <br><br>**meta-rz-features/** <br>• 0001-rzg2l-sbc-Bring-compat_alloc_user_space-back.patch<br>• 0004-rzg2l-sbc-Get-interrupt-number.patch|
@@ -59,7 +61,11 @@ $ tree -L 3
 
 ## Image Categories
 
-The `images.json` file contains the list of available build image options categorized by build system and image groups.
+The `config.json` file contains the list of available build options such as machine types and image options categorized by build system and image groups meant for the build script to verify against.
+The user can use this config in three ways:
+    1. Read it to check available options.
+    2. Alter the lists and values to control the build with changed defaults
+    3. Alter the lists to build new user images without changing any build code. 
 
 - **yocto**: Lists individual Yocto-based images you can build, such as:
     - `core-image-minimal`
@@ -79,7 +85,17 @@ The `images.json` file contains the list of available build image options catego
     - `all-ubuntu-images`
     - `all-supported-images`
 
-Only categories and images that are actively supported and integrated in the build process are included in `images.json`. Others might not exist yet or aren’t supported.
+Only categories and images that are actively supported and integrated in the build process are included in `config.json`. Others might not exist yet or aren’t supported.
+
+It also lists the available `machine` types
+
+- **machine**: Lists the available target machine:
+    - `rz-cmn` : This is the default target and is meant for common platform support.
+    - `rzg2l-sbc`: Legacy machine that supports the reference RZ/G2L-SBC.
+
+- **defaults**: Lists the default options for differnt parameters.
+    - `machine` : Specify the default machine chosen when no machine is passed as arguement.
+    - `image` : Specify the default image to build where none is specified.
 
 ## Managing Repositories and Applying Patches
 
