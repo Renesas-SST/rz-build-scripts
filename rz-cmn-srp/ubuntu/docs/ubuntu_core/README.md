@@ -38,8 +38,13 @@ The `config.ini` file is used for configuring the script that builds an Ubuntu i
 - **WIC_ROOTFS_PARTITION_OVERHEAD_FACTOR**: Overhead factor for the rootfs partition in WIC. Default is 1.3 (30%) is a common default for WIC. Use 1.0 to disable overhead.
 - **ROOTFS_INTERNAL_FREE_SPACE_MB**: Default extra *free* space to add *inside* the root filesystem (in MB). This space is available to the user/system after booting.
 - **renesas_ubuntu_input_name**: Input rootfs (contains Qt libraries, bootloader, kernel, etc. - generated from Yocto) file name.
-- **UBUNTU_BASE_FILE_NAME**: The file name of the Ubuntu base that will be downloaded.
-- **UBUNTU_BASE_LINK**: The link to download the Ubuntu base file.
+- **UBUNTU_BASE_URL**: The primary url to use for landing at the download page.
+- **UBUNTU_BASE_URL_FILE_PATTERN**: The regex pattern used to filter out the requisite image file from the download page.
+- **UBUNTU_BASE_FILE_PATTERN**: The file pattern used to search for local cdimage archive previously downloaded. It's passed on to a `find` command.
+- **UBUNTU_LATEST_IMAGE**: A composite variable that automatically determines the image to download from those available at release page.
+- **DOWNLOAD_DIR**: Specify the path to place the downloaded cdimage archive. DOWNLOAD_DIR can be set here but will default to './' during execution if left empty here.
+- **LOCAL_FILE**: Short hand variable that points to where the previous cdimage archive might be present.
+
 - **OUTPUT_ROOTFS**: The output file name for the rootfs.
 - **OUTPUT_WIC**: The output file name for the wic image.
 - **TIME_ZONE_AREA**: The time zone area (e.g., "Asia").

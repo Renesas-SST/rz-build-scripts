@@ -10,17 +10,17 @@ $ tree -L 3
 .
 ├── README.md                   <---- Top-level documentation (this file)
 └── rz-cmn-srp/                 <---- Main build logic and scripts
+    ├── config.json         <---- Build config options. Lists availabele options for build script to go over.
     ├── files_to_add/		<---- Additional files to be copied into build environment.
     │   └── meta-rz-features/
-    ├── README.md               <---- Detailed guide for Ubuntu and Yocto builds.
-    ├── rz_builder.sh        <---- Unified entry point for both Yocto and Ubuntu builds
     ├── git_patch.json          <---- JSON definitions for managing repositories and patches
-    ├── images.json             <---- Image definitions grouped by build type
     ├── jq-linux-amd64          <---- Local copy of `jq` for JSON processing
-    ├── site.conf               /* (optional) */
     ├── patches/                <---- Patch sets organized by target layer
     │   ├── meta-summit-radio/
     │   └── meta-rz-features/
+    ├── README.md               <---- Detailed guide for Ubuntu and Yocto builds.
+    ├── rz_builder.sh        <---- Unified entry point for both Yocto and Ubuntu builds
+    ├── site.conf               /* (optional) */
     └── ubuntu/                 <---- Ubuntu-specific configuration and scripts
         ├── config
         ├── config.ini          <---- User configuration file
@@ -29,7 +29,7 @@ $ tree -L 3
         ├── README.md           <---- Detailed guide for Ubuntu builds
         ├── script              <---- Ubuntu-related scripts
         └── setup_ubuntu_environment.sh         <---- Script sourced by main builder to prepare Ubuntu environment
-11 directories, 9 files
+12 directories, 9 files
 ```
 
 ## Build Systems Overview
