@@ -308,6 +308,13 @@ main_ubuntu_lxde(){
 		exit 1
 	fi
 
+	# Enable ping for non-root users
+	chroot_run_1_script ${UBUNTU_COMMON_SCRIPT_PATH} "enable_ping.sh"
+	if [ $? -eq 1 ]; then
+		echo "enable_service failed."
+		exit 1
+	fi
+
 	# Package rootfs to tar file
 	package_rootfs
 	if [ $? -eq 1 ]; then
