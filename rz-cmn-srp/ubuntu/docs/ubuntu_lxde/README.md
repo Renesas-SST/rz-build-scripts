@@ -29,7 +29,7 @@ This release provides the following features:
 **Additional Features**
 - Custom Ubuntu LXDE build scripts for easy setup and deployment.
 - Verified Linux Package (VLP) Yocto build support
-- Linux BSP functionality (based on latest BSP release per platform)
+- Linux BSP functionality (pinned to the 6.10 baseline per platform)
 - Codec libraries supported.
 - 40 IO expansion interfaces supported for hardware connectivity.
 - On-board Audio Codec with Stereo Jack Analog Audio IO.
@@ -82,101 +82,23 @@ Here are the packages preinstalled after running the script:
 
 ### Hierarchy
 ```
+ubuntu/
 ├── config
 │   ├── ubuntu_core
-│   │   ├── audio-init-core.sh
-│   │   ├── network_interfaces.conf
-│   │   ├── NetworkManager.conf
-│   │   └── resolved.conf
 │   └── ubuntu_lxde
-│       ├── audio-init-lxde.sh
-│       ├── connman-gtk.desktop
-│       ├── force-display-xorg.sh
-│       ├── force-xorg-display.service
-│       ├── interfaces
-│       ├── lightdm.conf
-│       ├── NetworkManager.conf
-│       ├── panel
-│       ├── rsyslog
-│       ├── ttyS0.conf
-│       └── v4l2-init.sh
 ├── config.ini
 ├── docs
 │   ├── ubuntu_core
-│   │   └── README.md
 │   └── ubuntu_lxde
-│       ├── Pictures
-│       │   ├── audacity.png
-│       │   ├── audio_settings.png
-│       │   ├── bluetooth_0.png
-│       │   ├── bluetooth_1.png
-│       │   ├── bluetooth_2.png
-│       │   ├── bluetooth_3.png
-│       │   ├── bluetooth_4.png
-│       │   ├── csi_0.png
-│       │   ├── csi_1.png
-│       │   ├── csi_2.png
-│       │   ├── eth_1.png
-│       │   ├── eth_2.png
-│       │   ├── eth_3.png
-│       │   ├── eth_4.png
-│       │   ├── eth_5.png
-│       │   ├── eth.png
-│       │   ├── save_audio_0.png
-│       │   ├── save_audio_1.png
-│       │   ├── save_audio_2.png
-│       │   ├── vlc_open_0.png
-│       │   ├── vlc_open_1.png
-│       │   ├── vlc_open_2.png
-│       │   ├── vlc.png
-│       │   ├── vlc_video_1.png
-│       │   ├── vlc_video.png
-│       │   ├── web_1.png
-│       │   ├── web_2.png
-│       │   ├── web_lxterm_htop.png
-│       │   ├── web.png
-│       │   └── wifi_0.png
-│       └── README.md
 ├── include
 │   ├── common
-│   │   ├── allow_empty_password.sh
-│   │   ├── create_wic.sh
-│   │   ├── install_gstreamer.sh
-│   │   ├── install_weston.sh
-│   │   ├── mount.sh
-│   │   ├── prepare_env_rootfs.sh
-│   │   ├── prepare_env.sh
-│   │   ├── prepare_ubuntu_base.sh
-│   │   └── yocto_working.sh
 │   ├── ubuntu_core
-│   │   ├── prepare_conf.sh
-│   │   ├── prepare_env.sh
-│   │   ├── prepare_rootfs.sh
-│   │   └── setup_dns.sh
 │   └── ubuntu_lxde
-│       ├── create_swap.sh
-│       ├── prepare_conf.sh
-│       └── prepare_rootfs_qt.sh
 ├── README.md
 ├── script
 │   ├── common
-│   │   ├── dpkg-install-lock-fix.sh
-│   │   └── setup_dns_and_time.sh
 │   ├── ubuntu_core
-│   │   ├── apt_install_base.sh
-│   │   ├── link_to_leagcy_iptables.sh
-│   │   └── set_root_password.sh
 │   └── ubuntu_lxde
-│       ├── apt_audio_video.sh
-│       ├── apt_blueman.sh
-│       ├── apt_install_base.sh
-│       ├── apt_lxde_desktop.sh
-│       ├── apt_wifi_ble.sh
-│       ├── create_user.sh
-│       ├── enable_service.sh
-│       ├── set_root_password.sh
-│       ├── set_swap_enable.sh
-│       └── setup-set-permissions.sh
 └── setup_ubuntu_environment.sh
 ```
 
@@ -210,7 +132,7 @@ ubuntu/
 │   ├── common
 │   ├── ubuntu_core
 │   └── ubuntu_lxde
-└── ubuntu-base-24.04-base-arm64.tar.gz
+└── ubuntu-base-24.04.<version>-base-arm64.tar.gz
 
 yocto_rzcmn_board/build/tmp/deploy/images/<machine_name>/target/images
 ├── rootfs

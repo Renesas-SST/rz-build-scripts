@@ -144,41 +144,14 @@ Then rerun the build script and it will take care of everything else.
 The following output is an example of the build artifacts generated for the `all-supported-images` target. These images will be located in the `tmp/deploy/images/<machine_name>/` directory within your Yocto build folder. If you use the default build location and run the script with only the `build` argument, the images will be found at `yocto_rzcmn_board/build/tmp/deploy/images/<machine_name>/`
 
 ```
+renesas@builder-pc:~/renesas/rz-cmn-srp/yocto_rzcmn_board/build/tmp/deploy/images/rz-cmn$ tree
 .
 ├── host
 │   ├── build
-│   │   ├── core-image-bsp-<timestamp>.rootfs.manifest
-│   │   ├── core-image-bsp-<timestamp>.testdata.json
-│   │   ├── core-image-bsp.manifest -> core-image-bsp-<timestamp>.rootfs.manifest
-│   │   ├── core-image-bsp.testdata.json -> core-image-bsp-<timestamp>.testdata.json
-│   │   ├── core-image-minimal-<timestamp>.rootfs.manifest
-│   │   ├── core-image-minimal-<timestamp>.testdata.json
-│   │   ├── core-image-minimal.manifest -> core-image-minimal-<timestamp>.rootfs.manifest
-│   │   ├── core-image-minimal.testdata.json -> core-image-minimal-<timestamp>.testdata.json
-│   │   ├── core-image-weston-<timestamp>.rootfs.manifest
-│   │   ├── core-image-weston-<timestamp>.testdata.json
-│   │   ├── core-image-weston.manifest -> core-image-weston-<timestamp>.rootfs.manifest
-│   │   ├── core-image-weston.testdata.json -> core-image-weston-<timestamp>.testdata.json
-│   │   ├── renesas-core-image-cli-<timestamp>.rootfs.manifest
-│   │   ├── renesas-core-image-cli-<timestamp>.testdata.json
-│   │   ├── renesas-core-image-cli.manifest -> renesas-core-image-cli-<timestamp>.rootfs.manifest
-│   │   ├── renesas-core-image-cli.testdata.json -> renesas-core-image-cli-<timestamp>.testdata.json
-│   │   ├── renesas-core-image-weston-<timestamp>.rootfs.manifest
-│   │   ├── renesas-core-image-weston-<timestamp>.testdata.json
-│   │   ├── renesas-core-image-weston.manifest -> renesas-core-image-weston-<timestamp>.rootfs.manifest
-│   │   ├── renesas-core-image-weston.testdata.json -> renesas-core-image-weston-<timestamp>.testdata.json
-│   │   ├── renesas-quickboot-cli-<timestamp>.rootfs.manifest
-│   │   ├── renesas-quickboot-cli-<timestamp>.testdata.json
-│   │   ├── renesas-quickboot-cli.manifest -> renesas-quickboot-cli-<timestamp>.rootfs.manifest
-│   │   ├── renesas-quickboot-cli.testdata.json -> renesas-quickboot-cli-<timestamp>.testdata.json
-│   │   ├── renesas-quickboot-wayland-<timestamp>.rootfs.manifest
-│   │   ├── renesas-quickboot-wayland-<timestamp>.testdata.json
-│   │   ├── renesas-quickboot-wayland.manifest -> renesas-quickboot-wayland-<timestamp>.rootfs.manifest
-│   │   ├── renesas-quickboot-wayland.testdata.json -> renesas-quickboot-wayland-<timestamp>.testdata.json
-│   │   ├── renesas-ubuntu-<timestamp>.rootfs.manifest
-│   │   ├── renesas-ubuntu-<timestamp>.testdata.json
-│   │   ├── renesas-ubuntu.manifest -> renesas-ubuntu-<timestamp>.rootfs.manifest
-│   │   └── renesas-ubuntu.testdata.json -> renesas-ubuntu-<timestamp>.testdata.json
+│   │   ├── <image-name>-<timestamp>.rootfs.manifest
+│   │   ├── <image-name>-<timestamp>.testdata.json
+│   │   ├── <image-name>.manifest -> <image-name>-<timestamp>.rootfs.manifest
+│   │   └── <image-name>.testdata.json -> <image-name>-<timestamp>.testdata.json
 │   ├── env
 │   │   ├── core-image-bsp.env
 │   │   ├── core-image-minimal.env
@@ -191,12 +164,12 @@ The following output is an example of the build artifacts generated for the `all
 │   ├── Readme.md
 │   ├── src
 │   │   └── rz-cmn-srp
+│   │       ├── config.json
 │   │       ├── files_to_add
 │   │       │   └── meta-rz-features
 │   │       │       ├── 0001-rzg2l-sbc-Bring-compat_alloc_user_space-back.patch
 │   │       │       └── 0004-rzg2l-sbc-Get-interrupt-number.patch
 │   │       ├── git_patch.json
-│   │       ├── images.json
 │   │       ├── jq-linux-amd64
 │   │       ├── patches
 │   │       │   ├── meta-rz-features
@@ -304,162 +277,105 @@ The following output is an example of the build artifacts generated for the `all
 │   │           │       └── setup-set-permissions.sh
 │   │           └── setup_ubuntu_environment.sh
 │   └── tools
-│       ├── bootloader-flasher
+│       ├── bin
 │       │   ├── linux
-│       │   │   ├── bootloader_flash.py
+│       │   │   ├── bpgen
+│       │   │   ├── fiptool
 │       │   │   └── Readme.md
 │       │   ├── Readme.md
 │       │   └── windows
-│       │       ├── config.ini
-│       │       ├── flash_bootloader.bat
-│       │       ├── Readme.md
-│       │       └── tools
-│       │           ├── cygterm.cfg
-│       │           ├── flash_bootloader.ttl
-│       │           ├── TERATERM.INI
-│       │           ├── ttermpro.exe
-│       │           ├── ttpcmn.dll
-│       │           ├── ttpfile.dll
-│       │           ├── ttpmacro.exe
-│       │           ├── ttpset.dll
-│       │           └── ttxssh.dll
-│       ├── Readme.md
-│       ├── sd-creator
-│       │   ├── linux
-│       │   │   ├── Readme.md
-│       │   │   └── sd_flash.sh
-│       │   ├── Readme.md
-│       │   └── windows
-│       │       ├── config.ini
-│       │       ├── flash_filesystem.bat
-│       │       ├── Readme.md
-│       │       └── tools
-│       │           ├── AdbWinApi.dll
-│       │           ├── cygterm.cfg
-│       │           ├── fastboot.bat
-│       │           ├── fastboot.exe
-│       │           ├── flash_system_image.ttl
-│       │           ├── TERATERM.INI
-│       │           ├── ttermpro.exe
-│       │           ├── ttpcmn.dll
-│       │           ├── ttpfile.dll
-│       │           ├── ttpmacro.exe
-│       │           ├── ttpset.dll
-│       │           └── ttxssh.dll
-│       └── uload-bootloader
-│           ├── linux
-│           │   ├── Readme.md
-│           │   └── uload_bootloader_flash.py
-│           ├── Readme.md
-│           └── windows
-│               ├── config.ini
-│               ├── Readme.md
-│               ├── tools
-│               │   ├── cygterm.cfg
-│               │   ├── TERATERM.INI
-│               │   ├── ttermpro.exe
-│               │   ├── ttpcmn.dll
-│               │   ├── ttpfile.dll
-│               │   ├── ttpmacro.exe
-│               │   ├── ttpset.dll
-│               │   ├── ttxssh.dll
-│               │   └── uload-flash_bootloader.ttl
-│               └── uload-flash_bootloader.bat
+│       │       ├── bpgen.exe
+│       │       ├── fiptool.exe
+│       │       └── Readme.md
+│       ├── bootloader_flasher
+│       │   ├── bootloader_flash.py
+│       │   └── README.md
+│       ├── config
+│       │   ├── boards_flash_config.toml
+│       │   └── README.md
+│       ├── firmware_compile
+│       │   ├── firmware_compile.py
+│       │   └── Readme.md
+│       ├── flash_images.json
+│       ├── README.md
+│       ├── sd_creator
+│       │   ├── README.md
+│       │   ├── sd_flash.py
+│       │   └── tools
+│       │       ├── AdbWinApi.dll
+│       │       └── fastboot.exe
+│       ├── uload_bootloader
+│       │   ├── README.md
+│       │   └── uload_bootloader_flash.py
+│       └── universal_flash.py
 ├── license
 │   └── Disclaimer051.pdf
-├── <code>-rz-srp-<yocto-version>-um-quick-start-guide.pdf 
-├── <code>-rz-srp-<yocto-version>-um.pdf
+├── <code>-rz-cmn-srp-um-quick-start-guide.pdf
+├── <code>-rz-cmn-srp-um.pdf
 ├── README.md
 ├── RZ_System_Release_Package_Evaluation_license.pdf
-    └── target
-        ├── env
-        │   ├── Readme.md
-        │   └── uEnv.txt
-        ├── images
-        │   ├── bl2_bp_esd_rzg2l-evk.bin
-        │   ├── bl2_bp_esd_rzg2l-sbc.bin
-        │   ├── bl2_bp_esd_rzv2h-evk.bin
-        │   ├── bl2_bp_esd_rzv2h-evk.srec
-        │   ├── bl2_bp_esd_rzv2l-evk.bin
-        │   ├── bl2_bp_mmc_rzv2h-evk.bin
-        │   ├── bl2_bp_mmc_rzv2h-evk.srec
-        │   ├── bl2_bp_rzg2l-evk.bin
-        │   ├── bl2_bp_rzg2l-evk.srec
-        │   ├── bl2_bp_rzg2l-sbc.bin
-        │   ├── bl2_bp_rzg2l-sbc.srec
-        │   ├── bl2_bp_rzv2l-evk.bin
-        │   ├── bl2_bp_rzv2l-evk.srec
-        │   ├── bl2_bp_spi_rzv2h-evk.bin
-        │   ├── bl2_bp_spi_rzv2h-evk.srec
-        │   ├── bl2-rzg2l-evk.bin
-        │   ├── bl2-rzg2l-sbc.bin
-        │   ├── bl2-rzv2h-evk.bin
-        │   ├── bl2-rzv2l-evk.bin
-        │   ├── core-image-bsp.wic
-        │   ├── core-image-minimal.wic
-        │   ├── core-image-weston.wic
-        │   ├── dtbs
-        │   │   ├── overlays
-        │   │   │   ├── Readme.md
-        │   │   │   ├── rzg2l-sbc-can.dtbo
-        │   │   │   ├── rzg2l-sbc-dsi.dtbo
-        │   │   │   ├── rzg2l-sbc-ext-i2c.dtbo
-        │   │   │   ├── rzg2l-sbc-ext-spi.dtbo
-        │   │   │   └── rzg2l-sbc-ov5640.dtbo
-        │   │   ├── r9a07g044l2-smarc--6.10.14+git0+d<commit-hash>-r0-rz-cmn-<timestamp>.dtbo
-        │   │   ├── r9a07g044l2-smarc.dtb -> r9a07g044l2-smarc--6.10.14+git0+d<commit-hash>-r0-rz-cmn-<timestamp>.dtbo
-        │   │   ├── r9a07g054l2-smarc--6.10.14+git0+d<commit-hash>-r0-rz-cmn-<timestamp>.dtbo
-        │   │   ├── r9a07g054l2-smarc.dtb -> r9a07g054l2-smarc--6.10.14+git0+d<commit-hash>-r0-rz-cmn-<timestamp>.dtbo
-        │   │   ├── r9a09g057h4-evk-ver1--6.10.14+git0+d<commit-hash>-r0-rz-cmn-<timestamp>.dtbo
-        │   │   ├── r9a09g057h4-evk-ver1.dtb -> r9a09g057h4-evk-ver1--6.10.14+git0+d<commit-hash>-r0-rz-cmn-<timestamp>.dtbo
-        │   │   ├── Readme.md
-        │   │   ├── rzg2l-sbc--6.10.14+git0+d<commit-hash>-r0-rz-cmn-<timestamp>.dtbo
-        │   │   └── rzg2l-sbc.dtb -> rzg2l-sbc--6.10.14+git0+d<commit-hash>-r0-rz-cmn-<timestamp>.dtbo
-        │   ├── fip_rzg2l-evk.bin
-        │   ├── fip_rzg2l-evk.srec
-        │   ├── fip_rzg2l-sbc.bin
-        │   ├── fip_rzg2l-sbc.srec
-        │   ├── fip_rzv2h-evk.bin
-        │   ├── fip_rzv2h-evk.srec
-        │   ├── fip_rzv2l-evk.bin
-        │   ├── fip_rzv2l-evk.srec
-        │   ├── Flash_Writer_SCIF_rzg2l-evk.mot
-        │   ├── Flash_Writer_SCIF_rzg2l-evk_PMIC.mot
-        │   ├── Flash_Writer_SCIF_rzg2l-sbc.mot
-        │   ├── Flash_Writer_SCIF_rzg2l-sbc_PMIC.mot
-        │   ├── Flash_Writer_SCIF_RZV2H_DEV_INTERNAL_MEMORY.mot
-        │   ├── Flash_Writer_SCIF_rzv2l-evk.mot
-        │   ├── Flash_Writer_SCIF_rzv2l-evk_PMIC.mot
-        │   ├── Image -> Image--6.10.14+git0+d<commit-hash>-r0-rz-cmn-<timestamp>.bin
-        │   ├── Image--6.10.14+git0+d<commit-hash>-r0-rz-cmn-<timestamp>.bin
-        │   ├── Readme.md
-        │   ├── renesas-core-image-cli.wic
-        │   ├── renesas-core-image-weston.wic
-        │   ├── renesas-quickboot-cli.wic
-        │   ├── renesas-quickboot-wayland.wic
-        │   ├── ubuntu-core-image.wic.gz
-        │   ├── ubuntu-lxde-image.wic.gz
-        │   ├── rootfs
-        │   │   ├── core-image-bsp.tar.bz2
-        │   │   ├── core-image-minimal.tar.bz2
-        │   │   ├── core-image-weston.tar.bz2
-        │   │   ├── Readme.md
-        │   │   ├── renesas-core-image-cli.tar.bz2
-        │   │   ├── renesas-core-image-weston.tar.bz2
-        │   │   ├── renesas-quickboot-cli.tar.bz2
-        │   │   ├── renesas-quickboot-wayland.tar.bz2
-        │   │   ├── ubuntu-core-image.tar.bz2
-        │   │   └── ubuntu-lxde-image.tar.bz2
-        │   ├── <board-name>[-ver<revision>]-platform-settings.bin
-        │   └── <board-name>[-ver<revision>]-platform-settings.srec
-        └── Readme.md
+└── target
+    ├── env
+    │   ├── Readme.md
+    │   └── uEnv.txt
+    ├── images
+    │   ├── atf
+    │   │   ├── bl2-rz-cmn.bin
+    │   │   ├── bl31-rz-cmn.bin
+    │   │   ├── fdts
+    │   │   │   ├── <board-name>.dtb
+    │   │   │   └── Readme.md
+    │   │   └── Readme.md
+    │   ├── core-image-bsp.wic
+    │   ├── core-image-minimal.wic
+    │   ├── core-image-weston.wic
+    │   ├── Flash_Writer_SCIF_<board-name>.mot
+    │   ├── Flash_Writer_SCIF_<board-name>_PMIC.mot
+    │   ├── linux
+    │   │   ├── dtbs
+    │   │   │   ├── overlays
+    │   │   │   │   ├── Readme.md
+    │   │   │   │   ├── rzg2l-sbc-can.dtbo
+    │   │   │   │   ├── rzg2l-sbc-dsi.dtbo
+    │   │   │   │   ├── rzg2l-sbc-ext-i2c.dtbo
+    │   │   │   │   ├── rzg2l-sbc-ext-spi.dtbo
+    │   │   │   │   └── rzg2l-sbc-ov5640.dtbo
+    │   │   │   ├── <board-name>--<kernel-version>-rz-cmn-<timestamp>.dtbo
+    │   │   │   ├── <board-name>.dtb -> <board-name>--<kernel-version>-rz-cmn-<timestamp>.dtbo
+    │   │   │   └── Readme.md
+    │   │   ├── Image -> Image--<kernel-version>-rz-cmn-<timestamp>.bin
+    │   │   ├── Image--<kernel-version>-rz-cmn-<timestamp>.bin
+    │   │   └── Readme.md
+    │   ├── Readme.md
+    │   ├── renesas-core-image-cli.wic
+    │   ├── renesas-core-image-weston.wic
+    │   ├── renesas-quickboot-cli.wic
+    │   ├── renesas-quickboot-wayland.wic
+    │   ├── rootfs
+    │   │   ├── core-image-bsp.tar.bz2
+    │   │   ├── core-image-minimal.tar.bz2
+    │   │   ├── core-image-weston.tar.bz2
+    │   │   ├── Readme.md
+    │   │   ├── renesas-core-image-cli.tar.bz2
+    │   │   ├── renesas-core-image-weston.tar.bz2
+    │   │   ├── renesas-quickboot-cli.tar.bz2
+    │   │   └── renesas-quickboot-wayland.tar.bz2
+    │   ├── <board>-<version>-platform-settings.bin
+    │   ├── <board>-<version>-platform-settings.srec
+    │   └── u-boot
+    │       ├── dtbs
+    │       │   ├── Readme.md
+    │       │   └── <board-name>.dtb
+    │       ├── Readme.md
+    │       └── u-boot-nodtb-rz-cmn.bin
+    └── Readme.md
 ```
 ## User Manual
 
-The build provides comprehensive documentation of the supported board and all the features in a user manual having the name `rz-srp-yocto5-um.pdf`.
+The build provides comprehensive documentation of the supported board and all the features in a user manual having the name `rz-cmn-srp-um.pdf`.
 
 > [!IMPORTANT]
 > The user manual name is prefixed with an internal code that we use for tracking and version within our systems. The actual filename would have a prefix looking like :
-> `xxxxxx-rz-srp-yocto5-um.pdf`
+> `xxxxxx-rz-cmn-srp-um.pdf`
 >
 > The document gets updated with each official release.
