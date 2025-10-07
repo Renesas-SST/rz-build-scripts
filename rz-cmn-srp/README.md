@@ -62,7 +62,9 @@ $ tree -L 3
 ## Image Categories
 
 The `config.json` file contains the list of available build options such as machine types and image options categorized by build system and image groups meant for the build script to verify against.
+
 The user can use this config in three ways:
+
     1. Read it to check available options.
     2. Alter the lists and values to control the build with changed defaults
     3. Alter the lists to build new user images without changing any build code. 

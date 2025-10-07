@@ -39,10 +39,10 @@ DEFAULT_MACHINE=$("${JQ}" -r '.defaults.machine' "$CONFIG_JSON")
 DEFAULT_IMG=$("${JQ}" -r '.defaults.image' "$CONFIG_JSON")
 
 # Default image is core-image-weston
-IMAGE="${DEFAULT_IMG:-core-image-weston}"
+IMAGE="${IMAGE:-${DEFAULT_IMG:-core-image-weston}}"
 
 # Default machine is rz-cmn
-MACHINE="${DEFAULT_MACHINE:-rz-cmn}"
+MACHINE="${MACHINE:-${DEFAULT_MACHINE:-rz-cmn}}"
 
 export IMAGE MACHINE
 # ------------------------------------------------------------------------------
@@ -719,7 +719,7 @@ setup() {
 	echo "Target contents in ${RZ_TARGET_DIR}:"
 	(ls "${RZ_TARGET_DIR}")
 	echo ""
-	echo "Finished preparing the rz yocto build source repository for RZ SBC board"
+	echo "Finished preparing the Yocto build source repository for the RZ Common System."
 	echo "========================================================================="
 }
 
@@ -1005,7 +1005,7 @@ output() {
 	echo "The output located at: $OUTPUT"
 	ls -la $OUTPUT
 	echo
-	echo "Finished collecting the rz yocto output for RZ SBC board"
+	echo "Finished collecting Yocto build output for the RZ Common System"
 	echo "======================================================================"
 }
 
