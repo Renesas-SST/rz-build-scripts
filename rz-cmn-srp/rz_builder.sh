@@ -39,11 +39,12 @@ DEFAULT_MACHINE=$("${JQ}" -r '.defaults.machine' "$CONFIG_JSON")
 DEFAULT_IMG=$("${JQ}" -r '.defaults.image' "$CONFIG_JSON")
 
 # Default image is core-image-weston
-: ${IMAGE:=core-image-weston}
+IMAGE="${DEFAULT_IMG:-core-image-weston}"
 
 # Default machine is rz-cmn
-: ${MACHINE:=rz-cmn}
+MACHINE="${DEFAULT_MACHINE:-rz-cmn}"
 
+export IMAGE MACHINE
 # ------------------------------------------------------------------------------
 
 # -----------------------------Global variable------------------------------------
@@ -146,6 +147,9 @@ clean_repository() {
 		echo "Cleaning the working directory..."
 		git checkout .
 		git clean -fdx
+
+		echo "Fetching updates from remote..."
+		git fetch --tags --prune
 	fi
 }
 
@@ -677,7 +681,7 @@ setup_conf(){
 			# Copy default template overrides file as yocto doesnt copy site.conf.sample
 			cp ../meta-renesas/conf/templates/${MACHINE}/site.conf.sample conf/site.conf
 		fi
-		echo "This build is a common build for rzsbc. It is not based on any release tag. Target image: ${IMAGE}"
+		echo "This build is a common build for RZ Common System. It is not based on any release tag. Target image: ${IMAGE}"
 	else
 		# Copy local overrides file to yocto build conf folder
 		cp "${WORKSPACE}"/site.conf conf/site.conf
