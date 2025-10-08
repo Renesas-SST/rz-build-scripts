@@ -1,0 +1,76 @@
+From 371ecef31872a611f34b2541a50ceed0c3ce06af Mon Sep 17 00:00:00 2001
+From: Tom Hochstein <tom.hochstein@oss.nxp.com>
+Date: Wed, 5 Feb 2025 16:18:55 -0600
+Subject: [PATCH] uboot-config: Fix devtool modify
+
+Fix a problem with `devtool modify` as suggested by Marcus Flyckt on
+the mailing list:
+```
+    I encountered an issue with `do_config` when using `devtool modify`
+    on `u-boot-imx`.
+
+    ```
+    [...]
+    | cp: cannot stat '[...]/u-boot-imx/2024.04/build/imx8mp_wl400s_defconfig/.config': No such file or directory
+    | WARNING: exit code 1 from a shell command.
+    ERROR: Task ([...]/sources/poky/../meta-freescale/recipes-bsp/u-boot/u-boot-imx_2024.04.bb:do_configure) failed with exit code '1'
+    NOTE: Tasks Summary: Attempted 963 tasks of which 962 didn't need to be rerun and 1 failed.
+    Summary: 1 task failed:
+      [...]/sources/poky/../meta-freescale/recipes-bsp/u-boot/u-boot-imx_2024.04.bb:do_configure
+    Summary: There was 1 ERROR message, returning a non-zero exit code
+    ```
+
+    The issue seems to originate from the following lines in
+    `workspace/appends/u-boot-imx_2024.04.bbappend`:
+
+    ```
+    do_configure:append() {
+        if [ ${@oe.types.boolean(d.getVar("KCONFIG_CONFIG_ENABLE_MENUCONFIG"))} = True ]; then
+            cp ${KCONFIG_CONFIG_ROOTDIR}/.config ${S}/.config.baseline
+            ln -sfT ${KCONFIG_CONFIG_ROOTDIR}/.config ${S}/.config.new
+        fi
+    }
+    ```
+
+    For some reason `KCONFIG_CONFIG_ROOTDIR` does not point to the
+    correct directory. It gets its value in `uboot-config.bbclass`:
+
+    ```
+    if len(ubootconfig) == 1:
+                    d.setVar('KCONFIG_CONFIG_ROOTDIR', os.path.join(d.getVar("B"), d.getVar("UBOOT_MACHINE").strip()))
+    ```
+
+    So the main issue is that B gets expanded in this expression, and
+    then later B gets changed by `externalsrc.bbclass`.
+    `d.getVar("B", False)` does not solve the issue, however the
+    proposed change does.
+```
+- https://lists.yoctoproject.org/g/yocto/topic/109254298#msg64152]
+
+Fixes [YOCTO #15603]
+
+Suggested-by: Marcus Flyckt <marcus.flyckt@gmail.com>
+(From OE-Core rev: 57b21065a25100c31515b32fd7c77bde3355d684)
+
+Signed-off-by: Tom Hochstein <tom.hochstein@oss.nxp.com>
+Signed-off-by: Richard Purdie <richard.purdie@linuxfoundation.org>
+---
+ meta/classes-recipe/uboot-config.bbclass | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/meta/classes-recipe/uboot-config.bbclass b/meta/classes-recipe/uboot-config.bbclass
+index bf21961977..74992182c3 100644
+--- a/meta/classes-recipe/uboot-config.bbclass
++++ b/meta/classes-recipe/uboot-config.bbclass
+@@ -144,7 +144,7 @@ python () {
+             # Ensure the uboot specific menuconfig settings do not leak into other recipes
+             if 'u-boot' in recipename:
+                 if len(ubootconfig) == 1:
+-                    d.setVar('KCONFIG_CONFIG_ROOTDIR', os.path.join(d.getVar("B"), d.getVar("UBOOT_MACHINE").strip()))
++                    d.setVar('KCONFIG_CONFIG_ROOTDIR', os.path.join("${B}", d.getVar("UBOOT_MACHINE").strip()))
+                 else:
+                     # Disable menuconfig for multiple configs
+                     d.setVar('KCONFIG_CONFIG_ENABLE_MENUCONFIG', "false")
+-- 
+2.43.0
+

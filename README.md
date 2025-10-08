@@ -17,7 +17,8 @@ $ tree -L 3
     ├── jq-linux-amd64          <---- Local copy of `jq` for JSON processing
     ├── patches/                <---- Patch sets organized by target layer
     │   ├── meta-summit-radio/
-    │   └── meta-rz-features/
+    │   ├── meta-rz-features/
+    │   └── poky/
     ├── README.md               <---- Detailed guide for Ubuntu and Yocto builds.
     ├── rz_builder.sh        <---- Unified entry point for both Yocto and Ubuntu builds
     ├── site.conf               /* (optional) */
