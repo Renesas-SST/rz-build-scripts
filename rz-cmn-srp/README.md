@@ -17,9 +17,11 @@ $ tree -L 3
 ├── patches
 │   ├── meta-rz-features
 │   │   └── 0001-support-codec-for-linux-6.10-and-yocto-styhead.patch
-│   └── meta-summit-radio
-│       ├── 0001-rz-sbc-meta-summit-radio-Support-build-in-yocto-styh.patch
-│       └── 0002-rz-sbc-summit-radio-support-eSDK-build.patch
+│   ├── meta-summit-radio
+│   │   ├── 0001-rz-sbc-meta-summit-radio-Support-build-in-yocto-styh.patch
+│   │   └── 0002-rz-sbc-summit-radio-support-eSDK-build.patch
+│   └── poky
+│       └── 0001-uboot-config-Fix-devtool-modify.patch
 ├── README.md
 ├── rz_builder.sh
 └── ubuntu
@@ -174,6 +176,8 @@ renesas@builder-pc:~/renesas/rz-cmn-srp/yocto_rzcmn_board/build/tmp/deploy/image
 │   │       ├── git_patch.json
 │   │       ├── jq-linux-amd64
 │   │       ├── patches
+│   │       │   ├── poky
+│   │       │   │   └── 0001-uboot-config-Fix-devtool-modify.patch
 │   │       │   ├── meta-rz-features
 │   │       │   │   └── 0001-support-codec-for-linux-6.10-and-yocto-styhead.patch
 │   │       │   └── meta-summit-radio

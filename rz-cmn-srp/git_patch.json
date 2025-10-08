@@ -4,7 +4,7 @@
 		"branch": "styhead",
 		"tag": "",
 		"commit": "",
-		"patches": [],
+		"patches": ["patches/poky/0001-uboot-config-Fix-devtool-modify.patch"],
 		"type": "git",
 		"enable": "true"
 	},
