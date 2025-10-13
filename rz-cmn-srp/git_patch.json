@@ -91,15 +91,15 @@
 		"enable": "false"
 	},
 	"meta-rz-features": {
-		"patches": ["patches/meta-rz-features/0001-support-codec-for-linux-6.10-and-yocto-styhead.patch"],
+		"patches": ["patches/meta-rz-features/meta-rz-codecs/0001-support-codec-for-linux-6.10-and-yocto-styhead.patch"],
 		"type": "local",
 		"add_files": [
 			{
-				"source": "files_to_add/meta-rz-features/0001-rzg2l-sbc-Bring-compat_alloc_user_space-back.patch",
+				"source": "files_to_add/meta-rz-features/meta-rz-codecs/0001-rzg2l-sbc-Bring-compat_alloc_user_space-back.patch",
 				"target": "meta-rz-features/meta-rz-codecs/recipes-kernel/linux-yocto/files"
 			},
 			{
-				"source": "files_to_add/meta-rz-features/0004-rzg2l-sbc-Get-interrupt-number.patch",
+				"source": "files_to_add/meta-rz-features/meta-rz-codecs/0004-rzg2l-sbc-Get-interrupt-number.patch",
 				"target": "meta-rz-features/meta-rz-codecs/recipes-kernel/kernel-module-uvcs-drv/files"
 			}
 		],
