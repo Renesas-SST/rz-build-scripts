@@ -45,6 +45,8 @@ IMAGE="${IMAGE:-${DEFAULT_IMG:-core-image-weston}}"
 MACHINE="${MACHINE:-${DEFAULT_MACHINE:-rz-cmn}}"
 
 export IMAGE MACHINE
+
+RZ_FEATURE_CODEC="True"
 # ------------------------------------------------------------------------------
 
 # -----------------------------Global variable------------------------------------
@@ -661,6 +663,174 @@ unpack_codec() {
 	rm -fr ${zip_dir}
 }
 
+# Set or replace a variable in local.conf
+conf_set_variable() {
+    local var="$1"
+    local val="$2"
+    local lconf="${AUTO_CONF_FILE}"
+
+	[ -f "$lconf" ] || { log_error "Missing ${lconf}"; exit 1; }
+	# Remove any existing lines that set the var
+    sed -i "/^${var}[[:space:]]*=.*/d" "${lconf}"
+    echo "${var} = \"${val}\"" >> "${lconf}"
+}
+
+# Clean and create the template variables for parsing the libraries
+conf_clean_libraries() {
+    local lconf="${AUTO_CONF_FILE}"
+
+	[ -f "$lconf" ] || { log_error "Missing ${lconf}"; exit 1; }
+	# Refresh previous lines in the local.conf
+    sed -i '\|^IMAGE_INSTALL:append = " \${USER_IMAGE_ADD}"$|d' "${lconf}"
+    sed -i '\|^PACKAGE_EXCLUDE += " \${USER_PACKAGE_EXCLUDE}"$|d' "${lconf}"
+    sed -i '\|^BAD_RECOMMENDATIONS += " \${USER_PACKAGE_EXCLUDE}"$|d' "${lconf}"
+
+    echo 'IMAGE_INSTALL:append = " ${USER_IMAGE_ADD}"' >> "${lconf}"
+    echo 'PACKAGE_EXCLUDE += " ${USER_PACKAGE_EXCLUDE}"' >> "${lconf}"
+    echo 'BAD_RECOMMENDATIONS += " ${USER_PACKAGE_EXCLUDE}"' >> "${lconf}"
+}
+
+add_layer() {
+    local layer="$1"
+    local layer_path
+
+    layer_path="${RZ_TARGET_DIR}/${layer}"
+    # Control flag to handle the dependencies of meta-rz-codecs in meta-renesas
+    case "${layer_path}" in */meta-rz-codecs) RZ_FEATURE_CODEC="True" ;; esac
+
+    # If this is a real layer (has conf/layer.conf) add it
+    if [ -f "${layer_path}/conf/layer.conf" ]; then
+        if ! bitbake-layers show-layers 2>/dev/null | grep -Fq "${layer_path}"; then
+            if ! bitbake-layers add-layer "${layer_path}" >/dev/null 2>&1; then
+                log_warning "Failed to add layer ${layer}"
+            fi
+        fi
+	# If this is a folder that contains sub-layers, add every child layer under it
+    elif [ -d "${layer_path}" ]; then
+        local child_conf child found
+        found=0
+        for child_conf in "${layer_path}"/*/conf/layer.conf; do
+            [ -f "${child_conf}" ] || continue
+            found=1
+            child="${child_conf%/conf/layer.conf}"
+            if ! bitbake-layers show-layers 2>/dev/null | grep -Fq "${child}"; then
+                local out
+                if ! out=$(bitbake-layers add-layer "${child}" 2>&1); then
+                    log_warning "Failed to add layer ${child}: ${out}"
+                fi
+            fi
+            case "${child}" in */meta-rz-codecs) RZ_FEATURE_CODEC="True" ;; esac
+        done
+        [ "${found}" -eq 1 ] || log_warning "No valid sub-layers found under ${layer}"
+    else
+        log_warning "Path does not exist or is not a layer: ${layer}"
+    fi
+}
+
+remove_layer() {
+    local layer="$1"
+    local layer_path
+
+    layer_path="${RZ_TARGET_DIR}/${layer}"
+    # Control flag to handle the dependencies of meta-rz-codecs in meta-renesas
+	case "${layer_path}" in */meta-rz-codecs) RZ_FEATURE_CODEC="False" ;; esac
+
+    # If this is a real layer (has conf/layer.conf) add it
+    if [ -f "${layer_path}/conf/layer.conf" ]; then
+        if bitbake-layers show-layers 2>/dev/null | grep -Fq "${layer_path}"; then
+            if ! bitbake-layers remove-layer "${layer_path}" >/dev/null 2>&1; then
+                log_warning "Failed to remove layer ${layer}"
+            fi
+        fi
+	# If this is a folder that contains sub-layers, add every child layer under it
+    elif [ -d "${layer_path}" ]; then
+        local child_conf child found
+        found=0
+        for child_conf in "${layer_path}"/*/conf/layer.conf; do
+            [ -f "${child_conf}" ] || continue
+            found=1
+            child="${child_conf%/conf/layer.conf}"
+            if bitbake-layers show-layers 2>/dev/null | grep -Fq "${child}"; then
+                if ! bitbake-layers remove-layer "${child}" >/dev/null 2>&1; then
+                    log_warning "Failed to remove layer ${child}"
+                fi
+            fi
+            case "${child}" in */meta-rz-codecs) RZ_FEATURE_CODEC="False" ;; esac
+        done
+        [ "${found}" -eq 1 ] || log_warning "No valid sub-layers found under ${layer}"
+    else
+        log_warning "Path does not exist or is not a layer: ${layer}"
+    fi
+}
+
+apply_add_remove_layers() {
+    local layers_add layers_remove layer
+    RZ_FEATURE_CODEC="True"
+
+	# Due to bblayers.conf template in meta-renesas fixated meta-rz-codecs,
+    # drop codec layer entry and manage via bitbake-layers instead
+	sed -i '/meta-rz-features\/meta-rz-codecs/d' "${RZ_TARGET_DIR}/build/conf/bblayers.conf"
+
+    layers_add=$(${JQ} -r '.features.layers.add[]? // empty' "${CONFIG_JSON}" | awk 'NF')
+    for layer in ${layers_add}; do
+        add_layer "${layer}"
+    done
+
+    layers_remove=$(${JQ} -r '.features.layers.remove[]? // empty' "${CONFIG_JSON}" | awk 'NF')
+    for layer in ${layers_remove}; do
+        remove_layer "${layer}"
+    done
+
+	# Control RZ_FEATURE_CODEC in meta-renesas
+    if [ "${RZ_FEATURE_CODEC}" = "False" ]; then
+        conf_set_variable 'RZ_FEATURE_CODEC' 'False'
+    else
+        conf_set_variable 'RZ_FEATURE_CODEC' 'True'
+    fi
+}
+
+# Parse libraries from config.json to handle add/remove
+apply_libraries() {
+    local ADD_LIBS REMOVE_LIBS
+    ADD_LIBS=$(${JQ} -r '.features.libraries?.add[]? // empty' "${CONFIG_JSON}" | tr '\n' ' ')
+    REMOVE_LIBS=$(${JQ} -r '.features.libraries?.remove[]? // empty' "${CONFIG_JSON}" | tr '\n' ' ')
+
+    # Refresh the template
+    conf_clean_libraries
+
+	# Clean and parse variables to the template avoiding duplicates
+    conf_set_variable 'USER_IMAGE_ADD' "${ADD_LIBS}"
+    conf_set_variable 'USER_PACKAGE_EXCLUDE' "${REMOVE_LIBS}"
+
+    if [ -n "${REMOVE_LIBS}" ]; then
+        log_info "Applied library exclusions: ${REMOVE_LIBS}"
+    fi
+}
+
+apply_gpu_feature() {
+    local GPU_MODE
+    GPU_MODE=$(${JQ} -r '.features.gpu // "none"' "${CONFIG_JSON}")
+    log_info "GPU mode: ${GPU_MODE}"
+
+    # Control RZ_FEATURE_PANFROST in meta-renesas
+    conf_set_variable 'RZ_FEATURE_PANFROST' '0'
+
+    case "${GPU_MODE}" in
+        panfrost)
+            conf_set_variable 'RZ_FEATURE_PANFROST' '1'
+            ;;
+        mali)
+            log_warning "GPU mode 'mali' is not supported, set back to none"
+            ;;
+        none|"")
+            : # no action
+            ;;
+        *)
+            log_warning "Unknown GPU mode '${GPU_MODE}', set back to none"
+            ;;
+    esac
+}
+
 setup_conf(){
 	# Build RZ
 	cd "${RZ_TARGET_DIR}" || { log_error "Failed to switch to ${RZ_TARGET_DIR}" ; exit 1; }
@@ -692,6 +862,12 @@ setup_conf(){
 		echo "This build is based on release tag:$revision_value. Target image: ${IMAGE}"
 	fi
 
+    AUTO_CONF_FILE="${RZ_TARGET_DIR}/build/conf/local.conf"
+    export AUTO_CONF_FILE
+    
+	apply_add_remove_layers
+    apply_gpu_feature
+    apply_libraries
 }
 
 # Main setup
@@ -815,6 +991,7 @@ build() {
 	setup $1
 
 	setup_conf
+
 	case "${IMAGE}" in
 		"all-supported-images")
 			# If IMAGE is set to 'all-supported-images', build all images
