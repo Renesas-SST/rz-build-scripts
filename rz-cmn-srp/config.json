@@ -35,5 +35,19 @@
 	"defaults": {
 		"machine": "rz-cmn",
 		"image": "core-image-weston"
+	},
+	"features": {
+        "layers": {
+            "add": [
+                "meta-rz-features/meta-rz-codecs"
+            ],
+            "remove": [
+            ]
+        },
+		"libraries": {
+			"add": [],
+			"remove": []
+		},
+		"gpu": "panfrost"
 	}
 }
