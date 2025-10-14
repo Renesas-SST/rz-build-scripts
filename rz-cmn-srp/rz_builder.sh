@@ -805,6 +805,7 @@ build_sdk() {
 	esac
 
 	deploy_build_assets
+	deploy_ubuntu_build_assets
 	#output
 }
 
