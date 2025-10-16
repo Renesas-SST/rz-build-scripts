@@ -14,6 +14,7 @@ LOG_PATH="$ROOTFS/var/log"
 BOOT_PATH="$ROOTFS/boot"
 
 source "${SCRIPT_DIR}/include/common/prepare_env.sh"
+source "${SCRIPT_DIR}/include/common/setup_dns.sh"
 
 # 1. Copy qemu-aarch64-static
 function copy_qemu() {
@@ -196,5 +197,25 @@ function set_config() {
 	fi
 
 	echo "Configuration completed successfully."
+	return 0
+}
+
+# --------------------------------------------------------------------------#
+# Install DNS config after install
+set_config_after_install() {
+	echo "Setting configuration after install packages..."
+
+	# Change dir WORK_DIR
+	echo "Current working directory is: $WORK_DIR"
+	cd "$WORK_DIR" || { echo "Failed to change to WORK_DIR"; return 1; }
+
+	# Call Function to set up
+	set_dns_config
+	if [[ $? -eq 1 ]]; then
+		echo "Failed to configure DNS. Exiting."
+		return 1
+	fi
+
+	echo "set_config_after_install completed successfully."
 	return 0
 }

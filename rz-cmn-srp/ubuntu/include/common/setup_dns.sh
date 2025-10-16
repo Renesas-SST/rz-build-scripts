@@ -32,7 +32,7 @@ set_dns_config() {
 	mkdir -p "$(dirname "$RESOLVE_CONF")" || { echo "Failed to create $(dirname "$RESOLVE_CONF")"; return 1; }
 
 	# Check exist file network config
-	RESOLVE_CONFIG_FILE="${SCRIPT_DIR}/config/ubuntu_core/resolved.conf"
+	RESOLVE_CONFIG_FILE="${SCRIPT_DIR}/config/common/resolved.conf"
 	if [[ ! -f "$RESOLVE_CONFIG_FILE" ]]; then
 		echo "Configuration file $RESOLVE_CONFIG_FILE not found"
 		return 1
@@ -45,23 +45,3 @@ set_dns_config() {
 	return 0
 }
 
-
-# --------------------------------------------------------------------------#
-# Install DNS config after install
-set_config_after_install() {
-	echo "Setting configuration after install packages..."
-
-	# Change dir WORK_DIR
-	echo "Current working directory is: $WORK_DIR"
-	cd "$WORK_DIR" || { echo "Failed to change to WORK_DIR"; return 1; }
-
-	# Call Function to set up 
-	set_dns_config
-	if [[ $? -eq 1 ]]; then
-		echo "Failed to configure DNS. Exiting."
-		return 1
-	fi
-
-	echo "set_config_after_install completed successfully."
-	return 0
-}

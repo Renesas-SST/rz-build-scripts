@@ -68,9 +68,11 @@ Here are the packages preinstalled after running the script:
 
 
 ## Hierarchy
+
 ```
 ubuntu/
 ├── config
+│   ├── common
 │   ├── ubuntu_core
 │   └── ubuntu_lxde
 ├── config.ini
@@ -101,8 +103,9 @@ IMAGE=ubuntu-core ./rz_builder.sh build
 
 ```
 ├── config
-│   ├── ubuntu_core
-│   └── ubuntu_lxde
+│   ├── common
+│   ├── ubuntu_core
+│   └── ubuntu_lxde
 ├── config.ini                                   <---- User configuration
 ├── docs
 │   ├── ubuntu_core
@@ -125,6 +128,8 @@ yocto_rzcmn_board/build/tmp/deploy/images/<machine_name>/target/images
 |   └── ubuntu-core-image.tar.bz2        <---- Output compressed rootfs
 └──  ubuntu-core-image.wic.gz            <---- Output compressed WIC
 ```
+
+**Note on ubuntu base version**: By default, the scripts fetch the latest available 24.04 point release at build time.
 
 ### U-boot environment
 For more information about the U-Boot environment configuration, please refer to the original documentation provided in the [Renesas-SST/meta-renesas](https://github.com/Renesas-SST/meta-renesas/blob/styhead/rz-cmn/recipes-docs/rz-cmn-readme/files/README.md) layer.
