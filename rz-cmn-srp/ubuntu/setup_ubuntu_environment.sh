@@ -19,7 +19,6 @@ source_env(){
 		. ${SCRIPT_DIR}/include/ubuntu_core/prepare_env.sh
 		. ${SCRIPT_DIR}/include/ubuntu_core/prepare_rootfs.sh
 		. ${SCRIPT_DIR}/include/ubuntu_core/prepare_conf.sh
-		. ${SCRIPT_DIR}/include/ubuntu_core/setup_dns.sh
 	elif [ "$UBUNTU_TYPE" = "LXDE" ]; then
 		. ${SCRIPT_DIR}/include/ubuntu_lxde/prepare_rootfs_qt.sh
 		. ${SCRIPT_DIR}/include/ubuntu_lxde/prepare_conf.sh

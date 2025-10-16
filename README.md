@@ -10,8 +10,8 @@ $ tree -L 3
 .
 ├── README.md                   <---- Top-level documentation (this file)
 └── rz-cmn-srp/                 <---- Main build logic and scripts
-    ├── config.json         <---- Build config options. Lists availabele options for build script to go over.
-    ├── files_to_add/		<---- Additional files to be copied into build environment.
+    ├── config.json             <---- Build config options. Lists availabele options for build script to go over.
+    ├── files_to_add/           <---- Additional files to be copied into build environment.
     │   └── meta-rz-features/
     ├── git_patch.json          <---- JSON definitions for managing repositories and patches
     ├── jq-linux-amd64          <---- Local copy of `jq` for JSON processing
@@ -20,7 +20,7 @@ $ tree -L 3
     │   ├── meta-rz-features/
     │   └── poky/
     ├── README.md               <---- Detailed guide for Ubuntu and Yocto builds.
-    ├── rz_builder.sh        <---- Unified entry point for both Yocto and Ubuntu builds
+    ├── rz_builder.sh           <---- Unified entry point for both Yocto and Ubuntu builds
     ├── site.conf               /* (optional) */
     └── ubuntu/                 <---- Ubuntu-specific configuration and scripts
         ├── config
