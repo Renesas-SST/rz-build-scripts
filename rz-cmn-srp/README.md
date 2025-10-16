@@ -26,6 +26,7 @@ $ tree -L 3
 ├── rz_builder.sh
 └── ubuntu
     ├── config
+    │   ├── common
     │   ├── ubuntu_core
     │   └── ubuntu_lxde
     ├── config.ini
@@ -176,22 +177,24 @@ renesas@builder-pc:~/renesas/rz-cmn-srp/yocto_rzcmn_board/build/tmp/deploy/image
 │   │       ├── git_patch.json
 │   │       ├── jq-linux-amd64
 │   │       ├── patches
-│   │       │   ├── poky
-│   │       │   │   └── 0001-uboot-config-Fix-devtool-modify.patch
 │   │       │   ├── meta-rz-features
 │   │       │   │   └── 0001-support-codec-for-linux-6.10-and-yocto-styhead.patch
-│   │       │   └── meta-summit-radio
-│   │       │       ├── 0001-rz-sbc-meta-summit-radio-Support-build-in-yocto-styh.patch
-│   │       │       └── 0002-rz-sbc-summit-radio-support-eSDK-build.patch
+│   │       │   ├── meta-summit-radio
+│   │       │   │   ├── 0001-rz-sbc-meta-summit-radio-Support-build-in-yocto-styh.patch
+│   │       │   │   └── 0002-rz-sbc-summit-radio-support-eSDK-build.patch
+│   │       │   └── poky
+│   │       │       └── 0001-uboot-config-Fix-devtool-modify.patch
 │   │       ├── README.md
 │   │       ├── rz_builder.sh
+│   │       ├── site.conf               /* (optional) */
 │   │       └── ubuntu
 │   │           ├── config
+│   │           │   ├── common
+│   │           │   │   └── resolved.conf
 │   │           │   ├── ubuntu_core
 │   │           │   │   ├── audio-init-core.sh
 │   │           │   │   ├── network_interfaces.conf
-│   │           │   │   ├── NetworkManager.conf
-│   │           │   │   └── resolved.conf
+│   │           │   │   └── NetworkManager.conf
 │   │           │   └── ubuntu_lxde
 │   │           │       ├── audio-init-lxde.sh
 │   │           │       ├── connman-gtk.desktop
@@ -251,12 +254,12 @@ renesas@builder-pc:~/renesas/rz-cmn-srp/yocto_rzcmn_board/build/tmp/deploy/image
 │   │           │   │   ├── prepare_env_rootfs.sh
 │   │           │   │   ├── prepare_env.sh
 │   │           │   │   ├── prepare_ubuntu_base.sh
+│   │           │   │   ├── setup_dns.sh
 │   │           │   │   └── yocto_working.sh
 │   │           │   ├── ubuntu_core
 │   │           │   │   ├── prepare_conf.sh
 │   │           │   │   ├── prepare_env.sh
-│   │           │   │   ├── prepare_rootfs.sh
-│   │           │   │   └── setup_dns.sh
+│   │           │   │   └── prepare_rootfs.sh
 │   │           │   └── ubuntu_lxde
 │   │           │       ├── create_swap.sh
 │   │           │       ├── prepare_conf.sh
@@ -282,38 +285,39 @@ renesas@builder-pc:~/renesas/rz-cmn-srp/yocto_rzcmn_board/build/tmp/deploy/image
 │   │           │       ├── set_swap_enable.sh
 │   │           │       └── setup-set-permissions.sh
 │   │           └── setup_ubuntu_environment.sh
-│   └── tools
-│       ├── bin
-│       │   ├── linux
-│       │   │   ├── bpgen
-│       │   │   ├── fiptool
-│       │   │   └── Readme.md
-│       │   ├── Readme.md
-│       │   └── windows
-│       │       ├── bpgen.exe
-│       │       ├── fiptool.exe
-│       │       └── Readme.md
-│       ├── bootloader_flasher
-│       │   ├── bootloader_flash.py
-│       │   └── README.md
-│       ├── config
-│       │   ├── boards_flash_config.toml
-│       │   └── README.md
-│       ├── firmware_compile
-│       │   ├── firmware_compile.py
-│       │   └── Readme.md
-│       ├── flash_images.json
-│       ├── README.md
-│       ├── sd_creator
-│       │   ├── README.md
-│       │   ├── sd_flash.py
-│       │   └── tools
-│       │       ├── AdbWinApi.dll
-│       │       └── fastboot.exe
-│       ├── uload_bootloader
-│       │   ├── README.md
-│       │   └── uload_bootloader_flash.py
-│       └── universal_flash.py
+│   └── tools
+│       ├── bin
+│       │   ├── linux
+│       │   │   ├── bpgen
+│       │   │   ├── fiptool
+│       │   │   └── Readme.md
+│       │   ├── Readme.md
+│       │   └── windows
+│       │       ├── bpgen.exe
+│       │       ├── fiptool.exe
+│       │       └── Readme.md
+│       ├── bootloader_flasher
+│       │   ├── bootloader_flash.py
+│       │   └── README.md
+│       ├── config
+│       │   ├── boards_flash_config.toml
+│       │   └── README.md
+│       ├── firmware_compile
+│       │   ├── firmware_compile.py
+│       │   └── Readme.md
+│       ├── flash_images.json
+│       ├── README.md
+│       ├── requirements.txt
+│       ├── sd_creator
+│       │   ├── README.md
+│       │   ├── sd_flash.py
+│       │   └── tools
+│       │       ├── AdbWinApi.dll
+│       │       └── fastboot.exe
+│       ├── uload_bootloader
+│       │   ├── README.md
+│       │   └── uload_bootloader_flash.py
+│       └── universal_flash.py
 ├── license
 │   └── Disclaimer051.pdf
 ├── <code>-rz-cmn-srp-um-quick-start-guide.pdf

@@ -17,6 +17,7 @@ BIN_PATH="$ROOTFS/usr/bin"
 ETC_PATH="$ROOTFS/etc"
 
 source "${SCRIPT_DIR}/include/common/prepare_env.sh"
+source "${SCRIPT_DIR}/include/common/setup_dns.sh"
 
 #######################################
 # Function copy_qemu use to copy qemu-aarch64-static to ubuntu os.
@@ -266,6 +267,14 @@ set_config_after_install() {
 		echo "Failed to Remove blueman-aplet icon. Exiting."
 		return 1
 	fi
+
+	# Setup DNS
+	set_dns_config
+		if [[ $? -eq 1 ]]; then
+		echo "Failed to configure DNS. Exiting."
+		return 1
+	fi
+	echo "set_config_after_install completed successfully."
 
 	echo "Starting copy_qt..."
 	# Call copy_qt to copy qt files for the system

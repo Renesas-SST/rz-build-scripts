@@ -81,9 +81,11 @@ Here are the packages preinstalled after running the script:
 
 
 ### Hierarchy
+
 ```
 ubuntu/
 ├── config
+│   ├── common
 │   ├── ubuntu_core
 │   └── ubuntu_lxde
 ├── config.ini
@@ -115,6 +117,7 @@ IMAGE=ubuntu-lxde ./rz_builder.sh build
 ```
 ubuntu/
 ├── config
+│   ├── common
 │   ├── ubuntu_core
 │   └── ubuntu_lxde
 ├── config.ini                                    <---- User configuration
@@ -139,10 +142,14 @@ yocto_rzcmn_board/build/tmp/deploy/images/<machine_name>/target/images
 |   └── ubuntu-lxde-image.tar.bz2               <---- Output compressed rootfs
 └──  ubuntu-lxde-image.wic.gz                   <---- Output compressed WIC
 ```
+
+**Note on ubuntu base version**: By default, the scripts fetch the latest available 24.04 point release at build time.
+
 ### U-boot environment
 For more information about the U-Boot environment configuration, please refer to the original documentation provided in the [Renesas-SST/meta-renesas](https://github.com/Renesas-SST/meta-renesas/blob/styhead/rz-cmn/recipes-docs/rz-cmn-readme/files/README.md) layer.
 
 ### Introduction of LXDE
+
 LXDE is a lightweight and rapid desktop environment. It is designed to be user-friendly and take up few resources while keeping resource usage low.LXDE uses less memory and CPU to present as feature-rich desktop environment as possible. Unlike other desktop environments, LXDE strives to be a modular desktop environment so that each component can be used independently. This allows porting LXDE to different distributions and platforms more easily.
 
 LXDE contains several core components that can be used in desktop environments to manage the entire system resources. The main components are listed below:
