@@ -271,7 +271,7 @@ main_ubuntu_lxde(){
 
 	# Install blueman for bluetooth (on 20.04 and above)
 	# Get the ubuntu version
-	version=$(echo "$UBUNTU_BASE_FILE_NAME" | grep -oP '\d+\.\d+')
+	version=$(echo "$UBUNTU_LATEST_IMAGE" | grep -oP '\d+\.\d+')
 	major_version=$(echo "$version" | cut -d '.' -f 1)
 
 	if [ "$major_version" -ge 20 ]; then
