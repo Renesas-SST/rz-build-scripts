@@ -61,7 +61,7 @@ The build script includes functionality to detect and apply new patches as they 
 Ubuntu-related build logic and configurations reside under the `rz-cmn-srp/ubuntu/` directory. The unified build script `rz_builder.sh` also manages Ubuntu image creation by sourcing the necessary environment setup scripts and executing Ubuntu-specific workflows.
 
 This repository supports building two Ubuntu image types for RZ boards:
-- ubuntu-core: A minimal, headless Ubuntu image tailored for embedded systems. It includes Qt framework support for developing Qt-based applications in a resource-efficient environment.
+- ubuntu-core: A minimal, headless Ubuntu image tailored for embedded systems.
 - Ubuntu LXDE: A lightweight Ubuntu image featuring the LXDE desktop environment, providing a graphical interface while maintaining low resource consumption. This image also includes Qt framework support for GUI development.
 
 > [!IMPORTANT]

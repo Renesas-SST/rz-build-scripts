@@ -787,7 +787,6 @@ The following table details the available configuration options that can be set 
 \---------------------------------------------------------------------------
 
 default settings:
-    fdtfile=rzg2l-sbc.dtb
     #enable_overlay_i2c=1
     #enable_overlay_spi=1
     #enable_overlay_can=1
@@ -815,7 +814,7 @@ You can mount the sdcard on Windows to edit the uEnv.txt or do it on linux as be
 
 Step 1: Mount the partition
 ```shell
-root@localhost:~# mount /dev/mmcblk2p1 /tmp
+root@localhost:~# mount /dev/mmcblk0p1 /tmp
 root@localhost:/tmp# ls uEnv.txt
 uEnv.txt
 root@localhost:/tmp# vi uEnv.txt
@@ -1191,7 +1190,7 @@ hci0:   Type: Primary  Bus: USB
         Packet type: DM1 DM3 DM5 DH1 DH3 DH5 HV1 HV2 HV3
         Link policy: RSWITCH HOLD SNIFF PARK
         Link mode: PERIPHERAL ACCEPT
-        Name: 'rzg2l-sbc'
+        Name: '<machine name>'
         Class: 0x000000
         Service Classes: Unspecified
         Device Class: Miscellaneous,
@@ -1216,7 +1215,7 @@ hci0:   Type: Primary  Bus: USB
         Packet type: DM1 DM3 DM5 DH1 DH3 DH5 HV1 HV2 HV3
         Link policy: RSWITCH HOLD SNIFF PARK
         Link mode: SLAVE ACCEPT
-        Name: 'rzg2l-sbc'
+        Name: '<machine name>'
         Class: 0x000000
         Service Classes: Unspecified
         Device Class: Miscellaneous,
@@ -1239,7 +1238,7 @@ root@localhost:~# bluetoothctl
 [bluetooth]# default-agent
 ```
 
-Set the RZG2L-SBC to be discoverable by other Bluetooth devices:
+Set the target board to be discoverable by other Bluetooth devices:
 
 ```Shell
 [bluetooth]# discoverable on
@@ -1270,7 +1269,7 @@ Exit `bluetoothctl`.
 
 ##### 4.2.7.1 Send files over Bluetooth
 
-To share files between the RZG2L-SBC and the target Bluetooth device, run the obexctl daemon and connect:
+To share files between the target board and the target Bluetooth device, run the obexctl daemon and connect:
 
 ```Shell
 root@localhost:~# export $(dbus-launch)
