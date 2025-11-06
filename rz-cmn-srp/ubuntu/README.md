@@ -2,11 +2,12 @@
 
 This directory (ubuntu/) provides an organized framework to create Ubuntu-based images (e.g., Ubuntu Core, Ubuntu LXDE) for Renesas RZ boards. The main script acts as a controller that **includes and invokes modular scripts** to perform image creation tasks.
 
-## Hierarchy
+## Top-level directory layout
 
 ```
 ubuntu/
 ├── config
+│   ├── common
 │   ├── ubuntu_core
 │   └── ubuntu_lxde
 ├── config.ini
