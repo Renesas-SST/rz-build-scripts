@@ -153,6 +153,160 @@ When checking out a repository, the order of priority is:
 - If neither a tag nor a commit is found, it will look for a branch.
 - If none of these are found, it will use the default branch if the layer is not already present. If the layer exists, it will leave the existing folder unchanged.
 
+## DRP-AI Build Configuration
+
+The AI accelerator, called DRP-AI, consists of the Dynamically Reconfigurable Processor (DRP) and the Multiply-Accumulate Calculator for AI (AI-MAC).
+
+DRP-AI is an AI accelerator that can execute AI inference independently of the CPU. It operates by having the DRP-AI driver read the descriptor generated for converting trained AI models using the DRP-AI translator.
+
+By default, the DRP-AI feature is enabled for RZ/V2H. If you need to change this setting for RZ/V2L or revert the configuration, please follow the guide below:
+
+- **Default DRP AI support for RZ/V2H:**
+
+git_patch.json
+
+```json
+	"rzv2h_opencv_accelerator": {
+		"url": "https://github.com/renesas-rz/rzv2h_opencv_accelerator.git",
+		"branch": "main",
+		"tag": "",
+		"commit": "",
+		"patches": [],
+		"type": "git",
+		"add_files": [
+			{
+				"source": "files_to_add/meta-rz-features/meta-rz-opencva/0001-Add-support-for-DRP-driver.patch",
+				"target": "rzv2h_opencv_accelerator/meta-rz-features/meta-rz-opencva/recipes-kernel/linux-yocto"
+			}
+		],
+		"enable": "true"
+	},
+	"rzv2h_drp-ai_driver": {
+		"url": "https://github.com/renesas-rz/rzv2h_drp-ai_driver.git",
+		"branch": "main",
+		"tag": "",
+		"commit": "",
+		"patches": [],
+		"type": "git",
+		"add_files": [
+			{
+				"source": "files_to_add/meta-rz-features/meta-rz-drpai/0001-Support-u-dma-buf-for-kernel-6.10.patch",
+				"target": "rzv2h_drp-ai_driver/meta-rz-features/meta-rz-drpai/recipes-kernel/linux/kernel-module-udmabuf/kernel-module-udmabuf"
+			},
+			{
+				"source": "files_to_add/meta-rz-features/meta-rz-drpai/0001-Add-support-for-V2H-DRP-AI-driver.patch",
+				"target": "rzv2h_drp-ai_driver/meta-rz-features/meta-rz-drpai/recipes-kernel/linux/linux-yocto"
+			}
+		],
+		"enable": "true"
+	}
+```
+
+config.json
+
+```json
+	"features": {
+        "layers": {
+            "add": [
+                "meta-rz-features/meta-rz-codecs",
+                "rzv2h_opencv_accelerator/meta-rz-features/meta-rz-opencva",
+                "rzv2h_drp-ai_driver/meta-rz-features/meta-rz-drpai"
+            ],
+            "remove": [
+            ]
+        },
+		"libraries": {
+			"add": [],
+			"remove": []
+		},
+		"gpu": "panfrost"
+	}
+```
+
+- **Enable DRP AI for RZ/V2L:**
+
+git_patch.json
+```diff
+	"rzv2h_opencv_accelerator": {
+		"url": "https://github.com/Renesas-SST/rzv2h_opencv_accelerator.git",
+		"branch": "main",
+		"tag": "",
+		"commit": "",
+		"patches": [],
+		"type": "git",
+		"add_files": [
+			{
+				"source": "files_to_add/meta-rz-features/meta-rz-opencva/0001-Add-support-for-DRP-driver.patch",
+				"target": "rzv2h_opencv_accelerator/meta-rz-features/meta-rz-opencva/recipes-kernel/linux-yocto"
+			}
+		],
+-		"enable": "true"
++		"enable": "false"
+	},
+	"rzv2h_drp-ai_driver": {
+		"url": "https://github.com/Renesas-SST/rzv2h_drp-ai_driver.git",
+		"branch": "main",
+		"tag": "",
+		"commit": "",
+		"patches": [],
+		"type": "git",
+		"add_files": [
+			{
+				"source": "files_to_add/meta-rz-features/meta-rz-drpai/0001-Support-u-dma-buf-for-kernel-6.10.patch",
+				"target": "rzv2h_drp-ai_driver/meta-rz-features/meta-rz-drpai/recipes-kernel/linux/kernel-module-udmabuf/kernel-module-udmabuf"
+			},
+			{
+				"source": "files_to_add/meta-rz-features/meta-rz-drpai/0001-Add-support-for-V2H-DRP-AI-driver.patch",
+				"target": "rzv2h_drp-ai_driver/meta-rz-features/meta-rz-drpai/recipes-kernel/linux/linux-yocto"
+			}
+		],
+-		"enable": "true"
++		"enable": "false"
+	},
+	"rzv2l_drp-ai_driver": {
+		"url": "git@github.com:Renesas-SST/rzv2l_drp-ai_driver.git",
+		"branch": "rzv2l/drp-ai-v7.51",
+		"tag": "",
+		"commit": "",
+		"patches": [],
+		"type": "git",
+		"add_files": [
+			{
+				"source": "files_to_add/meta-rz-features/meta-rz-drpai/0001-Support-u-dma-buf-for-kernel-6.10.patch",
+				"target": "rzv2l_drp-ai_driver/meta-rz-features/meta-rz-drpai/recipes-kernel/linux/kernel-module-udmabuf/kernel-module-udmabuf"
+			},
+			{
+				"source": "files_to_add/meta-rz-features/meta-rz-drpai/0001-Add-support-for-V2L-DRP-AI-driver.patch",
+				"target": "rzv2l_drp-ai_driver/meta-rz-features/meta-rz-drpai/recipes-kernel/linux/linux-yocto"
+			}
+		],
+-		"enable": "false"
++		"enable": "true"
+	}
+```
+
+config.json
+
+```diff
+	"features": {
+        "layers": {
+            "add": [
+                "meta-rz-features/meta-rz-codecs",
+-               "rzv2h_opencv_accelerator/meta-rz-features/meta-rz-opencva",
+-               "rzv2h_drp-ai_driver/meta-rz-features/meta-rz-drpai"
++               "rzv2l_drp-ai_driver/meta-rz-features/meta-rz-drpai"
+            ],
+            "remove": [
+            ]
+        },
+		"libraries": {
+			"add": [],
+			"remove": []
+		},
+		"gpu": "panfrost"
+	}
+```
+
 ## Yocto Build
 
 You can perform the yocto build right here or by moving this directorys contents to your chosed location.
