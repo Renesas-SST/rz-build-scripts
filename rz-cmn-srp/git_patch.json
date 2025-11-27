@@ -104,5 +104,58 @@
 			}
 		],
 		"enable": "true"
+	},
+	"rzv2h_opencv_accelerator": {
+		"url": "https://github.com/Renesas-SST/rzv2h_opencv_accelerator.git",
+		"branch": "main",
+		"tag": "",
+		"commit": "",
+		"patches": [],
+		"type": "git",
+		"add_files": [
+			{
+				"source": "files_to_add/meta-rz-features/meta-rz-opencva/0001-Add-support-for-DRP-driver.patch",
+				"target": "rzv2h_opencv_accelerator/meta-rz-features/meta-rz-opencva/recipes-kernel/linux-yocto"
+			}
+		],
+		"enable": "true"
+	},
+	"rzv2h_drp-ai_driver": {
+		"url": "https://github.com/Renesas-SST/rzv2h_drp-ai_driver.git",
+		"branch": "main",
+		"tag": "",
+		"commit": "",
+		"patches": [],
+		"type": "git",
+		"add_files": [
+			{
+				"source": "files_to_add/meta-rz-features/meta-rz-drpai/0001-Support-u-dma-buf-for-kernel-6.10.patch",
+				"target": "rzv2h_drp-ai_driver/meta-rz-features/meta-rz-drpai/recipes-kernel/linux/kernel-module-udmabuf/kernel-module-udmabuf"
+			},
+			{
+				"source": "files_to_add/meta-rz-features/meta-rz-drpai/0001-Add-support-for-V2H-DRP-AI-driver.patch",
+				"target": "rzv2h_drp-ai_driver/meta-rz-features/meta-rz-drpai/recipes-kernel/linux/linux-yocto"
+			}
+		],
+		"enable": "true"
+	},
+	"rzv2l_drp-ai_driver": {
+		"url": "git@github.com:Renesas-SST/rzv2l_drp-ai_driver.git",
+		"branch": "rzv2l/drp-ai-v7.51",
+		"tag": "",
+		"commit": "",
+		"patches": [],
+		"type": "git",
+		"add_files": [
+			{
+				"source": "files_to_add/meta-rz-features/meta-rz-drpai/0001-Support-u-dma-buf-for-kernel-6.10.patch",
+				"target": "rzv2l_drp-ai_driver/meta-rz-features/meta-rz-drpai/recipes-kernel/linux/kernel-module-udmabuf/kernel-module-udmabuf"
+			},
+			{
+				"source": "files_to_add/meta-rz-features/meta-rz-drpai/0001-Add-support-for-V2L-DRP-AI-driver.patch",
+				"target": "rzv2l_drp-ai_driver/meta-rz-features/meta-rz-drpai/recipes-kernel/linux/linux-yocto"
+			}
+		],
+		"enable": "false"
 	}
 }
