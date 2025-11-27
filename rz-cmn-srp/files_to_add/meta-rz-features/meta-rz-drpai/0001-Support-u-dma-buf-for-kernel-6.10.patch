@@ -1,0 +1,72 @@
+From e991e6b2aa8a7c60ebc3570533f29949ed577ee0 Mon Sep 17 00:00:00 2001
+From: thanhnguyenwx <thanh.nguyen.wx@bp.renesas.com>
+Date: Sun, 23 Nov 2025 20:16:43 +0700
+Subject: [PATCH] Support u-dma-buf for kernel 6.10
+
+Upstream-Status: Pending
+
+Signed-off-by: thanhnguyenwx <thanh.nguyen.wx@bp.renesas.com>
+---
+ u-dma-buf.c | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
+
+diff --git a/u-dma-buf.c b/u-dma-buf.c
+index 3d19a1c..6f7c7dc 100644
+--- a/u-dma-buf.c
++++ b/u-dma-buf.c
+@@ -636,15 +636,15 @@ static int udmabuf_device_file_mmap(struct file *file, struct vm_area_struct* vm
+     if ((file->f_flags & O_SYNC) | (this->sync_mode & SYNC_ALWAYS)) {
+         switch (this->sync_mode & SYNC_MODE_MASK) {
+             case SYNC_MODE_NONCACHED :
+-                vma->vm_flags    |= VM_IO;
++                vm_flags_set(vma, VM_IO);
+                 vma->vm_page_prot = _PGPROT_NONCACHED(vma->vm_page_prot);
+                 break;
+             case SYNC_MODE_WRITECOMBINE :
+-                vma->vm_flags    |= VM_IO;
++                vm_flags_set(vma, VM_IO);
+                 vma->vm_page_prot = _PGPROT_WRITECOMBINE(vma->vm_page_prot);
+                 break;
+             case SYNC_MODE_DMACOHERENT :
+-                vma->vm_flags    |= VM_IO;
++                vm_flags_set(vma, VM_IO);
+                 vma->vm_page_prot = _PGPROT_DMACOHERENT(vma->vm_page_prot);
+                 break;
+             default :
+@@ -657,7 +657,7 @@ static int udmabuf_device_file_mmap(struct file *file, struct vm_area_struct* vm
+     {
+         unsigned long page_frame_num = (this->phys_addr >> PAGE_SHIFT) + vma->vm_pgoff;
+         if (pfn_valid(page_frame_num)) {
+-            vma->vm_flags |= VM_PFNMAP;
++            vm_flags_set(vma, VM_PFNMAP);
+             vma->vm_ops    = &udmabuf_device_vm_ops;
+             udmabuf_device_vma_open(vma);
+             return 0;
+@@ -1276,7 +1276,14 @@ static int udmabuf_platform_device_create(const char* name, int id, unsigned int
+         struct property_entry* props = (name != NULL) ? &props_list[0] : &props_list[1];
+ #if     (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 7, 0))
+         {
+-            retval = device_add_properties(&pdev->dev, props);
++            struct fwnode_handle *fwnode;
++
++            fwnode = fwnode_create_software_node(props, NULL);
++            if (IS_ERR(fwnode))
++                retval = PTR_ERR(fwnode);
++            else 
++                set_secondary_fwnode(&pdev->dev, fwnode);
++
+             if (retval != 0) {
+                 dev_err(&pdev->dev, "device_add_properties failed. return=%d\n", retval);
+                 goto failed;
+@@ -2081,7 +2088,7 @@ static int __init u_dma_buf_init(void)
+         goto failed;
+     }
+ 
+-    udmabuf_sys_class = class_create(THIS_MODULE, DRIVER_NAME);
++    udmabuf_sys_class = class_create(DRIVER_NAME);
+     if (IS_ERR_OR_NULL(udmabuf_sys_class)) {
+         retval = PTR_ERR(udmabuf_sys_class);
+         udmabuf_sys_class = NULL;
+-- 
+2.25.1
+
