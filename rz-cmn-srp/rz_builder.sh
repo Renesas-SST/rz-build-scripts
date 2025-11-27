@@ -73,6 +73,40 @@ log_info_header(){
 	string=$1
 	echo -e "\033[32;1;4m${string}\033[0m"
 }
+
+#---------------------------setup helper functions--------------------------------
+install_git_lfs_if_needed() {
+	echo "Checking for Git LFS..."
+
+	if command -v git >/dev/null 2>&1; then
+		if git lfs version >/dev/null 2>&1; then
+			echo "Git LFS already available."
+			return 0
+		fi
+	fi
+
+	echo "Git LFS not found, trying to install..."
+
+	if ! command -v curl >/dev/null 2>&1; then
+		echo "'curl' not found, installing curl first..."
+
+		if command -v apt-get >/dev/null 2>&1; then
+			sudo apt-get install -y curl
+		fi
+	fi
+
+	if command -v apt-get >/dev/null 2>&1; then
+		echo "Detected deb/apt-based system, using script.deb.sh..."
+		curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+		sudo apt-get install -y git-lfs
+	fi
+
+	if git lfs version >/dev/null 2>&1; then
+		echo "Git LFS installed successfully."
+		return 0
+	fi
+}
+
 #--------------------------------xxxxx------------------------------------------
 # Guidance
 guideline() {
@@ -241,7 +275,7 @@ apply_patches() {
 		if [ ! -d ".git" ]; then
 			patch -p1 < "${TOP_DIR}/${local_patch}"
 		else
-			git apply "${TOP_DIR}/${local_patch}"
+			git apply --ignore-whitespace "${TOP_DIR}/${local_patch}"
 		fi
 		if [ $? -ne 0 ]; then
 			echo "Error: Failed to apply patch ${TOP_DIR}/${local_patch}."
@@ -878,6 +912,11 @@ setup() {
 	log_warning "WARNING: The script will check tags first, then commits, and finally branches if all three are specified. It will check out to the specified tag, commit, or branch as needed."
 
 	check_patch_require
+
+	install_git_lfs_if_needed
+
+	echo "Running 'git lfs install'..."
+	git lfs install
 
 	# if targe directory is not present, we have to create and unpack the contents.
 	if [ ! -d "${RZ_TARGET_DIR}" ];then
