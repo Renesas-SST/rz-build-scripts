@@ -42,7 +42,6 @@ $ tree -L 3
     │   ├── ubuntu_core
     │   └── ubuntu_lxde
     └── setup_ubuntu_environment.sh
-
 ``` 
 
 ## Organization:
@@ -65,39 +64,39 @@ The `config.json` file contains the list of available build options such as mach
 
 The user can use this config in three ways:
 
-    1. Read it to check available options.
-    2. Alter the lists and values to control the build with changed defaults
-    3. Alter the lists to build new user images without changing any build code. 
+	1. Read it to check available options.
+	2. Alter the lists and values to control the build with changed defaults
+	3. Alter the lists to build new user images without changing any build code.
 
 - **yocto**: Lists individual Yocto-based images you can build, such as:
-    - `core-image-minimal`
-    - `core-image-bsp`
-    - `core-image-weston`
-    - `renesas-core-image-cli`
-    - `renesas-core-image-weston`
-    - `renesas-quickboot-cli`
-    - `renesas-quickboot-wayland`
+	- `core-image-minimal`
+	- `core-image-bsp`
+	- `core-image-weston`
+	- `renesas-core-image-cli`
+	- `renesas-core-image-weston`
+	- `renesas-quickboot-cli`
+	- `renesas-quickboot-wayland`
 
 - **ubuntu**: Lists Ubuntu-based images available for building, such as:
-    - `ubuntu-core`
-    - `ubuntu-lxde`
+	- `ubuntu-core`
+	- `ubuntu-lxde`
 
 - **static**: Defines groups of images to build multiple targets in one command, including:
-    - `all-yocto-images`
-    - `all-ubuntu-images`
-    - `all-supported-images`
+	- `all-yocto-images`
+	- `all-ubuntu-images`
+	- `all-supported-images`
 
 Only categories and images that are actively supported and integrated in the build process are included in `config.json`. Others might not exist yet or aren’t supported.
 
 It also lists the available `machine` types
 
 - **machine**: Lists the available target machine:
-    - `rz-cmn` : This is the default target and is meant for common platform support.
-    - `rzg2l-sbc`: Legacy machine that supports the reference RZ/G2L-SBC.
+	- `rz-cmn` : This is the default target and is meant for common platform support.
+	- `rzg2l-sbc`: Legacy machine that supports the reference RZ/G2L-SBC.
 
 - **defaults**: Lists the default options for differnt parameters.
-    - `machine` : Specify the default machine chosen when no machine is passed as arguement.
-    - `image` : Specify the default image to build where none is specified.
+	- `machine` : Specify the default machine chosen when no machine is passed as arguement.
+	- `image` : Specify the default image to build where none is specified.
 
 ### Layers and Graphics Customization
 
@@ -106,29 +105,33 @@ The `features` section in `config.json` applies customization before BitBake run
 - `layers`: Supports `add`/`remove` entries of meta-layer in BBLAYERS, either a specific layer path (has `conf/layer.conf`) or a folder of layers (adds/removes all valid sub-layers under it).
 - `libraries`: Control image packages. `add` appends packages, `remove` excludes packages (and marks as bad recommendations).
 - `gpu`: Choose a graphic mode. Available values:
-    - `"none"`: Disables graphics and no graphic configurations are applied.
-    - `"panfrost"`: Enables the Panfrost DRM driver via a conditional kernel configuration fragment.
-    - `"mali"`: Not currently supported by this build. Selecting `"mali"` has no effect and is treated the same as `"none"`.
+	- `"none"`: Disables graphics and no graphic configurations are applied.
+	- `"panfrost"`: Enables the Panfrost DRM driver via a conditional kernel configuration fragment.
+	- `"mali"`: Not currently supported by this build. Selecting `"mali"` has no effect and is treated the same as `"none"`.
 Example:
-    ```json
-    "features": {
-        "layers": {
-            "add": [
-                "meta-openembedded/meta-perl",
-                "meta-rz-features/meta-rz-codecs"
-            ],
-            "remove": [
-                "meta-browser/meta-chromium",
-                "meta-clang",
-            ]
-        },
-        "libraries": { 
-            "add": ["vim", "curl"], 
-            "remove": ["nano"] 
-        },
-        "gpu": "panfrost"
-    }
-    ```
+	```json
+	"features": {
+		"layers": {
+			"add": [
+				"meta-openembedded/meta-perl",
+				"meta-rz-features/meta-rz-codecs"
+			],
+			"remove": [
+				"meta-browser/meta-chromium",
+				"meta-clang",
+			]
+		},
+		"libraries": {
+			"add": ["vim", "curl"],
+			"remove": ["nano"]
+		},
+		"gpu": "panfrost"
+	}
+	```
+
+> [!NOTE]
+> **Codec layer support limitation:** The layer `meta-rz-features/meta-rz-codecs` is currently supported **only** on **RZ/V2L** and **RZ/G2L**.
+> For RZ/V2H devices, enabling this layer may not work and is not supported.
 
 ## Managing Repositories and Applying Patches
 
@@ -155,66 +158,50 @@ When checking out a repository, the order of priority is:
 
 ## DRP-AI Build Configuration
 
-The AI accelerator, called DRP-AI, consists of the Dynamically Reconfigurable Processor (DRP) and the Multiply-Accumulate Calculator for AI (AI-MAC).
+DRP-AI (Dynamically Reconfigurable Processor + AI-MAC) is an on-chip accelerator that can run AI inference independently of the CPU. In this build package, DRP-AI support is controlled by the build configuration (via additional repositories/layers), and is enabled by default for RZ/V2H and RZ/V2L platforms.
 
-DRP-AI is an AI accelerator that can execute AI inference independently of the CPU. It operates by having the DRP-AI driver read the descriptor generated for converting trained AI models using the DRP-AI translator.
+### Default (DRP-AI enabled)
 
-By default, the DRP-AI feature is enabled for RZ/V2H. If you need to change this setting for RZ/V2L or revert the configuration, please follow the guide below:
+DRP-AI is enabled by default through the DRP-AI-related repositories/layers being included in the build configuration:
 
-- **Default DRP AI support for RZ/V2H:**
+- `git_patch.json`: DRP-AI repositories are enabled (fetched during setup).
+- `config.json`: DRP-AI layers are listed under features.layers.add so they are included in the build layer stack.
 
-git_patch.json
+In `git_patch.json`:
 
 ```json
 	"rzv2h_opencv_accelerator": {
-		"url": "https://github.com/renesas-rz/rzv2h_opencv_accelerator.git",
-		"branch": "main",
+		"url": "https://github.com/Renesas-SST/rzv2h_opencv_accelerator.git",
+		"branch": "styhead/rz-cmn",
 		"tag": "",
 		"commit": "",
 		"patches": [],
 		"type": "git",
-		"add_files": [
-			{
-				"source": "files_to_add/meta-rz-features/meta-rz-opencva/0001-Add-support-for-DRP-driver.patch",
-				"target": "rzv2h_opencv_accelerator/meta-rz-features/meta-rz-opencva/recipes-kernel/linux-yocto"
-			}
-		],
 		"enable": "true"
 	},
-	"rzv2h_drp-ai_driver": {
-		"url": "https://github.com/renesas-rz/rzv2h_drp-ai_driver.git",
-		"branch": "main",
+	"rzv_drp-ai_driver": {
+		"url": "https://github.com/Renesas-SST/rzv_drp-ai_driver.git",
+		"branch": "styhead/rz-cmn",
 		"tag": "",
 		"commit": "",
 		"patches": [],
 		"type": "git",
-		"add_files": [
-			{
-				"source": "files_to_add/meta-rz-features/meta-rz-drpai/0001-Support-u-dma-buf-for-kernel-6.10.patch",
-				"target": "rzv2h_drp-ai_driver/meta-rz-features/meta-rz-drpai/recipes-kernel/linux/kernel-module-udmabuf/kernel-module-udmabuf"
-			},
-			{
-				"source": "files_to_add/meta-rz-features/meta-rz-drpai/0001-Add-support-for-V2H-DRP-AI-driver.patch",
-				"target": "rzv2h_drp-ai_driver/meta-rz-features/meta-rz-drpai/recipes-kernel/linux/linux-yocto"
-			}
-		],
 		"enable": "true"
 	}
 ```
 
-config.json
+In `config.json`:
 
 ```json
 	"features": {
-        "layers": {
-            "add": [
-                "meta-rz-features/meta-rz-codecs",
-                "rzv2h_opencv_accelerator/meta-rz-features/meta-rz-opencva",
-                "rzv2h_drp-ai_driver/meta-rz-features/meta-rz-drpai"
-            ],
-            "remove": [
-            ]
-        },
+		"layers": {
+			"add": [
+				"rzv2h_opencv_accelerator/meta-rz-features/meta-rz-opencva",
+				"rzv_drp-ai_driver/meta-rz-features/meta-rz-drpai"
+			],
+			"remove": [
+			]
+		},
 		"libraries": {
 			"add": [],
 			"remove": []
@@ -223,82 +210,25 @@ config.json
 	}
 ```
 
-- **Enable DRP AI for RZ/V2L:**
+- **To disable DRP AI:** ensure the DRP-AI-related layers are not present in BBLAYERS. In this build system, that is done by updating config.json under features.layers to:
+	- remove the DRP-AI layer paths from add, and
+	- list the same paths under remove so they are actively excluded from the layer stack.
 
-git_patch.json
-```diff
-	"rzv2h_opencv_accelerator": {
-		"url": "https://github.com/Renesas-SST/rzv2h_opencv_accelerator.git",
-		"branch": "main",
-		"tag": "",
-		"commit": "",
-		"patches": [],
-		"type": "git",
-		"add_files": [
-			{
-				"source": "files_to_add/meta-rz-features/meta-rz-opencva/0001-Add-support-for-DRP-driver.patch",
-				"target": "rzv2h_opencv_accelerator/meta-rz-features/meta-rz-opencva/recipes-kernel/linux-yocto"
-			}
-		],
--		"enable": "true"
-+		"enable": "false"
-	},
-	"rzv2h_drp-ai_driver": {
-		"url": "https://github.com/Renesas-SST/rzv2h_drp-ai_driver.git",
-		"branch": "main",
-		"tag": "",
-		"commit": "",
-		"patches": [],
-		"type": "git",
-		"add_files": [
-			{
-				"source": "files_to_add/meta-rz-features/meta-rz-drpai/0001-Support-u-dma-buf-for-kernel-6.10.patch",
-				"target": "rzv2h_drp-ai_driver/meta-rz-features/meta-rz-drpai/recipes-kernel/linux/kernel-module-udmabuf/kernel-module-udmabuf"
-			},
-			{
-				"source": "files_to_add/meta-rz-features/meta-rz-drpai/0001-Add-support-for-V2H-DRP-AI-driver.patch",
-				"target": "rzv2h_drp-ai_driver/meta-rz-features/meta-rz-drpai/recipes-kernel/linux/linux-yocto"
-			}
-		],
--		"enable": "true"
-+		"enable": "false"
-	},
-	"rzv2l_drp-ai_driver": {
-		"url": "git@github.com:Renesas-SST/rzv2l_drp-ai_driver.git",
-		"branch": "rzv2l/drp-ai-v7.51",
-		"tag": "",
-		"commit": "",
-		"patches": [],
-		"type": "git",
-		"add_files": [
-			{
-				"source": "files_to_add/meta-rz-features/meta-rz-drpai/0001-Support-u-dma-buf-for-kernel-6.10.patch",
-				"target": "rzv2l_drp-ai_driver/meta-rz-features/meta-rz-drpai/recipes-kernel/linux/kernel-module-udmabuf/kernel-module-udmabuf"
-			},
-			{
-				"source": "files_to_add/meta-rz-features/meta-rz-drpai/0001-Add-support-for-V2L-DRP-AI-driver.patch",
-				"target": "rzv2l_drp-ai_driver/meta-rz-features/meta-rz-drpai/recipes-kernel/linux/linux-yocto"
-			}
-		],
--		"enable": "false"
-+		"enable": "true"
-	}
-```
-
-config.json
+In `config.json`:
 
 ```diff
 	"features": {
-        "layers": {
-            "add": [
-                "meta-rz-features/meta-rz-codecs",
--               "rzv2h_opencv_accelerator/meta-rz-features/meta-rz-opencva",
--               "rzv2h_drp-ai_driver/meta-rz-features/meta-rz-drpai"
-+               "rzv2l_drp-ai_driver/meta-rz-features/meta-rz-drpai"
-            ],
-            "remove": [
-            ]
-        },
+		"layers": {
+			"add": [
+				"meta-rz-features/meta-rz-codecs",
+-				"rzv2h_opencv_accelerator/meta-rz-features/meta-rz-opencva",
+-				"rzv_drp-ai_driver/meta-rz-features/meta-rz-drpai"
+			],
+			"remove": [
++				"rzv2h_opencv_accelerator/meta-rz-features/meta-rz-opencva",
++				"rzv_drp-ai_driver/meta-rz-features/meta-rz-drpai"
+			]
+		},
 		"libraries": {
 			"add": [],
 			"remove": []
@@ -521,60 +451,60 @@ renesas@builder-pc:~/renesas/rz-cmn-srp/yocto_rzcmn_board/build/tmp/deploy/image
 ├── README.md
 ├── RZ_System_Release_Package_Evaluation_license.pdf
 └── target
-    ├── env
-    │   ├── Readme.md
-    │   └── uEnv.txt
-    ├── images
-    │   ├── atf
-    │   │   ├── bl2-rz-cmn.bin
-    │   │   ├── bl31-rz-cmn.bin
-    │   │   ├── fdts
-    │   │   │   ├── <board-name>.dtb
-    │   │   │   └── Readme.md
-    │   │   └── Readme.md
-    │   ├── core-image-bsp.wic
-    │   ├── core-image-minimal.wic
-    │   ├── core-image-weston.wic
-    │   ├── Flash_Writer_SCIF_<board-name>.mot
-    │   ├── Flash_Writer_SCIF_<board-name>_PMIC.mot
-    │   ├── linux
-    │   │   ├── dtbs
-    │   │   │   ├── overlays
-    │   │   │   │   ├── Readme.md
-    │   │   │   │   └── <board-name>-<rev-major>.<rev-minor>-<feature>.dtbo
-    │   │   │   ├── <board-name>--<kernel-version>-rz-cmn-<timestamp>.dtbo
-    │   │   │   ├── <board-name>.dtb -> <board-name>--<kernel-version>-rz-cmn-<timestamp>.dtbo
-    │   │   │   └── Readme.md
-    │   │   ├── Image -> Image--<kernel-version>-rz-cmn-<timestamp>.bin
-    │   │   ├── Image--<kernel-version>-rz-cmn-<timestamp>.bin
-    │   │   └── Readme.md
-    │   ├── Readme.md
-    │   ├── renesas-core-image-cli.wic
-    │   ├── renesas-core-image-weston.wic
-    │   ├── renesas-quickboot-cli.wic
-    │   ├── renesas-quickboot-wayland.wic
-    │   ├── ubuntu-core-image.wic.gz
-    │   ├── ubuntu-lxde-image.wic.gz
-    │   ├── rootfs
-    │   │   ├── core-image-bsp.tar.bz2
-    │   │   ├── core-image-minimal.tar.bz2
-    │   │   ├── core-image-weston.tar.bz2
-    │   │   ├── Readme.md
-    │   │   ├── renesas-core-image-cli.tar.bz2
-    │   │   ├── renesas-core-image-weston.tar.bz2
-    │   │   ├── renesas-quickboot-cli.tar.bz2
-    │   │   ├── renesas-quickboot-wayland.tar.bz2
-    │   │   ├── ubuntu-lxde-image.tar.bz2
-    │   │   └── ubuntu-core-image.tar.bz2
-    │   ├── <board>-<version>-platform-settings.bin
-    │   ├── <board>-<version>-platform-settings.srec
-    │   └── u-boot
-    │       ├── dtbs
-    │       │   ├── Readme.md
-    │       │   └── <board-name>.dtb
-    │       ├── Readme.md
-    │       └── u-boot-nodtb-rz-cmn.bin
-    └── Readme.md
+	├── env
+	│   ├── Readme.md
+	│   └── uEnv.txt
+	├── images
+	│   ├── atf
+	│   │   ├── bl2-rz-cmn.bin
+	│   │   ├── bl31-rz-cmn.bin
+	│   │   ├── fdts
+	│   │   │   ├── <board-name>.dtb
+	│   │   │   └── Readme.md
+	│   │   └── Readme.md
+	│   ├── core-image-bsp.wic
+	│   ├── core-image-minimal.wic
+	│   ├── core-image-weston.wic
+	│   ├── Flash_Writer_SCIF_<board-name>.mot
+	│   ├── Flash_Writer_SCIF_<board-name>_PMIC.mot
+	│   ├── linux
+	│   │   ├── dtbs
+	│   │   │   ├── overlays
+	│   │   │   │   ├── Readme.md
+	│   │   │   │   └── <board-name>-<rev-major>.<rev-minor>-<feature>.dtbo
+	│   │   │   ├── <board-name>--<kernel-version>-rz-cmn-<timestamp>.dtbo
+	│   │   │   ├── <board-name>.dtb -> <board-name>--<kernel-version>-rz-cmn-<timestamp>.dtbo
+	│   │   │   └── Readme.md
+	│   │   ├── Image -> Image--<kernel-version>-rz-cmn-<timestamp>.bin
+	│   │   ├── Image--<kernel-version>-rz-cmn-<timestamp>.bin
+	│   │   └── Readme.md
+	│   ├── Readme.md
+	│   ├── renesas-core-image-cli.wic
+	│   ├── renesas-core-image-weston.wic
+	│   ├── renesas-quickboot-cli.wic
+	│   ├── renesas-quickboot-wayland.wic
+	│   ├── ubuntu-core-image.wic.gz
+	│   ├── ubuntu-lxde-image.wic.gz
+	│   ├── rootfs
+	│   │   ├── core-image-bsp.tar.bz2
+	│   │   ├── core-image-minimal.tar.bz2
+	│   │   ├── core-image-weston.tar.bz2
+	│   │   ├── Readme.md
+	│   │   ├── renesas-core-image-cli.tar.bz2
+	│   │   ├── renesas-core-image-weston.tar.bz2
+	│   │   ├── renesas-quickboot-cli.tar.bz2
+	│   │   ├── renesas-quickboot-wayland.tar.bz2
+	│   │   ├── ubuntu-lxde-image.tar.bz2
+	│   │   └── ubuntu-core-image.tar.bz2
+	│   ├── <board>-<version>-platform-settings.bin
+	│   ├── <board>-<version>-platform-settings.srec
+	│   └── u-boot
+	│       ├── dtbs
+	│       │   ├── Readme.md
+	│       │   └── <board-name>.dtb
+	│       ├── Readme.md
+	│       └── u-boot-nodtb-rz-cmn.bin
+	└── Readme.md
 ```
 ## User Manual
 
