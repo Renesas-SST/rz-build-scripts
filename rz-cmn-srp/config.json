@@ -41,7 +41,7 @@
             "add": [
                 "meta-rz-features/meta-rz-codecs",
                 "rzv2h_opencv_accelerator/meta-rz-features/meta-rz-opencva",
-                "rzv2h_drp-ai_driver/meta-rz-features/meta-rz-drpai"
+                "rzv_drp-ai_driver/meta-rz-features/meta-rz-drpai"
             ],
             "remove": [
             ]

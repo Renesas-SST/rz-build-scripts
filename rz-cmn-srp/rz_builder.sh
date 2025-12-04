@@ -74,39 +74,6 @@ log_info_header(){
 	echo -e "\033[32;1;4m${string}\033[0m"
 }
 
-#---------------------------setup helper functions--------------------------------
-install_git_lfs_if_needed() {
-	echo "Checking for Git LFS..."
-
-	if command -v git >/dev/null 2>&1; then
-		if git lfs version >/dev/null 2>&1; then
-			echo "Git LFS already available."
-			return 0
-		fi
-	fi
-
-	echo "Git LFS not found, trying to install..."
-
-	if ! command -v curl >/dev/null 2>&1; then
-		echo "'curl' not found, installing curl first..."
-
-		if command -v apt-get >/dev/null 2>&1; then
-			sudo apt-get install -y curl
-		fi
-	fi
-
-	if command -v apt-get >/dev/null 2>&1; then
-		echo "Detected deb/apt-based system, using script.deb.sh..."
-		curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
-		sudo apt-get install -y git-lfs
-	fi
-
-	if git lfs version >/dev/null 2>&1; then
-		echo "Git LFS installed successfully."
-		return 0
-	fi
-}
-
 #--------------------------------xxxxx------------------------------------------
 # Guidance
 guideline() {
@@ -699,170 +666,170 @@ unpack_codec() {
 
 # Set or replace a variable in local.conf
 conf_set_variable() {
-    local var="$1"
-    local val="$2"
-    local lconf="${AUTO_CONF_FILE}"
+	local var="$1"
+	local val="$2"
+	local lconf="${AUTO_CONF_FILE}"
 
 	[ -f "$lconf" ] || { log_error "Missing ${lconf}"; exit 1; }
 	# Remove any existing lines that set the var
-    sed -i "/^${var}[[:space:]]*=.*/d" "${lconf}"
-    echo "${var} = \"${val}\"" >> "${lconf}"
+	sed -i "/^${var}[[:space:]]*=.*/d" "${lconf}"
+	echo "${var} = \"${val}\"" >> "${lconf}"
 }
 
 # Clean and create the template variables for parsing the libraries
 conf_clean_libraries() {
-    local lconf="${AUTO_CONF_FILE}"
+	local lconf="${AUTO_CONF_FILE}"
 
 	[ -f "$lconf" ] || { log_error "Missing ${lconf}"; exit 1; }
 	# Refresh previous lines in the local.conf
-    sed -i '\|^IMAGE_INSTALL:append = " \${USER_IMAGE_ADD}"$|d' "${lconf}"
-    sed -i '\|^PACKAGE_EXCLUDE += " \${USER_PACKAGE_EXCLUDE}"$|d' "${lconf}"
-    sed -i '\|^BAD_RECOMMENDATIONS += " \${USER_PACKAGE_EXCLUDE}"$|d' "${lconf}"
+	sed -i '\|^IMAGE_INSTALL:append = " \${USER_IMAGE_ADD}"$|d' "${lconf}"
+	sed -i '\|^PACKAGE_EXCLUDE += " \${USER_PACKAGE_EXCLUDE}"$|d' "${lconf}"
+	sed -i '\|^BAD_RECOMMENDATIONS += " \${USER_PACKAGE_EXCLUDE}"$|d' "${lconf}"
 
-    echo 'IMAGE_INSTALL:append = " ${USER_IMAGE_ADD}"' >> "${lconf}"
-    echo 'PACKAGE_EXCLUDE += " ${USER_PACKAGE_EXCLUDE}"' >> "${lconf}"
-    echo 'BAD_RECOMMENDATIONS += " ${USER_PACKAGE_EXCLUDE}"' >> "${lconf}"
+	echo 'IMAGE_INSTALL:append = " ${USER_IMAGE_ADD}"' >> "${lconf}"
+	echo 'PACKAGE_EXCLUDE += " ${USER_PACKAGE_EXCLUDE}"' >> "${lconf}"
+	echo 'BAD_RECOMMENDATIONS += " ${USER_PACKAGE_EXCLUDE}"' >> "${lconf}"
 }
 
 add_layer() {
-    local layer="$1"
-    local layer_path
+	local layer="$1"
+	local layer_path
 
-    layer_path="${RZ_TARGET_DIR}/${layer}"
-    # Control flag to handle the dependencies of meta-rz-codecs in meta-renesas
-    case "${layer_path}" in */meta-rz-codecs) RZ_FEATURE_CODEC="True" ;; esac
+	layer_path="${RZ_TARGET_DIR}/${layer}"
+	# Control flag to handle the dependencies of meta-rz-codecs in meta-renesas
+	case "${layer_path}" in */meta-rz-codecs) RZ_FEATURE_CODEC="True" ;; esac
 
-    # If this is a real layer (has conf/layer.conf) add it
-    if [ -f "${layer_path}/conf/layer.conf" ]; then
-        if ! bitbake-layers show-layers 2>/dev/null | grep -Fq "${layer_path}"; then
-            if ! bitbake-layers add-layer "${layer_path}" >/dev/null 2>&1; then
-                log_warning "Failed to add layer ${layer}"
-            fi
-        fi
+	# If this is a real layer (has conf/layer.conf) add it
+	if [ -f "${layer_path}/conf/layer.conf" ]; then
+		if ! bitbake-layers show-layers 2>/dev/null | grep -Fq "${layer_path}"; then
+			if ! bitbake-layers add-layer "${layer_path}" >/dev/null 2>&1; then
+				log_warning "Failed to add layer ${layer}"
+			fi
+		fi
 	# If this is a folder that contains sub-layers, add every child layer under it
-    elif [ -d "${layer_path}" ]; then
-        local child_conf child found
-        found=0
-        for child_conf in "${layer_path}"/*/conf/layer.conf; do
-            [ -f "${child_conf}" ] || continue
-            found=1
-            child="${child_conf%/conf/layer.conf}"
-            if ! bitbake-layers show-layers 2>/dev/null | grep -Fq "${child}"; then
-                local out
-                if ! out=$(bitbake-layers add-layer "${child}" 2>&1); then
-                    log_warning "Failed to add layer ${child}: ${out}"
-                fi
-            fi
-            case "${child}" in */meta-rz-codecs) RZ_FEATURE_CODEC="True" ;; esac
-        done
-        [ "${found}" -eq 1 ] || log_warning "No valid sub-layers found under ${layer}"
-    else
-        log_warning "Path does not exist or is not a layer: ${layer}"
-    fi
+	elif [ -d "${layer_path}" ]; then
+		local child_conf child found
+		found=0
+		for child_conf in "${layer_path}"/*/conf/layer.conf; do
+			[ -f "${child_conf}" ] || continue
+			found=1
+			child="${child_conf%/conf/layer.conf}"
+			if ! bitbake-layers show-layers 2>/dev/null | grep -Fq "${child}"; then
+				local out
+				if ! out=$(bitbake-layers add-layer "${child}" 2>&1); then
+					log_warning "Failed to add layer ${child}: ${out}"
+				fi
+			fi
+			case "${child}" in */meta-rz-codecs) RZ_FEATURE_CODEC="True" ;; esac
+		done
+		[ "${found}" -eq 1 ] || log_warning "No valid sub-layers found under ${layer}"
+	else
+		log_warning "Path does not exist or is not a layer: ${layer}"
+	fi
 }
 
 remove_layer() {
-    local layer="$1"
-    local layer_path
+	local layer="$1"
+	local layer_path
 
-    layer_path="${RZ_TARGET_DIR}/${layer}"
-    # Control flag to handle the dependencies of meta-rz-codecs in meta-renesas
+	layer_path="${RZ_TARGET_DIR}/${layer}"
+	# Control flag to handle the dependencies of meta-rz-codecs in meta-renesas
 	case "${layer_path}" in */meta-rz-codecs) RZ_FEATURE_CODEC="False" ;; esac
 
-    # If this is a real layer (has conf/layer.conf) add it
-    if [ -f "${layer_path}/conf/layer.conf" ]; then
-        if bitbake-layers show-layers 2>/dev/null | grep -Fq "${layer_path}"; then
-            if ! bitbake-layers remove-layer "${layer_path}" >/dev/null 2>&1; then
-                log_warning "Failed to remove layer ${layer}"
-            fi
-        fi
-	# If this is a folder that contains sub-layers, add every child layer under it
-    elif [ -d "${layer_path}" ]; then
-        local child_conf child found
-        found=0
-        for child_conf in "${layer_path}"/*/conf/layer.conf; do
-            [ -f "${child_conf}" ] || continue
-            found=1
-            child="${child_conf%/conf/layer.conf}"
-            if bitbake-layers show-layers 2>/dev/null | grep -Fq "${child}"; then
-                if ! bitbake-layers remove-layer "${child}" >/dev/null 2>&1; then
-                    log_warning "Failed to remove layer ${child}"
-                fi
-            fi
-            case "${child}" in */meta-rz-codecs) RZ_FEATURE_CODEC="False" ;; esac
-        done
-        [ "${found}" -eq 1 ] || log_warning "No valid sub-layers found under ${layer}"
-    else
-        log_warning "Path does not exist or is not a layer: ${layer}"
-    fi
+	# If this is a real layer (has conf/layer.conf) remove it
+	if [ -f "${layer_path}/conf/layer.conf" ]; then
+		if bitbake-layers show-layers 2>/dev/null | grep -Fq "${layer_path}"; then
+			if ! bitbake-layers remove-layer "${layer_path}" >/dev/null 2>&1; then
+				log_warning "Failed to remove layer ${layer}"
+			fi
+		fi
+	# If this is a folder that contains sub-layers, remove every child layer under it
+	elif [ -d "${layer_path}" ]; then
+		local child_conf child found
+		found=0
+		for child_conf in "${layer_path}"/*/conf/layer.conf; do
+			[ -f "${child_conf}" ] || continue
+			found=1
+			child="${child_conf%/conf/layer.conf}"
+			if bitbake-layers show-layers 2>/dev/null | grep -Fq "${child}"; then
+				if ! bitbake-layers remove-layer "${child}" >/dev/null 2>&1; then
+					log_warning "Failed to remove layer ${child}"
+				fi
+			fi
+			case "${child}" in */meta-rz-codecs) RZ_FEATURE_CODEC="False" ;; esac
+		done
+		[ "${found}" -eq 1 ] || log_warning "No valid sub-layers found under ${layer}"
+	else
+		log_warning "Path does not exist or is not a layer: ${layer}"
+	fi
 }
 
 apply_add_remove_layers() {
-    local layers_add layers_remove layer
-    RZ_FEATURE_CODEC="True"
+	local layers_add layers_remove layer
+	RZ_FEATURE_CODEC="True"
 
 	# Due to bblayers.conf template in meta-renesas fixated meta-rz-codecs,
-    # drop codec layer entry and manage via bitbake-layers instead
+	# drop codec layer entry and manage via bitbake-layers instead
 	sed -i '/meta-rz-features\/meta-rz-codecs/d' "${RZ_TARGET_DIR}/build/conf/bblayers.conf"
 
-    layers_add=$(${JQ} -r '.features.layers.add[]? // empty' "${CONFIG_JSON}" | awk 'NF')
-    for layer in ${layers_add}; do
-        add_layer "${layer}"
-    done
+	layers_add=$(${JQ} -r '.features.layers.add[]? // empty' "${CONFIG_JSON}" | awk 'NF')
+	for layer in ${layers_add}; do
+		add_layer "${layer}"
+	done
 
-    layers_remove=$(${JQ} -r '.features.layers.remove[]? // empty' "${CONFIG_JSON}" | awk 'NF')
-    for layer in ${layers_remove}; do
-        remove_layer "${layer}"
-    done
+	layers_remove=$(${JQ} -r '.features.layers.remove[]? // empty' "${CONFIG_JSON}" | awk 'NF')
+	for layer in ${layers_remove}; do
+		remove_layer "${layer}"
+	done
 
 	# Control RZ_FEATURE_CODEC in meta-renesas
-    if [ "${RZ_FEATURE_CODEC}" = "False" ]; then
-        conf_set_variable 'RZ_FEATURE_CODEC' 'False'
-    else
-        conf_set_variable 'RZ_FEATURE_CODEC' 'True'
-    fi
+	if [ "${RZ_FEATURE_CODEC}" = "False" ]; then
+		conf_set_variable 'RZ_FEATURE_CODEC' 'False'
+	else
+		conf_set_variable 'RZ_FEATURE_CODEC' 'True'
+	fi
 }
 
 # Parse libraries from config.json to handle add/remove
 apply_libraries() {
-    local ADD_LIBS REMOVE_LIBS
-    ADD_LIBS=$(${JQ} -r '.features.libraries?.add[]? // empty' "${CONFIG_JSON}" | tr '\n' ' ')
-    REMOVE_LIBS=$(${JQ} -r '.features.libraries?.remove[]? // empty' "${CONFIG_JSON}" | tr '\n' ' ')
+	local ADD_LIBS REMOVE_LIBS
+	ADD_LIBS=$(${JQ} -r '.features.libraries?.add[]? // empty' "${CONFIG_JSON}" | tr '\n' ' ')
+	REMOVE_LIBS=$(${JQ} -r '.features.libraries?.remove[]? // empty' "${CONFIG_JSON}" | tr '\n' ' ')
 
-    # Refresh the template
-    conf_clean_libraries
+	# Refresh the template
+	conf_clean_libraries
 
 	# Clean and parse variables to the template avoiding duplicates
-    conf_set_variable 'USER_IMAGE_ADD' "${ADD_LIBS}"
-    conf_set_variable 'USER_PACKAGE_EXCLUDE' "${REMOVE_LIBS}"
+	conf_set_variable 'USER_IMAGE_ADD' "${ADD_LIBS}"
+	conf_set_variable 'USER_PACKAGE_EXCLUDE' "${REMOVE_LIBS}"
 
-    if [ -n "${REMOVE_LIBS}" ]; then
-        log_info "Applied library exclusions: ${REMOVE_LIBS}"
-    fi
+	if [ -n "${REMOVE_LIBS}" ]; then
+		log_info "Applied library exclusions: ${REMOVE_LIBS}"
+	fi
 }
 
 apply_gpu_feature() {
-    local GPU_MODE
-    GPU_MODE=$(${JQ} -r '.features.gpu // "none"' "${CONFIG_JSON}")
-    log_info "GPU mode: ${GPU_MODE}"
+	local GPU_MODE
+	GPU_MODE=$(${JQ} -r '.features.gpu // "none"' "${CONFIG_JSON}")
+	log_info "GPU mode: ${GPU_MODE}"
 
-    # Control RZ_FEATURE_PANFROST in meta-renesas
-    conf_set_variable 'RZ_FEATURE_PANFROST' '0'
+	# Control RZ_FEATURE_PANFROST in meta-renesas
+	conf_set_variable 'RZ_FEATURE_PANFROST' '0'
 
-    case "${GPU_MODE}" in
-        panfrost)
-            conf_set_variable 'RZ_FEATURE_PANFROST' '1'
-            ;;
-        mali)
-            log_warning "GPU mode 'mali' is not supported, set back to none"
-            ;;
-        none|"")
-            : # no action
-            ;;
-        *)
-            log_warning "Unknown GPU mode '${GPU_MODE}', set back to none"
-            ;;
-    esac
+	case "${GPU_MODE}" in
+		panfrost)
+			conf_set_variable 'RZ_FEATURE_PANFROST' '1'
+			;;
+		mali)
+			log_warning "GPU mode 'mali' requested but not supported. Keeping GPU disabled. Use 'panfrost' to enable GPU support."
+			;;
+		none|"")
+			log_info "GPU disabled (mode='none'). To enable GPU, set features.gpu='panfrost'."
+			;;
+		*)
+			log_warning "Unknown GPU mode '${GPU_MODE}'. Keeping GPU disabled."
+			;;
+	esac
 }
 
 setup_conf(){
@@ -896,12 +863,12 @@ setup_conf(){
 		echo "This build is based on release tag:$revision_value. Target image: ${IMAGE}"
 	fi
 
-    AUTO_CONF_FILE="${RZ_TARGET_DIR}/build/conf/local.conf"
-    export AUTO_CONF_FILE
-    
+	AUTO_CONF_FILE="${RZ_TARGET_DIR}/build/conf/local.conf"
+	export AUTO_CONF_FILE
+	
 	apply_add_remove_layers
-    apply_gpu_feature
-    apply_libraries
+	apply_gpu_feature
+	apply_libraries
 }
 
 # Main setup
@@ -912,11 +879,6 @@ setup() {
 	log_warning "WARNING: The script will check tags first, then commits, and finally branches if all three are specified. It will check out to the specified tag, commit, or branch as needed."
 
 	check_patch_require
-
-	install_git_lfs_if_needed
-
-	echo "Running 'git lfs install'..."
-	git lfs install
 
 	# if targe directory is not present, we have to create and unpack the contents.
 	if [ ! -d "${RZ_TARGET_DIR}" ];then
