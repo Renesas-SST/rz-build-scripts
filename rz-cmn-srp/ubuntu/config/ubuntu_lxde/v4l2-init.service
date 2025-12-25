@@ -1,0 +1,13 @@
+[Unit]
+Description=Initialize V4L2 media pipeline
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/v4l2-init.sh
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+
