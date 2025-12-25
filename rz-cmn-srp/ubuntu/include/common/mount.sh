@@ -69,28 +69,28 @@ copy_script() {
 	destination="./rootfs/${1}"
 
 	# Check input script
-	if [ ! -e $input_folder ]; then
-		echo "File $input_folder not found"
+	if [ ! -e ${input_folder} ]; then
+		echo "File ${input_folder} not found"
 		return 1
 	fi
 
 	# Change permission
-	chmod a+x $input_folder
+	chmod a+x ${destination}/${2}
 
 	# Create target folder
-	if [ ! -d "$destination" ]; then
-		echo "Directory $destination does not exist. Creating it..."
-		mkdir -p "$destination"
+	if [ ! -d "${destination}" ]; then
+		echo "Directory ${destination} does not exist. Creating it..."
+		mkdir -p "${destination}"
 		if [ $? -ne 0 ]; then
-			echo "Failed to create directory $destination."
+			echo "Failed to create directory ${destination}."
 			return 1
 		fi
 	else
-		echo "Directory $destination already exists. Skipping creation."
+		echo "Directory ${destination} already exists. Skipping creation."
 	fi
 
 	# Copy script to target folder
-	cp "$input_folder" "$destination" || { echo "Failed to copy $input_folder"; return 1; }
+	cp "${input_folder}" "${destination}" || { echo "Failed to copy ${input_folder}"; return 1; }
 	return 0
 
 }
