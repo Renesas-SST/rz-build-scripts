@@ -17,7 +17,7 @@ BIN_PATH="$ROOTFS/usr/bin"
 ETC_PATH="$ROOTFS/etc"
 
 source "${SCRIPT_DIR}/include/common/prepare_env.sh"
-source "${SCRIPT_DIR}/include/common/setup_dns.sh"
+source "${SCRIPT_DIR}/include/common/setup_conf.sh"
 
 #######################################
 # Function copy_qemu use to copy qemu-aarch64-static to ubuntu os.
@@ -254,18 +254,25 @@ set_config_after_install() {
 		return 1
 	fi
 
-        # Configure v4l2-init service
-        copy_file_conf "ubuntu_lxde" "v4l2-init.sh" "${ROOTFS}/usr/local/bin/" "755"
-        if [ $? -eq 1 ]; then
-                echo "Failed to copy v4l2-init.sh to /usr/local/bin. Exiting."
-                return 1
-        fi
+	# Configure v4l2-init service
+	copy_file_conf "ubuntu_lxde" "v4l2-init.sh" "${ROOTFS}/usr/local/bin/" "755"
+	if [ $? -eq 1 ]; then
+		echo "Failed to copy v4l2-init.sh to /usr/local/bin. Exiting."
+		return 1
+	fi
 
-        copy_file_conf "ubuntu_lxde" "v4l2-init.service" "${ROOTFS}/etc/systemd/system/" "755"
-        if [ $? -eq 1 ]; then
-                echo "Failed to configure v4l2-init.service. Exiting."
-                return 1
-        fi
+	copy_file_conf "ubuntu_lxde" "v4l2-init.service" "${ROOTFS}/etc/systemd/system/" "755"
+	if [ $? -eq 1 ]; then
+		echo "Failed to configure v4l2-init.service. Exiting."
+		return 1
+	fi
+
+	# Configure hostapd.service
+	copy_file_conf "common" "hostapd.service" "${ROOTFS}/etc/systemd/system/" "755"
+	if [ $? -eq 1 ]; then
+		echo "Failed to configure hostapd.service. Exiting."
+		return 1
+	fi
 
 	# Remove blueman-aplet icon
 	check_and_remove_file "${ROOTFS}/etc/xdg/autostart/blueman.desktop"
@@ -276,11 +283,19 @@ set_config_after_install() {
 
 	# Setup DNS
 	set_dns_config
-		if [[ $? -eq 1 ]]; then
+	if [[ $? -eq 1 ]]; then
 		echo "Failed to configure DNS. Exiting."
 		return 1
 	fi
-	echo "set_config_after_install completed successfully."
+	echo "set_dns_config completed successfully."
+
+	# Setup hostapd configuration
+	set_hostapd_conf
+	if [[ $? -eq 1 ]]; then
+		echo "Failed to configure hostapd. Exiting."
+		return 1
+	fi
+	echo "set_hostapd_conf completed successfully."
 
 	echo "Starting copy_qt..."
 	# Call copy_qt to copy qt files for the system

@@ -12,3 +12,6 @@ systemctl enable force-xorg-display.service
 chmod +x /usr/local/bin/v4l2-init.sh
 systemctl enable v4l2-init.service
 
+# Reload and enable hostapd
+systemctl daemon-reload
+systemctl enable hostapd.service

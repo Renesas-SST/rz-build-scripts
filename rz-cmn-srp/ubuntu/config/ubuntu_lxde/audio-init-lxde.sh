@@ -43,6 +43,34 @@ set_config_wm8978() {
 	amixer -q set 'ALC Capture Attack' 10
 }
 
+# Function to configure TLV320AIC3X audio codec
+set_config_tlv320aic3x() {
+	amixer -q cset name='Right PGA Mixer Mic2R Switch' on
+	amixer -q sset 'PGA' 70%
+	amixer -q sset 'PCM' 70%
+	amixer -q sset 'Line' 70%
+	amixer -q sset 'HP' 70%
+}
+
+# Function to configure DA7219 audio codec
+set_config_da7219() {
+	# Set Playback controls
+	amixer -q sset 'Headphone' on
+	amixer -q sset 'Playback Digital' on
+	amixer -q sset 'Mixer Out FilterL DACL' on
+	amixer -q sset 'Mixer Out FilterR DACR' on
+	amixer -q sset 'Out DACL Mux' 'DAIL'
+	amixer -q sset 'Out DACR Mux' 'DAIR'
+
+	# Set Capture controls
+	amixer -q sset 'Mixer In Mic' on
+	amixer -q sset 'Mixin' on
+	amixer -q sset 'Capture Digital' on
+	amixer -q sset 'Mic' on
+	amixer -q sset 'Out DAIL Mux' 'ADC'
+	amixer -q sset 'Out DAIR Mux' 'ADC'
+}
+
 # Function to disable pulseaudio service
 function disable_pulseaudio() {
 	systemctl --user stop pulseaudio.socket
@@ -80,6 +108,14 @@ main() {
 			*da7213*)
 				# DA7213 audio card detected
 				set_config_da7213
+				;;
+			*tlv320aic3x*)
+				# TLV320AIC3X audio card detected
+				set_config_tlv320aic3x
+				;;
+			*da7219*)
+				# da7219 audio card detected
+				set_config_da7219
 				;;
 			*)
 				# Other audio card detected
