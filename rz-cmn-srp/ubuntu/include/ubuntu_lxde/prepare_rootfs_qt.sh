@@ -8,6 +8,11 @@
 # Get Bluetooth firmware from Realtek-OpenSource to rootfs
 ##############################################################################
 
+source "${SCRIPT_DIR}/include/common/prepare_env_rootfs.sh"
+
+# Define global variable:
+WORK_DIR=$(pwd)
+
 #######################################
 # Extract file renesas-ubuntu (yocto output).
 # Globals:
@@ -150,40 +155,6 @@ copy_kernel_modules() {
 }
 
 #######################################
-# Copy Wi-Fi firmware from renesas-ubuntu (yocto output) to rootfs
-# Globals:
-#   WORK_DIR
-# Arguments:
-#   None
-#######################################
-copy_wifi_firmware() {
-	source_dir="./rootfs_qt/lib/firmware/brcm/"
-	dest_dir="./rootfs/lib/firmware/"
-
-	# Change dir WORK_DIR
-	cd "$WORK_DIR" || { echo "Failed to change to WORK_DIR"; return 1; }
-
-	# Check source folder
-	if [ ! -d "$source_dir" ]; then
-		echo "Source directory $source_dir does not exist."
-		return 1
-	fi
-
-	# Check destination folder
-	if [ ! -d "$dest_dir" ]; then
-		echo "Destination directory $dest_dir does not exist. Creating it..."
-		mkdir -p "$dest_dir" || { echo "Failed to create destination directory $dest_dir"; return 1; }
-	fi
-
-	# Copy folder from source to destination
-	echo "Copying Wi-Fi firmware from $source_dir to $dest_dir..."
-	cp -r "$source_dir" "$dest_dir" || { echo "Failed to copy wifi firmware."; return 1; }
-
-	echo "Wi-Fi firmware copied successfully to $dest_dir."
-	return 0
-}
-
-#######################################
 # Get_bluetooth firmware from Realtek-OpenSource to rootfs
 # Globals:
 #   WORK_DIR
@@ -242,14 +213,14 @@ rootfs_qt() {
 	fi
 	echo "copy_kernel_modules completed successfully."
 
-	# Copy Wi-Fi firmware from renesas-ubuntu (yocto output) to rootfs
-	echo "7. Starting copy_wifi_firmware..."
-	copy_wifi_firmware
+	# Copy firmware from renesas-ubuntu (yocto output) to rootfs
+	echo "7. Starting copy_firmware..."
+	copy_firmware "rootfs_qt" "rootfs"
 	if [ $? -eq 1 ]; then
-		echo "copy_wifi_firmware failed."
+		echo "copy_firmware failed."
 		return 1
 	fi
-	echo "copy_wifi_firmware completed successfully."
+	echo "copy_firmware completed successfully."
 
 	# Get Bluetooth firmware from Realtek-OpenSource to rootfs
 	echo "8. Starting get_bluetooth_firmware..."
@@ -259,6 +230,33 @@ rootfs_qt() {
 		return 1
 	fi
 	echo "get_bluetooth_firmware completed successfully."
+
+	# Copy modprobe conf
+	echo "9. Starting copy modprobe conf..."
+	copy_modprobe_conf "rootfs_qt" "rootfs"
+	if [[ $? -eq 1 ]]; then
+		echo "copy_modprobe_conf failed."
+		return 1
+	fi
+	echo "copy_modprobe_conf completed succesfully."
+
+	# Copy network interface
+	echo "10. Starting copy network interface..."
+	copy_network_interface_conf "rootfs_qt" "rootfs"
+	if [[ $? -eq 1 ]]; then
+		echo "copy_network_interface_conf failed."
+		return 1
+	fi
+	echo "copy_network_interface_conf completed succesfully."
+
+	# Copy modules_load_d
+	echo "10. Starting copy module-loads.d..."
+	copy_modules_load_d "rootfs_qt" "rootfs"
+	if [[ $? -eq 1 ]]; then
+		echo "copy_modules_load_d failed."
+		return 1
+	fi
+	echo "copy_modules_load_d completed succesfully."
 
 	return 0
 }

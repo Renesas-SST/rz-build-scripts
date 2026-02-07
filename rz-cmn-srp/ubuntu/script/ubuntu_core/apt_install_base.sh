@@ -48,7 +48,8 @@ apt install -y dialog \
 	usbutils \
 	memtester \
 	alsa-utils \
-	ufw
+	ufw \
+	hostapd
 
 apt install -y python3-pip \
 	dpkg \
