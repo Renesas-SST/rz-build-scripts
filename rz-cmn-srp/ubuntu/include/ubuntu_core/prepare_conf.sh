@@ -14,7 +14,7 @@ LOG_PATH="$ROOTFS/var/log"
 BOOT_PATH="$ROOTFS/boot"
 
 source "${SCRIPT_DIR}/include/common/prepare_env.sh"
-source "${SCRIPT_DIR}/include/common/setup_dns.sh"
+source "${SCRIPT_DIR}/include/common/setup_conf.sh"
 
 # 1. Copy qemu-aarch64-static
 function copy_qemu() {
@@ -213,6 +213,21 @@ set_config_after_install() {
 	set_dns_config
 	if [[ $? -eq 1 ]]; then
 		echo "Failed to configure DNS. Exiting."
+		return 1
+	fi
+
+	# Setup hostapd configuration
+	set_hostapd_conf
+	if [[ $? -eq 1 ]]; then
+		echo "Failed to configure hostapd. Exiting."
+		return 1
+	fi
+	echo "set_hostapd_conf completed successfully."
+
+	# Configure hostapd.service
+	copy_file_conf "common" "hostapd.service" "${ROOTFS}/etc/systemd/system/" "755"
+	if [ $? -eq 1 ]; then
+		echo "Failed to configure hostapd.service. Exiting."
 		return 1
 	fi
 

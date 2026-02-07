@@ -1,7 +1,7 @@
 #!/bin/bash
 # --------------------------------------------------------------------------#
 # Description:
-# The script configures DNS settings for the Ubuntu OS.
+# The script prepare configs settings for the Ubuntu OS.
 # --------------------------------------------------------------------------#
 
 # Define global variable:	
@@ -43,5 +43,38 @@ set_dns_config() {
 
 	echo "DNS configured successfully."
 	return 0
+}
+
+# Configure hostapd
+set_hostapd_conf() {
+	echo "Configuring hostapd..."
+
+	# Required variables
+	[[ -z "${SCRIPT_DIR}" ]] && { echo "SCRIPT_DIR not set"; return 1; }
+
+	SRC="${SCRIPT_DIR}/config/common/hostapd.conf"
+	DST="${ROOTFS}/etc/hostapd.conf"
+
+	# Check source
+	if [[ ! -f "${SRC}" ]]; then
+		echo "ERROR: source hostapd.conf not found: ${SRC}"
+		return 1
+	fi
+
+	# Ensure /etc writable
+	mkdir -p ${ROOTFS}/etc || return 1
+
+	# Backup old
+	if [[ -f "${DST}" ]]; then
+		cp "${DST}" "${DST}.bak.$(date +%s)"
+	fi
+
+	# Copy
+	cp "${SRC}" "${DST}" || {
+		echo "Failed to copy hostapd.conf"
+		return 1
+	}
+
+	echo "hostapd.conf installed at ${DST}"
 }
 

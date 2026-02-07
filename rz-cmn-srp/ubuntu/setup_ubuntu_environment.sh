@@ -32,6 +32,7 @@ source_env(){
 . ${SCRIPT_DIR}/include/common/mount.sh
 . ${SCRIPT_DIR}/include/common/install_gstreamer.sh
 . ${SCRIPT_DIR}/include/common/install_weston.sh
+. ${SCRIPT_DIR}/include/common/install_imdt_utils.sh
 . ${SCRIPT_DIR}/include/common/yocto_working.sh
 . ${SCRIPT_DIR}/include/common/prepare_ubuntu_base.sh
 . ${SCRIPT_DIR}/include/common/allow_empty_password.sh
@@ -39,24 +40,24 @@ source_env(){
 
 #---------------------------Log helper functions--------------------------------
 log_warning(){
-        string=$1
-        echo -e "\033[33;1;4m${string}\033[0m"
+	string=$1
+	echo -e "\033[33;1;4m${string}\033[0m"
 }
 
 log_error(){
-        string=$1
-        echo -e "\033[31;1;4m${string}\033[0m"
+	string=$1
+	echo -e "\033[31;1;4m${string}\033[0m"
 }
 
 log_info(){
-        string=$1
-        echo -e "\033[32;1;4m${string}\033[0m"
+	string=$1
+	echo -e "\033[32;1;4m${string}\033[0m"
 }
 
 # Function to clean old build artifacts
 cleanup_ubuntu_artifacts() {
-    log_info "Cleaning up old Ubuntu rootfs artifacts..."
-    rm -rf rootfs
+	log_info "Cleaning up old Ubuntu rootfs artifacts..."
+	rm -rf rootfs
 }
 
 # Main function for ubuntu core
@@ -81,7 +82,6 @@ main_ubuntu_core(){
 		echo "prepare_rootfs failed."
 		exit 1
 	fi
-
 
 	# Set configuration files
 	set_config
@@ -138,6 +138,13 @@ main_ubuntu_core(){
 		exit 1
 	fi
 
+	# Install IMDT utils to ubuntu rootfs
+	install_imdt_utils "rootfs" "artifacts_rootfs_source"
+	if [ $? -eq 1 ]; then
+			echo "install_imdt_utils failed."
+			exit 1
+	fi
+
 	# Install weston to ubuntu
 	install_weston "rootfs" "artifacts_rootfs_source"
 	if [ $? -eq 1 ]; then
@@ -145,6 +152,7 @@ main_ubuntu_core(){
 		exit 1
 	fi
 
+	# Setup dns and time
 	chroot_run_1_script ${UBUNTU_COMMON_SCRIPT_PATH} "setup_dns_and_time.sh"
 	if [ $? -eq 1 ]; then
 		echo "setup dns and time failed."
@@ -252,6 +260,13 @@ main_ubuntu_lxde(){
 	if [ $? -eq 1 ]; then
 		echo "allow_empty_password_ssh failed."
 		exit 1
+	fi
+
+	# Install IMDT utils to ubuntu rootfs
+	install_imdt_utils "rootfs" "rootfs_qt"
+	if [ $? -eq 1 ]; then
+			echo "install_imdt_utils failed."
+			exit 1
 	fi
 
 	# Install wifi and bluetooth packages

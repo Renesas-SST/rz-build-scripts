@@ -51,6 +51,7 @@ apt install -y usbutils
 apt install -y memtester
 apt install -y alsa-utils
 apt install -y ufw
+apt install -y hostapd
 
 # Install virtual keyboard
 apt install -y onboard
