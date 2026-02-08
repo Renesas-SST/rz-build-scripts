@@ -30,7 +30,6 @@ $ tree -L 3
         ├── README.md           <---- Detailed guide for Ubuntu builds
         ├── script              <---- Ubuntu-related scripts
         └── setup_ubuntu_environment.sh         <---- Script sourced by main builder to prepare Ubuntu environment
-12 directories, 9 files
 ```
 
 ## Build Systems Overview

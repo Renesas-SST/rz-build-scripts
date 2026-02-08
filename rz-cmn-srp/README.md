@@ -44,8 +44,6 @@ $ tree -L 3
     │   └── ubuntu_lxde
     └── setup_ubuntu_environment.sh
 
-21 directories, 13 files
-
 ``` 
 
 ## Organization:
@@ -167,161 +165,172 @@ renesas@builder-pc:~/renesas/rz-cmn-srp/yocto_rzcmn_board/build/tmp/deploy/image
 │   │   ├── renesas-quickboot-cli.env
 │   │   └── renesas-quickboot-wayland.env
 │   ├── Readme.md
-│   ├── src
-│   │   └── rz-cmn-srp
-│   │       ├── config.json
-│   │       ├── files_to_add
-│   │       │   └── meta-rz-features
-│   │       │       ├── 0001-rzg2l-sbc-Bring-compat_alloc_user_space-back.patch
-│   │       │       └── 0004-rzg2l-sbc-Get-interrupt-number.patch
-│   │       ├── git_patch.json
-│   │       ├── jq-linux-amd64
-│   │       ├── patches
-│   │       │   ├── meta-rz-features
-│   │       │   │   └── 0001-support-codec-for-linux-6.10-and-yocto-styhead.patch
-│   │       │   ├── meta-summit-radio
-│   │       │   │   ├── 0001-rz-sbc-meta-summit-radio-Support-build-in-yocto-styh.patch
-│   │       │   │   └── 0002-rz-sbc-summit-radio-support-eSDK-build.patch
-│   │       │   └── poky
-│   │       │       └── 0001-uboot-config-Fix-devtool-modify.patch
-│   │       ├── README.md
-│   │       ├── rz_builder.sh
-│   │       ├── site.conf           /* Optional */
-│   │       └── ubuntu
-│   │           ├── config
-│   │           │   ├── common
-│   │           │   │   └── resolved.conf
-│   │           │   ├── ubuntu_core
-│   │           │   │   ├── audio-init-core.sh
-│   │           │   │   ├── network_interfaces.conf
-│   │           │   │   ├── NetworkManager.conf
-│   │           │   │   └── resolved.conf
-│   │           │   └── ubuntu_lxde
-│   │           │       ├── audio-init-lxde.sh
-│   │           │       ├── connman-gtk.desktop
-│   │           │       ├── force-display-xorg.sh
-│   │           │       ├── force-xorg-display.service
-│   │           │       ├── interfaces
-│   │           │       ├── lightdm.conf
-│   │           │       ├── NetworkManager.conf
-│   │           │       ├── panel
-│   │           │       ├── rsyslog
-│   │           │       ├── ttyS0.conf
-│   │           │       └── v4l2-init.sh
-│   │           ├── config.ini
-│   │           ├── docs
-│   │           │   ├── ubuntu_core
-│   │           │   │   └── README.md
-│   │           │   └── ubuntu_lxde
-│   │           │       ├── Pictures
-│   │           │       │   ├── audacity.png
-│   │           │       │   ├── audio_settings.png
-│   │           │       │   ├── bluetooth_0.png
-│   │           │       │   ├── bluetooth_1.png
-│   │           │       │   ├── bluetooth_2.png
-│   │           │       │   ├── bluetooth_3.png
-│   │           │       │   ├── bluetooth_4.png
-│   │           │       │   ├── csi_0.png
-│   │           │       │   ├── csi_1.png
-│   │           │       │   ├── csi_2.png
-│   │           │       │   ├── eth_1.png
-│   │           │       │   ├── eth_2.png
-│   │           │       │   ├── eth_3.png
-│   │           │       │   ├── eth_4.png
-│   │           │       │   ├── eth_5.png
-│   │           │       │   ├── eth.png
-│   │           │       │   ├── save_audio_0.png
-│   │           │       │   ├── save_audio_1.png
-│   │           │       │   ├── save_audio_2.png
-│   │           │       │   ├── vlc_open_0.png
-│   │           │       │   ├── vlc_open_1.png
-│   │           │       │   ├── vlc_open_2.png
-│   │           │       │   ├── vlc.png
-│   │           │       │   ├── vlc_video_1.png
-│   │           │       │   ├── vlc_video.png
-│   │           │       │   ├── web_1.png
-│   │           │       │   ├── web_2.png
-│   │           │       │   ├── web_lxterm_htop.png
-│   │           │       │   ├── web.png
-│   │           │       │   └── wifi_0.png
-│   │           │       └── README.md
-│   │           ├── include
-│   │           │   ├── common
-│   │           │   │   ├── allow_empty_password.sh
-│   │           │   │   ├── create_wic.sh
-│   │           │   │   ├── install_gstreamer.sh
-│   │           │   │   ├── install_weston.sh
-│   │           │   │   ├── mount.sh
-│   │           │   │   ├── prepare_env_rootfs.sh
-│   │           │   │   ├── prepare_env.sh
-│   │           │   │   ├── prepare_ubuntu_base.sh
-│   │           │   │   ├── setup_dns.sh
-│   │           │   │   └── yocto_working.sh
-│   │           │   ├── ubuntu_core
-│   │           │   │   ├── prepare_conf.sh
-│   │           │   │   ├── prepare_env.sh
-│   │           │   │   ├── prepare_rootfs.sh
-│   │           │   │   └── setup_dns.sh
-│   │           │   └── ubuntu_lxde
-│   │           │       ├── create_swap.sh
-│   │           │       ├── prepare_conf.sh
-│   │           │       └── prepare_rootfs_qt.sh
-│   │           ├── README.md
-│   │           ├── script
-│   │           │   ├── common
-│   │           │   │   ├── dpkg-install-lock-fix.sh
-│   │           │   │   └── setup_dns_and_time.sh
-│   │           │   ├── ubuntu_core
-│   │           │   │   ├── apt_install_base.sh
-│   │           │   │   ├── link_to_leagcy_iptables.sh
-│   │           │   │   └── set_root_password.sh
-│   │           │   └── ubuntu_lxde
-│   │           │       ├── apt_audio_video.sh
-│   │           │       ├── apt_blueman.sh
-│   │           │       ├── apt_install_base.sh
-│   │           │       ├── apt_lxde_desktop.sh
-│   │           │       ├── apt_wifi_ble.sh
-│   │           │       ├── create_user.sh
-│   │           │       ├── enable_service.sh
-│   │           │       ├── set_root_password.sh
-│   │           │       ├── set_swap_enable.sh
-│   │           │       └── setup-set-permissions.sh
-│   │           └── setup_ubuntu_environment.sh
-│   └── tools
-│       ├── bin
-│       │   ├── linux
-│       │   │   ├── bpgen
-│       │   │   ├── fiptool
-│       │   │   └── Readme.md
-│       │   ├── Readme.md
-│       │   └── windows
-│       │       ├── bpgen.exe
-│       │       ├── fiptool.exe
-│       │       └── Readme.md
-│       ├── bootloader_flasher
-│       │   ├── bootloader_flash.py
-│       │   └── README.md
-│       ├── config
-│       │   ├── boards_flash_config.toml
-│       │   └── README.md
-│       ├── firmware_compile
-│       │   ├── firmware_compile.py
-│       │   └── Readme.md
-│       ├── flash_images.json
-│       ├── README.md
-│       ├── requirements.txt
-│       ├── sd_creator
-│       │   ├── README.md
-│       │   ├── sd_flash.py
-│       │   └── tools
-│       │       ├── AdbWinApi.dll
-│       │       ├── AdbWinUsbApi.dll
-│       │       ├── fastboot.exe
-│       │       └── NOTICE.txt
-│       ├── uload_bootloader
-│       │   ├── README.md
-│       │   └── uload_bootloader_flash.py
-│       └── universal_flash.py
+│   ├── src
+│   │   └── rz-cmn-srp
+│   │       ├── config.json
+│   │       ├── files_to_add
+│   │       │   └── meta-rz-features
+│   │       │       ├── 0001-rzg2l-sbc-Bring-compat_alloc_user_space-back.patch
+│   │       │       └── 0004-rzg2l-sbc-Get-interrupt-number.patch
+│   │       ├── git_patch.json
+│   │       ├── jq-linux-amd64
+│   │       ├── patches
+│   │       │   ├── meta-rz-features
+│   │       │   │   └── 0001-support-codec-for-linux-6.10-and-yocto-styhead.patch
+│   │       │   ├── meta-summit-radio
+│   │       │   │   ├── 0001-rz-sbc-meta-summit-radio-Support-build-in-yocto-styh.patch
+│   │       │   │   └── 0002-rz-sbc-summit-radio-support-eSDK-build.patch
+│   │       │   └── poky
+│   │       │       └── 0001-uboot-config-Fix-devtool-modify.patch
+│   │       ├── README.md
+│   │       ├── rz_builder.sh
+│   │       └── ubuntu
+│   │           ├── config
+│   │           │   ├── common
+│   │           │   │   ├── hostapd.conf
+│   │           │   │   ├── hostapd.service
+│   │           │   │   ├── moal.conf
+│   │           │   │   └── resolved.conf
+│   │           │   ├── ubuntu_core
+│   │           │   │   ├── audio-init-core.sh
+│   │           │   │   ├── network_interfaces.conf
+│   │           │   │   └── NetworkManager.conf
+│   │           │   └── ubuntu_lxde
+│   │           │       ├── audio-init-lxde.sh
+│   │           │       ├── connman-gtk.desktop
+│   │           │       ├── force-display-xorg.sh
+│   │           │       ├── force-xorg-display.service
+│   │           │       ├── interfaces
+│   │           │       ├── lightdm.conf
+│   │           │       ├── NetworkManager.conf
+│   │           │       ├── panel
+│   │           │       ├── rsyslog
+│   │           │       ├── ttyS0.conf
+│   │           │       ├── v4l2-init.service
+│   │           │       └── v4l2-init.sh
+│   │           ├── config.ini
+│   │           ├── docs
+│   │           │   ├── ubuntu_core
+│   │           │   │   └── README.md
+│   │           │   └── ubuntu_lxde
+│   │           │       ├── Pictures
+│   │           │       │   ├── audacity.png
+│   │           │       │   ├── audio_settings.png
+│   │           │       │   ├── bluetooth_0.png
+│   │           │       │   ├── bluetooth_1.png
+│   │           │       │   ├── bluetooth_2.png
+│   │           │       │   ├── bluetooth_3.png
+│   │           │       │   ├── bluetooth_4.png
+│   │           │       │   ├── csi_0.png
+│   │           │       │   ├── csi_1.png
+│   │           │       │   ├── csi_2.png
+│   │           │       │   ├── eth_1.png
+│   │           │       │   ├── eth_2.png
+│   │           │       │   ├── eth_3.png
+│   │           │       │   ├── eth_4.png
+│   │           │       │   ├── eth_5.png
+│   │           │       │   ├── eth.png
+│   │           │       │   ├── save_audio_0.png
+│   │           │       │   ├── save_audio_1.png
+│   │           │       │   ├── save_audio_2.png
+│   │           │       │   ├── vlc_open_0.png
+│   │           │       │   ├── vlc_open_1.png
+│   │           │       │   ├── vlc_open_2.png
+│   │           │       │   ├── vlc.png
+│   │           │       │   ├── vlc_video_1.png
+│   │           │       │   ├── vlc_video.png
+│   │           │       │   ├── web_1.png
+│   │           │       │   ├── web_2.png
+│   │           │       │   ├── web_lxterm_htop.png
+│   │           │       │   ├── web.png
+│   │           │       │   └── wifi_0.png
+│   │           │       └── README.md
+│   │           ├── include
+│   │           │   ├── common
+│   │           │   │   ├── allow_empty_password.sh
+│   │           │   │   ├── create_wic.sh
+│   │           │   │   ├── install_gstreamer.sh
+│   │           │   │   ├── install_imdt_utils.sh
+│   │           │   │   ├── install_weston.sh
+│   │           │   │   ├── mount.sh
+│   │           │   │   ├── prepare_env_rootfs.sh
+│   │           │   │   ├── prepare_env.sh
+│   │           │   │   ├── prepare_ubuntu_base.sh
+│   │           │   │   ├── setup_conf.sh
+│   │           │   │   └── yocto_working.sh
+│   │           │   ├── ubuntu_core
+│   │           │   │   ├── prepare_conf.sh
+│   │           │   │   ├── prepare_env.sh
+│   │           │   │   └── prepare_rootfs.sh
+│   │           │   └── ubuntu_lxde
+│   │           │       ├── create_swap.sh
+│   │           │       ├── prepare_conf.sh
+│   │           │       └── prepare_rootfs_qt.sh
+│   │           ├── README.md
+│   │           ├── script
+│   │           │   ├── common
+│   │           │   │   ├── dpkg-install-lock-fix.sh
+│   │           │   │   ├── enable_ping.sh
+│   │           │   │   └── setup_dns_and_time.sh
+│   │           │   ├── ubuntu_core
+│   │           │   │   ├── apt_install_base.sh
+│   │           │   │   ├── link_to_leagcy_iptables.sh
+│   │           │   │   └── set_root_password.sh
+│   │           │   └── ubuntu_lxde
+│   │           │       ├── apt_audio_video.sh
+│   │           │       ├── apt_blueman.sh
+│   │           │       ├── apt_install_base.sh
+│   │           │       ├── apt_lxde_desktop.sh
+│   │           │       ├── apt_wifi_ble.sh
+│   │           │       ├── create_user.sh
+│   │           │       ├── enable_service.sh
+│   │           │       ├── set_root_password.sh
+│   │           │       ├── set_swap_enable.sh
+│   │           │       └── setup-set-permissions.sh
+│   │           └── setup_ubuntu_environment.sh
+│   └── tools
+│       ├── bin
+│       │   ├── linux
+│       │   │   ├── bpgen
+│       │   │   ├── fiptool
+│       │   │   ├── libcrypto.so.1.1
+│       │   │   ├── OPENSSL_LICENSE.txt
+│       │   │   └── Readme.md
+│       │   ├── Readme.md
+│       │   └── windows
+│       │       ├── bpgen.exe
+│       │       ├── fiptool.exe
+│       │       ├── GNU_BINUTILS_LICENSE.txt
+│       │       ├── libcrypto-3-x64.dll
+│       │       ├── libwinpthread-1.dll
+│       │       ├── LIBWINPTHREAD_LICENSE.txt
+│       │       ├── objcopy.exe
+│       │       ├── OPENSSL_LICENSE.txt
+│       │       └── Readme.md
+│       ├── bootloader_flasher
+│       │   ├── bootloader_flash.py
+│       │   └── README.md
+│       ├── config
+│       │   ├── boards_flash_config.toml
+│       │   └── README.md
+│       ├── firmware_compile
+│       │   ├── firmware_compile.py
+│       │   └── Readme.md
+│       ├── flash_images.json
+│       ├── README.md
+│       ├── requirements.txt
+│       ├── sd_creator
+│       │   ├── README.md
+│       │   ├── sd_flash.py
+│       │   └── tools
+│       │       ├── AdbWinApi.dll
+│       │       ├── AdbWinUsbApi.dll
+│       │       ├── fastboot.exe
+│       │       └── NOTICE.txt
+│       ├── uload_bootloader
+│       │   ├── README.md
+│       │   └── uload_bootloader_flash.py
+│       └── universal_flash.py
 ├── license
 │   └── Disclaimer051.pdf
 ├── <code>-rz-cmn-srp-um-quick-start-guide.pdf
@@ -349,11 +358,7 @@ renesas@builder-pc:~/renesas/rz-cmn-srp/yocto_rzcmn_board/build/tmp/deploy/image
     │   │   ├── dtbs
     │   │   │   ├── overlays
     │   │   │   │   ├── Readme.md
-    │   │   │   │   ├── rzg2l-sbc-can.dtbo
-    │   │   │   │   ├── rzg2l-sbc-dsi.dtbo
-    │   │   │   │   ├── rzg2l-sbc-ext-i2c.dtbo
-    │   │   │   │   ├── rzg2l-sbc-ext-spi.dtbo
-    │   │   │   │   └── rzg2l-sbc-ov5640.dtbo
+    │   │   │   │   └── <board-name>-<rev-major>.<rev-minor>-<feature>.dtbo
     │   │   │   ├── <board-name>--<kernel-version>-rz-cmn-<timestamp>.dtbo
     │   │   │   ├── <board-name>.dtb -> <board-name>--<kernel-version>-rz-cmn-<timestamp>.dtbo
     │   │   │   └── Readme.md
