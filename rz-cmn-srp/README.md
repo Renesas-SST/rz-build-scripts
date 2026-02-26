@@ -107,7 +107,7 @@ The `features` section in `config.json` applies customization before BitBake run
 - `gpu`: Choose a graphic mode. Available values:
     - `"none"`: Disables graphics and no graphic configurations are applied.
     - `"panfrost"`: Enables the Panfrost DRM driver via a conditional kernel configuration fragment.
-    - `"mali"`: Not currently supported by this build. Selecting `"mali"` has no effect and is treated the same as `"none"`.
+    - `"mali"`: Enables the Mali Bifrost DRM driver in meta-renesas.
 Example:
     ```json
     "features": {
