@@ -9,41 +9,39 @@ $ tree -L 3
 .
 ├── config.json
 ├── files_to_add
-│   └── meta-rz-features
-│       ├── 0001-rzg2l-sbc-Bring-compat_alloc_user_space-back.patch
-│       └── 0004-rzg2l-sbc-Get-interrupt-number.patch
+│   └── meta-rz-features
+│       └── meta-rz-codecs
 ├── git_patch.json
 ├── jq-linux-amd64
 ├── patches
-│   ├── meta-rz-features
-│   │   └── 0001-support-codec-for-linux-6.10-and-yocto-styhead.patch
-│   ├── meta-summit-radio
-│   │   ├── 0001-rz-sbc-meta-summit-radio-Support-build-in-yocto-styh.patch
-│   │   └── 0002-rz-sbc-summit-radio-support-eSDK-build.patch
-│   └── poky
-│       └── 0001-uboot-config-Fix-devtool-modify.patch
+│   ├── meta-rz-features
+│   │   └── meta-rz-codecs
+│   ├── meta-summit-radio
+│   │   ├── 0001-rz-sbc-meta-summit-radio-Support-build-in-yocto-styh.patch
+│   │   └── 0002-rz-sbc-summit-radio-support-eSDK-build.patch
+│   └── poky
+│       └── 0001-uboot-config-Fix-devtool-modify.patch
 ├── README.md
 ├── rz_builder.sh
 └── ubuntu
     ├── config
     │   ├── common
-    │   ├── ubuntu_core
-    │   └── ubuntu_lxde
+    │   ├── ubuntu_core
+    │   └── ubuntu_lxde
     ├── config.ini
     ├── docs
-    │   ├── ubuntu_core
-    │   └── ubuntu_lxde
+    │   ├── ubuntu_core
+    │   └── ubuntu_lxde
     ├── include
-    │   ├── common
-    │   ├── ubuntu_core
-    │   └── ubuntu_lxde
+    │   ├── common
+    │   ├── ubuntu_core
+    │   └── ubuntu_lxde
     ├── README.md
     ├── script
-    │   ├── common
-    │   ├── ubuntu_core
-    │   └── ubuntu_lxde
+    │   ├── common
+    │   ├── ubuntu_core
+    │   └── ubuntu_lxde
     └── setup_ubuntu_environment.sh
-
 ``` 
 
 ## Organization:
@@ -99,6 +97,37 @@ It also lists the available `machine` types
 - **defaults**: Lists the default options for differnt parameters.
     - `machine` : Specify the default machine chosen when no machine is passed as arguement.
     - `image` : Specify the default image to build where none is specified.
+
+### Layers and Graphics Customization
+
+The `features` section in `config.json` applies customization before BitBake runs. It adds or removes entries of meta-layer in BBLAYERS, adjusts image package lists, and sets GPU configuration.
+
+- `layers`: Supports `add`/`remove` entries of meta-layer in BBLAYERS, either a specific layer path (has `conf/layer.conf`) or a folder of layers (adds/removes all valid sub-layers under it).
+- `libraries`: Control image packages. `add` appends packages, `remove` excludes packages (and marks as bad recommendations).
+- `gpu`: Choose a graphic mode. Available values:
+    - `"none"`: Disables graphics and no graphic configurations are applied.
+    - `"panfrost"`: Enables the Panfrost DRM driver via a conditional kernel configuration fragment.
+    - `"mali"`: Enables the Mali Bifrost DRM driver in meta-renesas.
+Example:
+    ```json
+    "features": {
+        "layers": {
+            "add": [
+                "meta-openembedded/meta-perl",
+                "meta-rz-features/meta-rz-codecs"
+            ],
+            "remove": [
+                "meta-browser/meta-chromium",
+                "meta-clang",
+            ]
+        },
+        "libraries": { 
+            "add": ["vim", "curl"], 
+            "remove": ["nano"] 
+        },
+        "gpu": "panfrost"
+    }
+    ```
 
 ## Managing Repositories and Applying Patches
 
