@@ -31,6 +31,7 @@ source_env(){
 . ${SCRIPT_DIR}/include/common/create_wic.sh
 . ${SCRIPT_DIR}/include/common/mount.sh
 . ${SCRIPT_DIR}/include/common/install_gstreamer.sh
+. ${SCRIPT_DIR}/include/common/install_renesas_library.sh
 . ${SCRIPT_DIR}/include/common/install_weston.sh
 . ${SCRIPT_DIR}/include/common/install_imdt_utils.sh
 . ${SCRIPT_DIR}/include/common/yocto_working.sh
@@ -103,6 +104,13 @@ main_ubuntu_core(){
 		exit 1
 	fi
 
+	# Mount chroot to install common packages
+	chroot_run_1_script ${UBUNTU_COMMON_SCRIPT_PATH} "apt_common_install.sh"
+	if [ $? -eq 1 ]; then
+		echo "apt_common_install failed."
+		exit 1
+	fi
+
 	# Run the script 'set_root_password.sh' inside chroot environment
 	chroot_run_1_script ${UBUNTU_CORE_SCRIPT_PATH} "set_root_password.sh"
 	if [ $? -eq 1 ]; then
@@ -138,17 +146,31 @@ main_ubuntu_core(){
 		exit 1
 	fi
 
+	# Install drpai and mmngr libraries
+	install_renesas_library "rootfs" "artifacts_rootfs_source"
+	if [ $? -eq 1 ]; then
+		echo "install_renesas_library failed."
+		exit 1
+	fi
+
 	# Install IMDT utils to ubuntu rootfs
 	install_imdt_utils "rootfs" "artifacts_rootfs_source"
 	if [ $? -eq 1 ]; then
-			echo "install_imdt_utils failed."
-			exit 1
+		echo "install_imdt_utils failed."
+		exit 1
 	fi
 
 	# Install weston to ubuntu
 	install_weston "rootfs" "artifacts_rootfs_source"
 	if [ $? -eq 1 ]; then
 		echo "install_weston failed."
+		exit 1
+	fi
+
+	# Install opencva
+	chroot_run_1_script ${UBUNTU_COMMON_SCRIPT_PATH} "install-opencva.sh"
+	if [ $? -eq 1 ]; then
+		echo "setup dns and time failed."
 		exit 1
 	fi
 
@@ -241,6 +263,13 @@ main_ubuntu_lxde(){
 		exit 1
 	fi
 
+	# Mount chroot to install common packages
+	chroot_run_1_script ${UBUNTU_COMMON_SCRIPT_PATH} "apt_common_install.sh"
+	if [ $? -eq 1 ]; then
+		echo "apt_common_install failed."
+		exit 1
+	fi
+
 	# Create user - normal user
 	chroot_run_1_script ${UBUNTU_LXDE_SCRIPT_PATH} "create_user.sh"
 	if [ $? -eq 1 ]; then
@@ -259,6 +288,13 @@ main_ubuntu_lxde(){
 	allow_empty_password_ssh
 	if [ $? -eq 1 ]; then
 		echo "allow_empty_password_ssh failed."
+		exit 1
+	fi
+
+	# Install drpai and mmngr libraries
+	install_renesas_library "rootfs" "rootfs_qt"
+	if [ $? -eq 1 ]; then
+		echo "install_renesas_library failed."
 		exit 1
 	fi
 
@@ -303,6 +339,14 @@ main_ubuntu_lxde(){
 		exit 1
 	fi
 
+	# Install opencva
+	chroot_run_1_script ${UBUNTU_COMMON_SCRIPT_PATH} "install-opencva.sh"
+	if [ $? -eq 1 ]; then
+		echo "setup dns and time failed."
+		exit 1
+	fi
+	
+	# Setup DNS and time
 	chroot_run_1_script ${UBUNTU_COMMON_SCRIPT_PATH} "setup_dns_and_time.sh"
 	if [ $? -eq 1 ]; then
 		echo "setup dns and time failed."
@@ -315,6 +359,7 @@ main_ubuntu_lxde(){
 		echo "set_config_after_install failed."
 		exit 1
 	fi
+
 	# Execute some commands right after modifying config
 	chroot_run_1_script ${UBUNTU_LXDE_SCRIPT_PATH} "enable_service.sh"
 	if [ $? -eq 1 ]; then
