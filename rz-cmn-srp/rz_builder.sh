@@ -284,13 +284,13 @@ check_pkg_require(){
 	#    echo "Please download 'RZ/G Verified Linux Package' from Renesas RZ/G2L Website (https://www.renesas.com/us/en/document/swo/rzg-verified-linux-package-v305-update1rtk0ef0045z0021azj-v305-update1zip?r=1597481)"
 	#    check=1
 	#fi
-	if [ ! -e ${REN_GPU_MALI_LIB_PKG}${SUFFIX_ZIP} ];then
-		log_error "Cannot find ${REN_GPU_MALI_LIB_PKG}${SUFFIX_ZIP} !"
-		echo "Please download 'RZ MPU Graphics Library' from Renesas RZ/G2L Website (https://www.renesas.com/us/en/document/swo/rz-mpu-graphics-library-evaluation-version-rzg2l-and-rzg2lc-rtk0ef0045z13001zj-v112enzip)"
-		check=2
-	fi
-	if [ ! -e ${REN_VEDIO_CODEC_LIB_PKG}${SUFFIX_ZIP} ];then
-		log_error "Cannot found ${REN_VEDIO_CODEC_LIB_PKG}${SUFFIX_ZIP} !"
+	# if [ ! -e ${REN_GPU_MALI_LIB_PKG}${SUFFIX_ZIP} ];then
+	# 	log_error "Cannot find ${REN_GPU_MALI_LIB_PKG}${SUFFIX_ZIP} !"
+	# 	echo "Please download 'RZ MPU Graphics Library' from Renesas RZ/G2L Website (https://www.renesas.com/us/en/document/swo/rz-mpu-graphics-library-evaluation-version-rzg2l-and-rzg2lc-rtk0ef0045z13001zj-v112enzip)"
+	# 	check=2
+	# fi
+	if [ ! -e "${TOP_DIR}/${REN_VEDIO_CODEC_LIB_PKG}${SUFFIX_ZIP}" ]; then
+		log_error "Cannot find ${REN_VEDIO_CODEC_LIB_PKG}${SUFFIX_ZIP} !"
 		echo "Please download 'RZ MPU Codec Library' from Renesas RZ/G2L Website (https://www.renesas.com/us/en/document/swo/rz-mpu-video-codec-library-evaluation-version-rzg2l-rtk0ef0045z15001zj-v110xxzip?r=1535641)"
 		check=3
 	fi
@@ -474,6 +474,7 @@ check_and_clone_missing_layers() {
 
 		# If the missing repos is local
 		if [ "$repo_type" = "local" ]; then
+			check_pkg_require
 			unpack_local_repo
 			cd "${RZ_TARGET_DIR}/$missing_layer" || { log_error "Failed to change dir ${RZ_TARGET_DIR}/${missing_layer}" ; exit 1; }
 		elif [ "$repo_type" = "git" ]; then

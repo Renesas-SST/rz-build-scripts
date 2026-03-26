@@ -130,17 +130,16 @@ To perform yocto build with all RZ SOc's IP's functioning, you will need to down
 
 | File                             |   Description                                                                                                                |
 |----------------------------------|------------------------------------------------------------------------------------------------------------------------------|
-| RTK0EF0045Z15001ZJ-v1.1.0_EN.zip | RZ codec driver and HAL package.    |
+| [RTK0EF0045Z15001ZJ-v1.1.0_EN.zip](https://www.renesas.com/us/en/document/swo/rz-mpu-video-codec-library-evaluation-version-rzg2l-rtk0ef0045z15001zj-v110xxzip?r=1535641) | RZ codec driver and HAL package. |
 
 > [!IMPORTANT]
-> Simply running the script `rz_builder.sh` will tell you the command options.
-> Running the script with `build` parameter (`rz_builder.sh build`) will give you the download url's of the missing packages.
+> Simply running `rz_builder.sh` will show the available command options.
+>
+> Running `rz_builder.sh build` will display the correct download URLs for any missing packages. Note that the package may be difficult to find or overridden through direct search on the Renesas website.
+>
+> Please ensure this build is performed in an Ubuntu 24.04 environment via Docker, VM, or native OS installation.
 
-> [!IMPORTANT]
-> Please ensure that you are making this build in an ubuntu 24.04 OS environment through docker/VM/native-OS installations.
-
-Once you download the packages, place the zip files here.
-Then rerun the build script and it will take care of everything else.
+Once downloaded, place the zip file in the **same directory as `rz_builder.sh`** and rerun the build script — it will take care of the rest.
 
 ## Build output
 
