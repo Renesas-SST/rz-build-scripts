@@ -90,6 +90,15 @@
 		"type": "git",
 		"enable": "false"
 	},
+	"meta-rz-multi-os": {
+		"url": "https://github.com/Renesas-SST/meta-rz-multi-os.git",
+		"branch": "styhead/rz-cmn",
+		"tag": "",
+		"commit": "",
+		"patches": [],
+		"type": "git",
+		"enable": "true"
+	},
 	"meta-rz-features": {
 		"patches": ["patches/meta-rz-features/meta-rz-codecs/0001-support-codec-for-linux-6.10-and-yocto-styhead.patch"],
 		"type": "local",
