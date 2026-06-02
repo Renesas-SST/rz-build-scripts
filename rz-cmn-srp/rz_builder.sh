@@ -34,6 +34,7 @@ TOP_DIR=$(pwd)
 JQ="${TOP_DIR}/jq-linux-amd64"
 PATCH_FILE="${TOP_DIR}/git_patch.json"
 CONFIG_JSON="${TOP_DIR}/config.json"
+LAYER_OVERRIDE_JSON="${TOP_DIR}/layer_override.json"
 
 DEFAULT_MACHINE=$("${JQ}" -r '.defaults.machine' "$CONFIG_JSON")
 DEFAULT_IMG=$("${JQ}" -r '.defaults.image' "$CONFIG_JSON")
@@ -665,13 +666,14 @@ unpack_codec() {
 	rm -fr ${zip_dir}
 }
 
-# Set or replace a variable in local.conf
+# Set or replace a variable in auto.conf
 conf_set_variable() {
 	local var="$1"
 	local val="$2"
 	local lconf="${AUTO_CONF_FILE}"
 
-	[ -f "$lconf" ] || { log_error "Missing ${lconf}"; exit 1; }
+	[ -f "$lconf" ] || touch "$lconf"
+
 	# Remove any existing lines that set the var
 	sed -i "/^${var}[[:space:]]*=.*/d" "${lconf}"
 	echo "${var} = \"${val}\"" >> "${lconf}"
@@ -682,7 +684,7 @@ conf_clean_libraries() {
 	local lconf="${AUTO_CONF_FILE}"
 
 	[ -f "$lconf" ] || { log_error "Missing ${lconf}"; exit 1; }
-	# Refresh previous lines in the local.conf
+	# Refresh previous lines in the auto.conf
 	sed -i '\|^IMAGE_INSTALL:append = " \${USER_IMAGE_ADD}"$|d' "${lconf}"
 	sed -i '\|^PACKAGE_EXCLUDE += " \${USER_PACKAGE_EXCLUDE}"$|d' "${lconf}"
 	sed -i '\|^BAD_RECOMMENDATIONS += " \${USER_PACKAGE_EXCLUDE}"$|d' "${lconf}"
@@ -773,12 +775,12 @@ apply_add_remove_layers() {
 	# drop codec layer entry and manage via bitbake-layers instead
 	sed -i '/meta-rz-features\/meta-rz-codecs/d' "${RZ_TARGET_DIR}/build/conf/bblayers.conf"
 
-	layers_add=$(${JQ} -r '.features.layers.add[]? // empty' "${CONFIG_JSON}" | awk 'NF')
+	layers_add=$(${JQ} -r '.features.layers.add[]? // empty' "${LAYER_OVERRIDE_JSON}" | awk 'NF')
 	for layer in ${layers_add}; do
 		add_layer "${layer}"
 	done
 
-	layers_remove=$(${JQ} -r '.features.layers.remove[]? // empty' "${CONFIG_JSON}" | awk 'NF')
+	layers_remove=$(${JQ} -r '.features.layers.remove[]? // empty' "${LAYER_OVERRIDE_JSON}" | awk 'NF')
 	for layer in ${layers_remove}; do
 		remove_layer "${layer}"
 	done
@@ -791,11 +793,11 @@ apply_add_remove_layers() {
 	fi
 }
 
-# Parse libraries from config.json to handle add/remove
+# Parse libraries from layer_override.json to handle add/remove
 apply_libraries() {
 	local ADD_LIBS REMOVE_LIBS
-	ADD_LIBS=$(${JQ} -r '.features.libraries?.add[]? // empty' "${CONFIG_JSON}" | tr '\n' ' ')
-	REMOVE_LIBS=$(${JQ} -r '.features.libraries?.remove[]? // empty' "${CONFIG_JSON}" | tr '\n' ' ')
+	ADD_LIBS=$(${JQ} -r '.features.libraries?.add[]? // empty' "${LAYER_OVERRIDE_JSON}" | tr '\n' ' ')
+	REMOVE_LIBS=$(${JQ} -r '.features.libraries?.remove[]? // empty' "${LAYER_OVERRIDE_JSON}" | tr '\n' ' ')
 
 	# Refresh the template
 	conf_clean_libraries
@@ -811,7 +813,7 @@ apply_libraries() {
 
 apply_gpu_feature() {
 	local GPU_MODE
-	GPU_MODE=$(${JQ} -r '.features.gpu // "none"' "${CONFIG_JSON}")
+	GPU_MODE=$(${JQ} -r '.features.gpu // "none"' "${LAYER_OVERRIDE_JSON}")
 	log_info "GPU mode: ${GPU_MODE}"
 
 	# Control RZ_FEATURE_PANFROST in meta-renesas
@@ -864,7 +866,7 @@ setup_conf(){
 		echo "This build is based on release tag:$revision_value. Target image: ${IMAGE}"
 	fi
 
-	AUTO_CONF_FILE="${RZ_TARGET_DIR}/build/conf/local.conf"
+	AUTO_CONF_FILE="${RZ_TARGET_DIR}/build/conf/auto.conf"
 	export AUTO_CONF_FILE
 	
 	apply_add_remove_layers
@@ -1133,6 +1135,7 @@ deploy_build_assets() {
 	# Copy build assets to the src directory
 	cp "${PATCH_FILE}" "${target_dir}"
 	cp "${CONFIG_JSON}" "${target_dir}"
+	cp "${LAYER_OVERRIDE_JSON}" "${target_dir}"
 	cp "${JQ}" "${target_dir}"
 	cp -r "${TOP_DIR}/patches" "${target_dir}"
 	cp -r "${TOP_DIR}/files_to_add" "${target_dir}"
@@ -1200,11 +1203,14 @@ if ! command -v ${JQ} >/dev/null 2>&1; then
 	exit 1
 fi
 
-# Check if the config.json file exists
-if [ ! -f "${CONFIG_JSON}" ]; then
-  echo "JSON file not found: ${CONFIG_JSON}"
-  exit 1
-fi
+# Validate JSON files early
+for f in "${CONFIG_JSON}" "${LAYER_OVERRIDE_JSON}" "${PATCH_FILE}"; do
+    if ! ${JQ} empty "$f" 2>/dev/null; then
+        log_error "Invalid JSON in: $f"
+        ${JQ} . "$f"   # show jq's detailed error
+        exit 1
+    fi
+done
 
 ${JQ} -r '.images | del(.static) | .. | arrays | .[]' "${CONFIG_JSON}" > /tmp/build-images.lst
 ${JQ} -r '.images.static[][0]' "${CONFIG_JSON}" >> /tmp/build-images.lst
