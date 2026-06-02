@@ -8,6 +8,7 @@ This directory contains automated build scripts and resources for performing Yoc
 $ tree -L 3
 .
 ├── config.json
+├── layer_override.json
 ├── files_to_add
 │   └── meta-rz-features
 │       └── meta-rz-codecs
@@ -50,6 +51,7 @@ $ tree -L 3
 |----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | git_patch.json        | Contains json keys and repository configuration such as: url, branch, tag, commit, repo type and patch paths to apply.                                          |
 | config.json           | Contains the config options including available build image options grouped by build type, including Yocto images, Ubuntu images, and static image collections (all-yocto-images, all-ubuntu-images, all-supported-images).|
+| layer_override.json   | Pre-build customization file: add/remove meta-layers in BBLAYERS, append/exclude image packages, and select GPU mode (none/panfrost/mali). Applied before BitBake runs. |
 | jq-linux-amd64        | JSON querry oss binary to perform reads of git_patch.json from shell script.                                                                                    |
 | patches/              | Folder containing patches. This should ideally be organized into sub directories named after the json key.                                                      |
 | files_to_add/              | A folder containing additional files that need to be added to the meta layer. These files are specified in the `add_files` field of `git_patch.json`, which defines their source locations and target destinations. For example: <br><br>**meta-rz-features/** <br>• 0001-rzg2l-sbc-Bring-compat_alloc_user_space-back.patch<br>• 0004-rzg2l-sbc-Get-interrupt-number.patch|
@@ -100,7 +102,7 @@ It also lists the available `machine` types
 
 ### Layers and Graphics Customization
 
-The `features` section in `config.json` applies customization before BitBake runs. It adds or removes entries of meta-layer in BBLAYERS, adjusts image package lists, and sets GPU configuration.
+The `features` section in `layer_override.json` applies customization before BitBake runs. It adds or removes entries of meta-layer in BBLAYERS, adjusts image package lists, and sets GPU configuration.
 
 - `layers`: Supports `add`/`remove` entries of meta-layer in BBLAYERS, either a specific layer path (has `conf/layer.conf`) or a folder of layers (adds/removes all valid sub-layers under it).
 - `libraries`: Control image packages. `add` appends packages, `remove` excludes packages (and marks as bad recommendations).
@@ -165,7 +167,7 @@ DRP-AI (Dynamically Reconfigurable Processor + AI-MAC) is an on-chip accelerator
 DRP-AI is enabled by default through the DRP-AI-related repositories/layers being included in the build configuration:
 
 - `git_patch.json`: DRP-AI repositories are enabled (fetched during setup).
-- `config.json`: DRP-AI layers are listed under features.layers.add so they are included in the build layer stack.
+- `layer_override.json`: DRP-AI layers are listed under features.layers.add so they are included in the build layer stack.
 
 In `git_patch.json`:
 
@@ -190,7 +192,7 @@ In `git_patch.json`:
 	}
 ```
 
-In `config.json`:
+In `layer_override.json`:
 
 ```json
 	"features": {
@@ -210,11 +212,11 @@ In `config.json`:
 	}
 ```
 
-- **To disable DRP AI:** ensure the DRP-AI-related layers are not present in BBLAYERS. In this build system, that is done by updating config.json under features.layers to:
+- **To disable DRP AI:** ensure the DRP-AI-related layers are not present in BBLAYERS. In this build system, that is done by updating `layer_override.json` under features.layers to:
 	- remove the DRP-AI layer paths from add, and
 	- list the same paths under remove so they are actively excluded from the layer stack.
 
-In `config.json`:
+In `layer_override.json`:
 
 ```diff
 	"features": {
@@ -281,6 +283,7 @@ renesas@builder-pc:~/renesas/rz-cmn-srp/yocto_rzcmn_board/build/tmp/deploy/image
 │   ├── src
 │   │   └── rz-cmn-srp
 │   │       ├── config.json
+│   │       ├── layer_override.json
 │   │       ├── files_to_add
 │   │       │   └── meta-rz-features
 │   │       │       ├── 0001-rzg2l-sbc-Bring-compat_alloc_user_space-back.patch
