@@ -11,6 +11,7 @@ $ tree -L 3
 ├── README.md                   <---- Top-level documentation (this file)
 └── rz-cmn-srp/                 <---- Main build logic and scripts
     ├── config.json             <---- Build config options. Lists availabele options for build script to go over.
+    ├── layer_override.json     <---- Customize BBLAYERS, image packages, and GPU mode before build.
     ├── files_to_add/           <---- Additional files to be copied into build environment.
     │   └── meta-rz-features/
     ├── git_patch.json          <---- JSON definitions for managing repositories and patches
