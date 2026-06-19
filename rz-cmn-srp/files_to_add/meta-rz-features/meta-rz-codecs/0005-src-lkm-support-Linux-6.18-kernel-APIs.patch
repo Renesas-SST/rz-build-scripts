@@ -1,0 +1,110 @@
+From 5bf6381242c2cdb0e123667050f1f50ca426f72e Mon Sep 17 00:00:00 2001
+From: Tien Nguyen <tien.nguyen.uh@renesas.com>
+Date: Thu, 21 May 2026 09:11:30 +0000
+Subject: [PATCH] src: lkm: support Linux 6.18 kernel APIs
+
+Update the UVCS kernel module for Linux 6.18 API changes.
+
+The platform driver remove callback now returns void, so update
+uvcs_dev_remove() and remove its return value.
+
+Also update timer handling by using timer_delete() and container_of()
+for timer callback data lookup.
+
+Upstream-Status: Pending
+
+Signed-off-by: Tien Nguyen <tien.nguyen.uh@renesas.com>
+---
+ src/lkm/uvcs_lkm.c       |  6 ++----
+ src/lkm/uvcs_lkm_uf_io.c | 12 ++++++------
+ 2 files changed, 8 insertions(+), 10 deletions(-)
+
+diff --git a/src/lkm/uvcs_lkm.c b/src/lkm/uvcs_lkm.c
+index 10a6a91..5e8f9f7 100644
+--- a/src/lkm/uvcs_lkm.c
++++ b/src/lkm/uvcs_lkm.c
+@@ -757,12 +757,12 @@ err_exit:
+ 	return result;
+ }
+ 
+-static int uvcs_dev_remove(struct platform_device *pdev)
++static void uvcs_dev_remove(struct platform_device *pdev)
+ {
+ 	struct uvcs_platform_data *pdata = pdev->dev.platform_data;
+ 
+ 	if (!pdata)
+-		return -EFAULT;
++		return;
+ 
+ 	if (pdata->device_vcp)
+ 		uvcs_put_vcp_resource((struct uvcs_vcp_hwinf *)pdata->hwinf);
+@@ -773,8 +773,6 @@ static int uvcs_dev_remove(struct platform_device *pdev)
+ 	uvcsdrv->pdev[pdata->device_id] = NULL;
+ 	platform_set_drvdata(pdev, NULL);
+ 	vfree(pdata);
+-
+-	return 0;
+ }
+ 
+ /******************************************************************************/
+diff --git a/src/lkm/uvcs_lkm_uf_io.c b/src/lkm/uvcs_lkm_uf_io.c
+index bcad77c..5f18314 100644
+--- a/src/lkm/uvcs_lkm_uf_io.c
++++ b/src/lkm/uvcs_lkm_uf_io.c
+@@ -181,7 +181,7 @@ static irqreturn_t uvcs_vlc_int_handler(
+ 			if ((driver_info->vcpinf[i].irq_vlc == irq)
+ 			&&	(driver_info->vcpinf[i].pdev == pdev)) {
+ 				spin_lock_irqsave(&driver_info->vcpinf[i].slock_vlc, flags);
+-				del_timer(&driver_info->vcpinf[i].timer_vlc);
++				timer_delete(&driver_info->vcpinf[i].timer_vlc);
+ 				iowrite32(0u, driver_info->vcpinf[i].reg_vlc + UVCS_VCPREG_IRQENB);
+ 				uvcs_cmn_vlc_interrupt(driver_info->uvcs_info, i, ts.tv_nsec, UVCS_FALSE);
+ 				spin_unlock_irqrestore(&driver_info->vcpinf[i].slock_vlc, flags);
+@@ -215,7 +215,7 @@ static irqreturn_t uvcs_ce_int_handler(
+ 			if ((driver_info->vcpinf[i].irq_ce == irq)
+ 			&&	(driver_info->vcpinf[i].pdev == pdev)) {
+ 				spin_lock_irqsave(&driver_info->vcpinf[i].slock_ce, flags);
+-				del_timer(&driver_info->vcpinf[i].timer_ce);
++				timer_delete(&driver_info->vcpinf[i].timer_ce);
+ 				iowrite32(0u, driver_info->vcpinf[i].reg_ce + UVCS_VCPREG_IRQENB);
+ 				uvcs_cmn_ce_interrupt(driver_info->uvcs_info, i, ts.tv_nsec, UVCS_FALSE);
+ 				spin_unlock_irqrestore(&driver_info->vcpinf[i].slock_ce, flags);
+@@ -234,7 +234,7 @@ static void uvcs_vlc_timer_handler(
+ 	struct timer_list *data_ptr /**< [in] hardware identifier */
+ 	)
+ {
+-	struct uvcs_vcp_hwinf *vcpinfo = from_timer(vcpinfo, data_ptr, timer_vlc);
++	struct uvcs_vcp_hwinf *vcpinfo = container_of(data_ptr, struct uvcs_vcp_hwinf, timer_vlc);
+ 	unsigned long data = vcpinfo -> timer_vlc_data;
+ 	if (driver_info) {
+ 		struct timespec64 ts;
+@@ -243,7 +243,7 @@ static void uvcs_vlc_timer_handler(
+ 		ktime_get_raw_ts64(&ts);
+ 		if (data < driver_info->vcp_devnum) {
+ 			spin_lock_irqsave(&driver_info->vcpinf[data].slock_vlc, flags);
+-			del_timer(&driver_info->vcpinf[data].timer_vlc);
++			timer_delete(&driver_info->vcpinf[data].timer_vlc);
+ 			iowrite32(0u, driver_info->vcpinf[data].reg_vlc + UVCS_VCPREG_IRQENB);
+ 			uvcs_cmn_vlc_interrupt(driver_info->uvcs_info, data, ts.tv_nsec, UVCS_TRUE);
+ 			spin_unlock_irqrestore(&driver_info->vcpinf[data].slock_vlc, flags);
+@@ -258,7 +258,7 @@ static void uvcs_ce_timer_handler(
+ 	struct timer_list *data_ptr /**< [in] hardware identifier */
+ 	)
+ {
+-	struct uvcs_vcp_hwinf *vcpinfo = from_timer(vcpinfo, data_ptr, timer_ce);
++	struct uvcs_vcp_hwinf *vcpinfo = container_of(data_ptr, struct uvcs_vcp_hwinf, timer_ce);
+ 	unsigned long data = vcpinfo -> timer_ce_data;
+ 	if (driver_info) {
+ 		struct timespec64 ts;
+@@ -267,7 +267,7 @@ static void uvcs_ce_timer_handler(
+ 		ktime_get_raw_ts64(&ts);
+ 		if (data < driver_info->vcp_devnum) {
+ 			spin_lock_irqsave(&driver_info->vcpinf[data].slock_ce, flags);
+-			del_timer(&driver_info->vcpinf[data].timer_ce);
++			timer_delete(&driver_info->vcpinf[data].timer_ce);
+ 			iowrite32(0u, driver_info->vcpinf[data].reg_ce + UVCS_VCPREG_IRQENB);
+ 			uvcs_cmn_ce_interrupt(driver_info->uvcs_info, data, ts.tv_nsec, UVCS_TRUE);
+ 			spin_unlock_irqrestore(&driver_info->vcpinf[data].slock_ce, flags);
+-- 
+2.43.0
+

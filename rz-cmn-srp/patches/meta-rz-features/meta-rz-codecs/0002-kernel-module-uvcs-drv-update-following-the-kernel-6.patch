@@ -1,0 +1,42 @@
+From bf43f55ab741df00c31c92fd564ad5cb6b2b560f Mon Sep 17 00:00:00 2001
+From: Tien Nguyen <tien.nguyen.uh@renesas.com>
+Date: Fri, 19 Jun 2026 06:52:34 +0000
+Subject: [PATCH] kernel-module-uvcs-drv: update following the kernel 6.18
+
+Upstream-Status: Pending
+
+Signed-off-by: Tien Nguyen <tien.nguyen.uh@renesas.com>
+---
+ .../kernel-module-uvcs-drv/kernel-module-uvcs-drv.bb     | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/meta-rz-codecs/recipes-kernel/kernel-module-uvcs-drv/kernel-module-uvcs-drv.bb b/meta-rz-codecs/recipes-kernel/kernel-module-uvcs-drv/kernel-module-uvcs-drv.bb
+index 098e7f6..9d8798a 100644
+--- a/meta-rz-codecs/recipes-kernel/kernel-module-uvcs-drv/kernel-module-uvcs-drv.bb
++++ b/meta-rz-codecs/recipes-kernel/kernel-module-uvcs-drv/kernel-module-uvcs-drv.bb
+@@ -23,7 +23,8 @@ SRC_URI:append = " \
+ 
+ SRC_URI:append = " \
+ 	file://0003-Add-SMC-calls-for-uvcs-kernel.patch \
+-    file://0004-rzg2l-sbc-Get-interrupt-number.patch \
++	file://0004-rzg2l-sbc-Get-interrupt-number.patch \
++	file://0005-src-lkm-support-Linux-6.18-kernel-APIs.patch \
+ "
+ 
+ S = "${WORKDIR}/uvcs_kernel_package"
+@@ -37,6 +38,12 @@ includedir = "${RENESAS_DATADIR}/include"
+ 
+ do_fetch[file-checksums] = ""
+ 
++UVCS_PATHMAP_FLAGS = " \
++    -ffile-prefix-map=${STAGING_KERNEL_DIR}=/usr/src/kernel \
++"
++
++EXTRA_OEMAKE += "KCFLAGS='${UVCS_PATHMAP_FLAGS}'"
++
+ do_compile:prepend() {
+     export UVCS_SRC="${S}/src"
+     export UVCS_INC="${S}"
+-- 
+2.43.0
+
