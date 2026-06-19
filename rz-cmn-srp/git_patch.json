@@ -100,7 +100,8 @@
 		"enable": "true"
 	},
 	"meta-rz-features": {
-		"patches": ["patches/meta-rz-features/meta-rz-codecs/0001-support-codec-for-linux-6.10-and-yocto-styhead.patch"],
+		"patches": ["patches/meta-rz-features/meta-rz-codecs/0001-support-codec-for-linux-6.10-and-yocto-styhead.patch",
+					"patches/meta-rz-features/meta-rz-codecs/0002-kernel-module-uvcs-drv-update-following-the-kernel-6.patch"],
 		"type": "local",
 		"add_files": [
 			{
@@ -110,7 +111,11 @@
 			{
 				"source": "files_to_add/meta-rz-features/meta-rz-codecs/0004-rzg2l-sbc-Get-interrupt-number.patch",
 				"target": "meta-rz-features/meta-rz-codecs/recipes-kernel/kernel-module-uvcs-drv/files"
-			}
+			},
+            {
+                "source": "files_to_add/meta-rz-features/meta-rz-codecs/0005-src-lkm-support-Linux-6.18-kernel-APIs.patch",
+                "target": "meta-rz-features/meta-rz-codecs/recipes-kernel/kernel-module-uvcs-drv/files"
+            }
 		],
 		"enable": "true"
 	},
