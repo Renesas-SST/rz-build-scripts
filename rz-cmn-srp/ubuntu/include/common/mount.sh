@@ -64,6 +64,9 @@ umount_chroot() {
 #   None
 #######################################
 copy_script() {
+    # Change to WORK_DIR to ensure relative paths work correctly
+	cd "$WORK_DIR" || { echo "Failed to change to WORK_DIR"; return 1; }
+
 	# Define local variables
 	input_folder="${SCRIPT_DIR}/${1}/${2}"
 	destination="./rootfs/${1}"
@@ -73,9 +76,6 @@ copy_script() {
 		echo "File ${input_folder} not found"
 		return 1
 	fi
-
-	# Change permission
-	chmod a+x ${destination}/${2}
 
 	# Create target folder
 	if [ ! -d "${destination}" ]; then
@@ -91,6 +91,10 @@ copy_script() {
 
 	# Copy script to target folder
 	cp "${input_folder}" "${destination}" || { echo "Failed to copy ${input_folder}"; return 1; }
+
+	# Change permission AFTER copying
+	chmod a+x ${destination}/${2}
+
 	return 0
 
 }
@@ -103,6 +107,9 @@ copy_script() {
 #   None
 #######################################
 chroot_run_1_script() {
+	# Change to WORK_DIR to ensure relative paths work correctly
+	cd "$WORK_DIR" || { echo "Failed to change to WORK_DIR"; return 1; }
+
 	trap 'echo "Caught Ctrl+C, running umount_chroot..."; umount_chroot; exit 1' INT
 	script_path="${1}/${2}"
 	script_name="${2}"

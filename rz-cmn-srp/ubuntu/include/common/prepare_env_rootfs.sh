@@ -114,10 +114,10 @@ copy_modprobe_conf() {
 		mkdir -p "$dest_dir" || { echo "Failed to create destination directory $dest_dir"; return 1; }
 	fi
 
-	# Copy folder from source to destination
-	echo "Copying modprobe conf from $source_dir to $dest_dir..."
-	cp -r "$source_dir"* "$dest_dir" || { echo "Failed to copy modprobe conf to $dest_dir."; return 1; }
-	echo "modprobe conf copied successfully to $dest_dir."
+	# Merge folder from source to destination (preserves existing files, adds new ones)
+	echo "Merging modprobe conf from $source_dir to $dest_dir..."
+	rsync -av "$source_dir" "$dest_dir" --backup-dir="$dest_dir/.backup" || { echo "Failed to merge modprobe conf to $dest_dir."; return 1; }
+	echo "modprobe conf merged successfully to $dest_dir."
 
 	return 0
 }

@@ -170,14 +170,14 @@ function prepare_rootfs() {
 	fi
 	echo "copy_kernel_modules completed successfully."
 
-	# Copy modprobe conf
-	echo "Starting copy modprobe conf..."
-	copy_modprobe_conf "artifacts_rootfs_source" "rootfs"
-	if [[ $? -eq 1 ]]; then
-			echo "copy_modprobe_conf failed."
-			return 1
-	fi
-	echo "copy_modprobe_conf completed succesfully."
+	# Skip modprobe conf copy here - will copy after package installation to avoid dpkg conflicts
+	# echo "Starting copy modprobe conf..."
+	# copy_modprobe_conf "artifacts_rootfs_source" "rootfs"
+	# if [[ $? -eq 1 ]]; then
+	# 		echo "copy_modprobe_conf failed."
+	# 		return 1
+	# fi
+	# echo "copy_modprobe_conf completed succesfully."
 
 	# Copy network interface
 	echo "Starting copy network interface..."
