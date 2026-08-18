@@ -39,6 +39,16 @@ source_env(){
 . ${SCRIPT_DIR}/include/common/allow_empty_password.sh
 . ${SCRIPT_DIR}/include/common/prepare_env_rootfs.sh
 
+# Load V4H support scripts (RCar V4H Sparrow Hawk board)
+. ${SCRIPT_DIR}/include/common/install_v4h_pcie_firmware.sh
+. ${SCRIPT_DIR}/include/common/install_powervr_graphics.sh
+. ${SCRIPT_DIR}/include/common/setup_libdrm_pvr.sh
+. ${SCRIPT_DIR}/include/common/setup_wayland_pvr.sh
+. ${SCRIPT_DIR}/include/common/install_libcamera.sh
+. ${SCRIPT_DIR}/include/common/install_libpisp.sh
+. ${SCRIPT_DIR}/include/common/install_qos_userspace.sh
+. ${SCRIPT_DIR}/script/common/install_graphics_v4h.sh
+
 #---------------------------Log helper functions--------------------------------
 log_warning(){
 	string=$1
@@ -167,6 +177,42 @@ main_ubuntu_core(){
 		exit 1
 	fi
 
+	log_info "Installing V4H board support..."
+	install_v4h_pcie_firmware "artifacts_rootfs_source" "rootfs"
+	if [ $? -eq 1 ]; then
+		log_warning "install_v4h_pcie_firmware failed or skipped."
+	fi
+
+	install_powervr_graphics "artifacts_rootfs_source" "rootfs"
+	if [ $? -eq 1 ]; then
+		log_warning "install_powervr_graphics failed or skipped."
+	fi
+
+	setup_libdrm_pvr "artifacts_rootfs_source" "rootfs"
+	if [ $? -eq 1 ]; then
+		log_warning "setup_libdrm_pvr failed or skipped."
+	fi
+
+	setup_wayland_pvr "artifacts_rootfs_source" "rootfs"
+	if [ $? -eq 1 ]; then
+		log_warning "setup_wayland_pvr failed or skipped."
+	fi
+
+	install_libcamera "artifacts_rootfs_source" "rootfs"
+	if [ $? -eq 1 ]; then
+		log_warning "install_libcamera failed or skipped."
+	fi
+
+	install_libpisp "artifacts_rootfs_source" "rootfs"
+	if [ $? -eq 1 ]; then
+		log_warning "install_libpisp failed or skipped."
+	fi
+
+	install_qos_userspace "artifacts_rootfs_source" "rootfs"
+	if [ $? -eq 1 ]; then
+		log_warning "install_qos_userspace failed or skipped."
+	fi
+
 	# Install opencva
 	chroot_run_1_script ${UBUNTU_COMMON_SCRIPT_PATH} "install-opencva.sh"
 	if [ $? -eq 1 ]; then
@@ -179,6 +225,12 @@ main_ubuntu_core(){
 	if [ $? -eq 1 ]; then
 		echo "setup dns and time failed."
 		exit 1
+	fi
+
+	# Copy modprobe configs after all package installations are complete (no dpkg conflicts)
+	copy_modprobe_conf "artifacts_rootfs_source" "rootfs"
+	if [ $? -eq 1 ]; then
+		echo "Warning: copy_modprobe_conf failed."
 	fi
 
 	# Package the root filesystem into a compressed archive (tarball)
@@ -303,6 +355,42 @@ main_ubuntu_lxde(){
 	if [ $? -eq 1 ]; then
 			echo "install_imdt_utils failed."
 			exit 1
+	fi
+
+	log_info "Installing V4H board support for LXDE..."
+	install_v4h_pcie_firmware "rootfs_qt" "rootfs"
+	if [ $? -eq 1 ]; then
+		log_warning "install_v4h_pcie_firmware failed or skipped."
+	fi
+
+	install_powervr_graphics "rootfs_qt" "rootfs"
+	if [ $? -eq 1 ]; then
+		log_warning "install_powervr_graphics failed or skipped."
+	fi
+
+	setup_libdrm_pvr "rootfs_qt" "rootfs"
+	if [ $? -eq 1 ]; then
+		log_warning "setup_libdrm_pvr failed or skipped."
+	fi
+
+	setup_wayland_pvr "rootfs_qt" "rootfs"
+	if [ $? -eq 1 ]; then
+		log_warning "setup_wayland_pvr failed or skipped."
+	fi
+
+	install_libcamera "rootfs_qt" "rootfs"
+	if [ $? -eq 1 ]; then
+		log_warning "install_libcamera failed or skipped."
+	fi
+
+	install_libpisp "rootfs_qt" "rootfs"
+	if [ $? -eq 1 ]; then
+		log_warning "install_libpisp failed or skipped."
+	fi
+
+	install_qos_userspace "rootfs_qt" "rootfs"
+	if [ $? -eq 1 ]; then
+		log_warning "install_qos_userspace failed or skipped."
 	fi
 
 	# Install wifi and bluetooth packages
