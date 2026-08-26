@@ -31,12 +31,14 @@ install_libpisp() {
 
 	echo "Copying libpisp library from Yocto rootfs to Ubuntu..."
 
-	# Create destination directories
-	mkdir -p "${ubuntu_rootfs}${install_prefix}/lib/aarch64-linux-gnu"
+	# Create destination directories. Yocto's meta-renesas libpisp_git.bb
+	# installs under plain /usr/lib (no multiarch aarch64-linux-gnu subdir).
+	mkdir -p "${ubuntu_rootfs}${install_prefix}/lib"
 	mkdir -p "${ubuntu_rootfs}${install_prefix}/include"
 	mkdir -p "${ubuntu_rootfs}${install_prefix}/share/libpisp"
 
 	local copied=0
+	local failed=0
 
 	# Helper function to copy files with validation
 	copy_file() {
@@ -50,6 +52,8 @@ install_libpisp() {
 			echo "✓ Copied: ${src_file}"
 			return 0
 		else
+			echo "✗ NOT FOUND: ${src_file}"
+			failed=$((failed + 1))
 			return 1
 		fi
 	}
@@ -66,17 +70,45 @@ install_libpisp() {
 			echo "✓ Copied directory: ${src_dir}"
 			return 0
 		else
+			echo "✗ NOT FOUND or EMPTY: ${src_dir}"
+			failed=$((failed + 1))
 			return 1
 		fi
 	}
 
-	# ===== Copy libpisp shared libraries =====
+	# Helper function to copy a required file, failing hard if missing
+	copy_required_file() {
+		local src_file="$1"
+		local dst_dir="$2"
+
+		if [ ! -f "${yocto_rootfs}${src_file}" ]; then
+			echo "ERROR: Required libpisp file is missing: ${src_file}"
+			failed=$((failed + 1))
+			return 1
+		fi
+
+		mkdir -p "$dst_dir"
+		cp -v "${yocto_rootfs}${src_file}" "$dst_dir/"
+		copied=$((copied + 1))
+		echo "✓ Copied required file: ${src_file}"
+	}
+
+	# ===== Copy libpisp shared library (required) =====
+	# Yocto ships the real libpisp.so.1.Y.Z file plus libpisp.so and
+	# libpisp.so.1 symlinks (no bare .so.0). Copy the whole family with
+	# -P so the symlinks are preserved instead of dereferenced. This is
+	# the only artifact this script provides, so a miss fails the install.
 	echo ""
 	echo "Copying libpisp libraries..."
-	copy_file "${install_prefix}/lib/aarch64-linux-gnu/libpisp.so.0" \
-		"${ubuntu_rootfs}${install_prefix}/lib/aarch64-linux-gnu"
-	copy_file "${install_prefix}/lib/aarch64-linux-gnu/libpisp.so" \
-		"${ubuntu_rootfs}${install_prefix}/lib/aarch64-linux-gnu"
+	if compgen -G "${yocto_rootfs}${install_prefix}/lib/libpisp.so*" > /dev/null; then
+		cp -Pv "${yocto_rootfs}${install_prefix}"/lib/libpisp.so* "${ubuntu_rootfs}${install_prefix}/lib/"
+		copied=$((copied + 1))
+		echo "✓ Copied: libpisp.so* (real file + symlinks)"
+	else
+		echo "ERROR: Required libpisp library is missing: ${install_prefix}/lib/libpisp.so*"
+		failed=$((failed + 1))
+		return 1
+	fi
 
 	# ===== Copy libpisp headers =====
 	echo ""
@@ -97,39 +129,11 @@ install_libpisp() {
 		echo "✓ Created symlink: /etc/libpisp/tuning"
 	fi
 
-	# ===== Create library symlinks =====
-	echo ""
-	echo "Creating libpisp library symlinks..."
-	setup_libpisp_symlinks "${ubuntu_rootfs}" "${install_prefix}"
-
 	# ===== Verify installation =====
 	echo ""
 	echo "libpisp copy summary:"
-	echo "  Copied: $copied components"
-
-	if [ -f "${ubuntu_rootfs}${install_prefix}/lib/aarch64-linux-gnu/libpisp.so.0" ] || \
-	   [ -f "${ubuntu_rootfs}${install_prefix}/lib/aarch64-linux-gnu/libpisp.so" ]; then
-		echo "SUCCESS: libpisp library copied to Ubuntu rootfs"
-		return 0
-	else
-		echo "WARNING: libpisp library not found in Yocto rootfs"
-		echo "This component may not be essential for your configuration"
-		return 0
-	fi
-}
-
-setup_libpisp_symlinks() {
-	local ubuntu_rootfs="$1"
-	local install_prefix="$2"
-	local lib_dir="${ubuntu_rootfs}${install_prefix}/lib/aarch64-linux-gnu"
-
-	if [ ! -d "$lib_dir" ]; then
-		return 0
-	fi
-
-	# Create main symlink (using absolute paths, no cd)
-	if [ -f "${lib_dir}/libpisp.so.0" ] && [ ! -L "${lib_dir}/libpisp.so" ]; then
-		ln -sf libpisp.so.0 "${lib_dir}/libpisp.so"
-		echo "✓ Created symlink: libpisp.so → libpisp.so.0"
-	fi
+	echo "  Copied: $copied"
+	echo "  Missing: $failed"
+	echo "SUCCESS: libpisp library copied to Ubuntu rootfs"
+	return 0
 }
