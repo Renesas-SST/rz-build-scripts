@@ -180,37 +180,44 @@ main_ubuntu_core(){
 	log_info "Installing V4H board support..."
 	install_v4h_pcie_firmware "artifacts_rootfs_source" "rootfs"
 	if [ $? -eq 1 ]; then
-		log_warning "install_v4h_pcie_firmware failed or skipped."
+		log_error "install_v4h_pcie_firmware failed. PCIe firmware is required for V4H."
+		exit 1
 	fi
 
 	install_powervr_graphics "artifacts_rootfs_source" "rootfs"
 	if [ $? -eq 1 ]; then
-		log_warning "install_powervr_graphics failed or skipped."
+		log_error "install_powervr_graphics failed. PowerVR runtime is required for V4H."
+		exit 1
 	fi
 
 	setup_libdrm_pvr "artifacts_rootfs_source" "rootfs"
 	if [ $? -eq 1 ]; then
-		log_warning "setup_libdrm_pvr failed or skipped."
+		log_error "setup_libdrm_pvr failed. libdrm is required for PowerVR GPU support."
+		exit 1
 	fi
 
 	setup_wayland_pvr "artifacts_rootfs_source" "rootfs"
 	if [ $? -eq 1 ]; then
-		log_warning "setup_wayland_pvr failed or skipped."
+		log_error "setup_wayland_pvr failed. Wayland/Weston is required for V4H display."
+		exit 1
 	fi
 
 	install_libcamera "artifacts_rootfs_source" "rootfs"
 	if [ $? -eq 1 ]; then
-		log_warning "install_libcamera failed or skipped."
+		log_error "install_libcamera failed. libcamera is required for V4H camera support."
+		exit 1
 	fi
 
 	install_libpisp "artifacts_rootfs_source" "rootfs"
 	if [ $? -eq 1 ]; then
-		log_warning "install_libpisp failed or skipped."
+		log_error "install_libpisp failed. libpisp is required for V4H camera support."
+		exit 1
 	fi
 
 	install_qos_userspace "artifacts_rootfs_source" "rootfs"
 	if [ $? -eq 1 ]; then
-		log_warning "install_qos_userspace failed or skipped."
+		log_error "install_qos_userspace failed. QoS userspace is required for V4H."
+		exit 1
 	fi
 
 	# Install opencva
@@ -360,37 +367,44 @@ main_ubuntu_lxde(){
 	log_info "Installing V4H board support for LXDE..."
 	install_v4h_pcie_firmware "rootfs_qt" "rootfs"
 	if [ $? -eq 1 ]; then
-		log_warning "install_v4h_pcie_firmware failed or skipped."
+		log_error "install_v4h_pcie_firmware failed. PCIe firmware is required for V4H."
+		exit 1
 	fi
 
 	install_powervr_graphics "rootfs_qt" "rootfs"
 	if [ $? -eq 1 ]; then
-		log_warning "install_powervr_graphics failed or skipped."
+		log_error "install_powervr_graphics failed. PowerVR runtime is required for V4H."
+		exit 1
 	fi
 
 	setup_libdrm_pvr "rootfs_qt" "rootfs"
 	if [ $? -eq 1 ]; then
-		log_warning "setup_libdrm_pvr failed or skipped."
+		log_error "setup_libdrm_pvr failed. libdrm is required for PowerVR GPU support."
+		exit 1
 	fi
 
 	setup_wayland_pvr "rootfs_qt" "rootfs"
 	if [ $? -eq 1 ]; then
-		log_warning "setup_wayland_pvr failed or skipped."
+		log_error "setup_wayland_pvr failed. Wayland/Weston is required for V4H display."
+		exit 1
 	fi
 
 	install_libcamera "rootfs_qt" "rootfs"
 	if [ $? -eq 1 ]; then
-		log_warning "install_libcamera failed or skipped."
+		log_error "install_libcamera failed. libcamera is required for V4H camera support."
+		exit 1
 	fi
 
 	install_libpisp "rootfs_qt" "rootfs"
 	if [ $? -eq 1 ]; then
-		log_warning "install_libpisp failed or skipped."
+		log_error "install_libpisp failed. libpisp is required for V4H camera support."
+		exit 1
 	fi
 
 	install_qos_userspace "rootfs_qt" "rootfs"
 	if [ $? -eq 1 ]; then
-		log_warning "install_qos_userspace failed or skipped."
+		log_error "install_qos_userspace failed. QoS userspace is required for V4H."
+		exit 1
 	fi
 
 	# Install wifi and bluetooth packages
