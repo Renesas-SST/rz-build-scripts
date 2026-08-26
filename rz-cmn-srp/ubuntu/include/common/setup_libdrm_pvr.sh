@@ -36,6 +36,7 @@ setup_libdrm_pvr() {
 	mkdir -p "${ubuntu_rootfs}/usr/lib/aarch64-linux-gnu/pkgconfig"
 
 	local copied=0
+	local failed=0
 
 	# Helper function to copy files with validation
 	copy_file() {
@@ -49,6 +50,8 @@ setup_libdrm_pvr() {
 			echo "✓ Copied: ${src_file}"
 			return 0
 		else
+			echo "✗ NOT FOUND: ${src_file}"
+			failed=$((failed + 1))
 			return 1
 		fi
 	}
@@ -65,16 +68,36 @@ setup_libdrm_pvr() {
 			echo "✓ Copied directory: ${src_dir}"
 			return 0
 		else
+			echo "✗ NOT FOUND or EMPTY: ${src_dir}"
+			failed=$((failed + 1))
 			return 1
 		fi
+	}
+
+	# Helper function to copy a required file, failing hard if missing
+	copy_required_file() {
+		local src_file="$1"
+		local dst_dir="$2"
+
+		if [ ! -f "${yocto_rootfs}${src_file}" ]; then
+			echo "ERROR: Required libdrm file is missing: ${src_file}"
+			failed=$((failed + 1))
+			return 1
+		fi
+
+		mkdir -p "$dst_dir" || { failed=$((failed + 1)); return 1; }
+		cp -v "${yocto_rootfs}${src_file}" "$dst_dir/" || { failed=$((failed + 1)); return 1; }
+		copied=$((copied + 1))
+		echo "✓ Copied required file: ${src_file}"
+		return 0
 	}
 
 	# ===== Copy libdrm shared libraries =====
 	echo ""
 	echo "Copying libdrm libraries..."
-	copy_file "/usr/lib/aarch64-linux-gnu/libdrm.so.2" "${ubuntu_rootfs}/usr/lib/aarch64-linux-gnu"
-	copy_file "/usr/lib/aarch64-linux-gnu/libkms.so.1" "${ubuntu_rootfs}/usr/lib/aarch64-linux-gnu"
-	copy_file "/usr/lib/aarch64-linux-gnu/libdrm_freedreno.so.1" "${ubuntu_rootfs}/usr/lib/aarch64-linux-gnu"
+	copy_required_file "/usr/lib/libdrm.so.2" "${ubuntu_rootfs}/usr/lib/aarch64-linux-gnu" || return 1
+	copy_file "/usr/lib/libkms.so.1" "${ubuntu_rootfs}/usr/lib/aarch64-linux-gnu"
+	copy_file "/usr/lib/libdrm_freedreno.so.1" "${ubuntu_rootfs}/usr/lib/aarch64-linux-gnu"
 
 	# ===== Copy libdrm headers =====
 	echo ""
@@ -84,11 +107,11 @@ setup_libdrm_pvr() {
 	# ===== Copy pkgconfig files =====
 	echo ""
 	echo "Copying libdrm pkgconfig files..."
-	copy_file "/usr/lib/aarch64-linux-gnu/pkgconfig/libdrm.pc" \
+	copy_file "/usr/lib/pkgconfig/libdrm.pc" \
 		"${ubuntu_rootfs}/usr/lib/aarch64-linux-gnu/pkgconfig"
-	copy_file "/usr/lib/aarch64-linux-gnu/pkgconfig/libkms.pc" \
+	copy_file "/usr/lib/pkgconfig/libkms.pc" \
 		"${ubuntu_rootfs}/usr/lib/aarch64-linux-gnu/pkgconfig"
-	copy_file "/usr/lib/aarch64-linux-gnu/pkgconfig/libdrm_freedreno.pc" \
+	copy_file "/usr/lib/pkgconfig/libdrm_freedreno.pc" \
 		"${ubuntu_rootfs}/usr/lib/aarch64-linux-gnu/pkgconfig"
 
 	# ===== Create symlinks for versioned libraries =====
@@ -99,17 +122,11 @@ setup_libdrm_pvr() {
 	# ===== Verify installation =====
 	echo ""
 	echo "libdrm copy summary:"
-	echo "  Copied: $copied components"
-
-	if [ -f "${ubuntu_rootfs}/usr/lib/aarch64-linux-gnu/libdrm.so.2" ]; then
-		echo "SUCCESS: libdrm copied to Ubuntu rootfs"
-		ls -lh "${ubuntu_rootfs}/usr/lib/aarch64-linux-gnu/libdrm"* 2>/dev/null || true
-		return 0
-	else
-		echo "WARNING: libdrm libraries not found in Yocto rootfs"
-		echo "This may not be critical if libdrm is provided by Ubuntu base"
-		return 0
-	fi
+	echo "  Copied: $copied"
+	echo "  Missing: $failed"
+	echo "SUCCESS: libdrm copied to Ubuntu rootfs"
+	ls -lh "${ubuntu_rootfs}/usr/lib/aarch64-linux-gnu/libdrm"* 2>/dev/null || true
+	return 0
 }
 
 setup_libdrm_symlinks() {

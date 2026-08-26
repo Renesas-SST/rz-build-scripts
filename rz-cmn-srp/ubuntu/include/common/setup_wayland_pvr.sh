@@ -38,6 +38,7 @@ setup_wayland_pvr() {
 	mkdir -p "${ubuntu_rootfs}/usr/lib/aarch64-linux-gnu"
 
 	local copied=0
+	local failed=0
 
 	# Helper function to copy files with validation
 	copy_file() {
@@ -51,6 +52,8 @@ setup_wayland_pvr() {
 			echo "✓ Copied: ${src_file}"
 			return 0
 		else
+			echo "✗ NOT FOUND: ${src_file}"
+			failed=$((failed + 1))
 			return 1
 		fi
 	}
@@ -67,68 +70,59 @@ setup_wayland_pvr() {
 			echo "✓ Copied directory: ${src_dir}"
 			return 0
 		else
+			echo "✗ NOT FOUND or EMPTY: ${src_dir}"
+			failed=$((failed + 1))
 			return 1
 		fi
+	}
+
+	# Helper function to copy a required file, failing hard if missing
+	copy_required_file() {
+		local src_file="$1"
+		local dst_dir="$2"
+
+		if [ ! -f "${yocto_rootfs}${src_file}" ]; then
+			echo "ERROR: Required Wayland/Weston file is missing: ${src_file}"
+			failed=$((failed + 1))
+			return 1
+		fi
+
+		mkdir -p "$dst_dir" || { failed=$((failed + 1)); return 1; }
+		cp -v "${yocto_rootfs}${src_file}" "$dst_dir/" || { failed=$((failed + 1)); return 1; }
+		copied=$((copied + 1))
+		echo "✓ Copied required file: ${src_file}"
+		return 0
 	}
 
 	# ===== Copy Wayland client/server libraries =====
 	echo ""
 	echo "Copying Wayland libraries..."
-	copy_file "/usr/lib/aarch64-linux-gnu/libwayland-client.so.0" \
+	copy_required_file "/usr/lib/libwayland-client.so.0" \
+		"${ubuntu_rootfs}/usr/lib/aarch64-linux-gnu" || return 1
+	copy_file "/usr/lib/libwayland-server.so.0" \
 		"${ubuntu_rootfs}/usr/lib/aarch64-linux-gnu"
-	copy_file "/usr/lib/aarch64-linux-gnu/libwayland-server.so.0" \
+	copy_file "/usr/lib/libwayland-cursor.so.0" \
 		"${ubuntu_rootfs}/usr/lib/aarch64-linux-gnu"
-	copy_file "/usr/lib/aarch64-linux-gnu/libwayland-cursor.so.0" \
-		"${ubuntu_rootfs}/usr/lib/aarch64-linux-gnu"
-	copy_file "/usr/lib/aarch64-linux-gnu/libwayland-egl.so.1" \
+	copy_file "/usr/lib/libwayland-egl.so.1" \
 		"${ubuntu_rootfs}/usr/lib/aarch64-linux-gnu"
 
 	# ===== Copy Weston binaries and libraries =====
 	echo ""
 	echo "Copying Weston compositor..."
-	copy_file "/usr/bin/weston" "${ubuntu_rootfs}/usr/bin"
+	copy_required_file "/usr/bin/weston" "${ubuntu_rootfs}/usr/bin" || return 1
 	copy_file "/usr/bin/weston-info" "${ubuntu_rootfs}/usr/bin"
 	copy_file "/usr/bin/weston-launch" "${ubuntu_rootfs}/usr/bin"
 
 	# Copy Weston modules and backends
 	echo ""
 	echo "Copying Weston modules..."
-	copy_dir "/usr/lib/aarch64-linux-gnu/weston" \
+	copy_dir "/usr/lib/weston" \
 		"${ubuntu_rootfs}/usr/lib/aarch64-linux-gnu/weston"
 
 	# ===== Copy Weston configuration =====
 	echo ""
 	echo "Copying Weston configuration..."
 	copy_file "/etc/xdg/weston/weston.ini" "${ubuntu_rootfs}/etc/xdg/weston"
-
-	# ===== Copy systemd services for Weston =====
-	echo ""
-	echo "Copying Weston systemd services..."
-	copy_file "/etc/systemd/system/weston.service" "${ubuntu_rootfs}/etc/systemd/system"
-
-	# ===== Create Weston service files if not present =====
-	if [ ! -f "${ubuntu_rootfs}/etc/systemd/system/weston.service" ]; then
-		echo "Creating Weston service file..."
-		mkdir -p "${ubuntu_rootfs}/etc/systemd/system"
-		cat > "${ubuntu_rootfs}/etc/systemd/system/weston.service" <<'EOF'
-[Unit]
-Description=Wayland display server
-After=systemd-user-sessions.service
-
-[Service]
-Type=simple
-ExecStart=/usr/bin/weston --backend=drm-backend.so
-Restart=on-failure
-User=root
-StandardOutput=journal
-StandardError=journal
-
-[Install]
-WantedBy=graphical.target
-EOF
-		chmod 644 "${ubuntu_rootfs}/etc/systemd/system/weston.service"
-		echo "✓ Created: /etc/systemd/system/weston.service"
-	fi
 
 	# ===== Create default Weston configuration if not copied =====
 	if [ ! -f "${ubuntu_rootfs}/etc/xdg/weston/weston.ini" ]; then
@@ -165,17 +159,10 @@ EOF
 	# ===== Verify installation =====
 	echo ""
 	echo "Wayland/Weston copy summary:"
-	echo "  Copied: $copied components"
-
-	if [ -f "${ubuntu_rootfs}/usr/bin/weston" ] || \
-	   [ -f "${ubuntu_rootfs}/usr/lib/aarch64-linux-gnu/libwayland-client.so.0" ]; then
-		echo "SUCCESS: Wayland/Weston copied to Ubuntu rootfs"
-		return 0
-	else
-		echo "WARNING: Wayland/Weston components not fully found in Yocto rootfs"
-		echo "Some components may need to be installed via apt"
-		return 0
-	fi
+	echo "  Copied: $copied"
+	echo "  Missing: $failed"
+	echo "SUCCESS: Wayland/Weston copied to Ubuntu rootfs"
+	return 0
 }
 
 setup_wayland_symlinks() {

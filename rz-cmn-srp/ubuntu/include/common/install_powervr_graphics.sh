@@ -127,7 +127,35 @@ install_powervr_graphics() {
 	echo ""
 	echo "Copying PowerVR systemd services..."
 	copy_file "/etc/systemd/system/rc.pvr.service" "${ubuntu_rootfs}/etc/systemd/system"
-	copy_file "/etc/systemd/system/pvr-gfx-select.service" "${ubuntu_rootfs}/etc/systemd/system"
+
+	# pvr-gfx-select.service ships as a vendor unit under /usr/lib/systemd/system
+	# (not /etc/systemd/system) and is enabled via a multi-user.target.wants
+	# symlink in the Yocto source rootfs. Mirror that layout so systemd picks
+	# it up and Weston's Wants=/After=pvr-gfx-select.service resolves.
+	if [ -f "${yocto_rootfs}/usr/lib/systemd/system/pvr-gfx-select.service" ]; then
+		mkdir -p "${ubuntu_rootfs}/usr/lib/systemd/system"
+		mkdir -p "${ubuntu_rootfs}/etc/systemd/system/multi-user.target.wants"
+		cp -v "${yocto_rootfs}/usr/lib/systemd/system/pvr-gfx-select.service" "${ubuntu_rootfs}/usr/lib/systemd/system/"
+		ln -sfn "/usr/lib/systemd/system/pvr-gfx-select.service" "${ubuntu_rootfs}/etc/systemd/system/multi-user.target.wants/pvr-gfx-select.service"
+		copied=$((copied + 1))
+		echo "Enabled: pvr-gfx-select.service (multi-user.target.wants)"
+	else
+		echo "NOT FOUND: /usr/lib/systemd/system/pvr-gfx-select.service"
+	fi
+
+	# The apt weston package ships a weston.service with no PowerVR awareness.
+	# Replace it with the Yocto team's version, which already has
+	# Wants=/After=pvr-gfx-select.service and EnvironmentFile=-/run/pvr-gfx.env
+	# so Weston picks up LD_LIBRARY_PATH=/usr/lib/pvr automatically on V4H.
+	if [ -f "${yocto_rootfs}/usr/lib/systemd/system/weston.service" ]; then
+		mkdir -p "${ubuntu_rootfs}/usr/lib/systemd/system"
+		cp -v "${yocto_rootfs}/usr/lib/systemd/system/weston.service" "${ubuntu_rootfs}/usr/lib/systemd/system/weston.service"
+		copied=$((copied + 1))
+		echo "Replaced: weston.service (with pvr-gfx-select integration)"
+	else
+		echo "NOT FOUND: /usr/lib/systemd/system/weston.service (keeping apt default)"
+	fi
+
 	copy_required_file "/etc/powervr.ini" "${ubuntu_rootfs}/etc" || return 1
 	copy_required_file "/etc/udev/rules.d/72-pvr-seat.rules" "${ubuntu_rootfs}/etc/udev/rules.d" || return 1
 

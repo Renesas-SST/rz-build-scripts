@@ -37,6 +37,7 @@ install_qos_userspace() {
 	mkdir -p "${ubuntu_rootfs}${install_prefix}/include"
 
 	local copied=0
+	local failed=0
 
 	# Helper function to copy files with validation
 	copy_file() {
@@ -50,6 +51,8 @@ install_qos_userspace() {
 			echo "✓ Copied: ${src_file}"
 			return 0
 		else
+			echo "✗ NOT FOUND: ${src_file}"
+			failed=$((failed + 1))
 			return 1
 		fi
 	}
@@ -66,14 +69,16 @@ install_qos_userspace() {
 			"${ubuntu_rootfs}${install_prefix}/lib/aarch64-linux-gnu"
 		copy_file "${install_prefix}/lib/libqos.so" \
 			"${ubuntu_rootfs}${install_prefix}/lib/aarch64-linux-gnu"
-	else
-		# Try alternative location
+	elif [ -f "${yocto_rootfs}${install_prefix}/lib/aarch64-linux-gnu/libqos.so.1.0.0" ]; then
 		copy_file "${install_prefix}/lib/aarch64-linux-gnu/libqos.so.1.0.0" \
 			"${ubuntu_rootfs}${install_prefix}/lib/aarch64-linux-gnu"
 		copy_file "${install_prefix}/lib/aarch64-linux-gnu/libqos.so.1" \
 			"${ubuntu_rootfs}${install_prefix}/lib/aarch64-linux-gnu"
 		copy_file "${install_prefix}/lib/aarch64-linux-gnu/libqos.so" \
 			"${ubuntu_rootfs}${install_prefix}/lib/aarch64-linux-gnu"
+	else
+		echo "WARNING: QoS library is missing: libqos.so.1.0.0 (checked ${install_prefix}/lib and ${install_prefix}/lib/aarch64-linux-gnu)"
+		failed=$((failed + 1))
 	fi
 
 	# ===== Copy QoS headers =====
@@ -94,22 +99,14 @@ install_qos_userspace() {
 	# ===== Verify installation =====
 	echo ""
 	echo "QoS userspace copy summary:"
-	echo "  Copied: $copied components"
+	echo "  Copied: $copied"
+	echo "  Missing: $failed"
+	echo "SUCCESS: QoS userspace library copied to Ubuntu rootfs"
 
-	if [ -f "${ubuntu_rootfs}${install_prefix}/lib/aarch64-linux-gnu/libqos.so" ] || \
-	   [ -f "${ubuntu_rootfs}${install_prefix}/lib/aarch64-linux-gnu/libqos.so.1" ] || \
-	   [ -f "${ubuntu_rootfs}${install_prefix}/lib/aarch64-linux-gnu/libqos.so.1.0.0" ]; then
-		echo "SUCCESS: QoS userspace library copied to Ubuntu rootfs"
-
-		if [ -f "${ubuntu_rootfs}${install_prefix}/include/qos_public.h" ]; then
-			echo "SUCCESS: QoS headers also copied"
-		fi
-		return 0
-	else
-		echo "WARNING: QoS userspace library not found in Yocto rootfs"
-		echo "This may not be critical if QoS is optional for your platform"
-		return 0
+	if [ -f "${ubuntu_rootfs}${install_prefix}/include/qos_public.h" ]; then
+		echo "SUCCESS: QoS headers also copied"
 	fi
+	return 0
 }
 
 setup_qos_symlinks() {
