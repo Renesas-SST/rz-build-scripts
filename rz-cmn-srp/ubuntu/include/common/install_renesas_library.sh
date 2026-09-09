@@ -38,6 +38,16 @@ install_mmngr() {
 	sudo rsync -avl ${wic_rootfs}/usr/lib/libmmngr.so* ${rootfs}/usr/lib/aarch64-linux-gnu/
 }
 
+install_openamp_dependencies() {
+	sudo cp -a ${wic_rootfs}/usr/include/openamp ${rootfs}/usr/include/
+
+	sudo rsync -avl ${wic_rootfs}/usr/lib/libopen_amp.so* ${rootfs}/usr/lib/aarch64-linux-gnu/
+    sudo rsync -avl ${wic_rootfs}/usr/lib/libmetal* ${rootfs}/usr/lib/aarch64-linux-gnu/
+	sudo rsync -avl ${wic_rootfs}/usr/lib/libsysfs.so* ${rootfs}/usr/lib/aarch64-linux-gnu/
+
+	sudo cp ${wic_rootfs}/usr/bin/rpmsg_sample_client* ${rootfs}/usr/bin
+}
+
 install_renesas_library() {
 	if [ -n "$1" ]; then
 		if [ ! -e "$1" ]; then
@@ -96,4 +106,7 @@ EOF
 
 	# Porting drpai
 	install_drpai
+
+	# Porting openamp
+	install_openamp_dependencies
 }
