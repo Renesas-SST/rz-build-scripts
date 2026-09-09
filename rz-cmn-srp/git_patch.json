@@ -21,7 +21,7 @@
 	"meta-renesas": {
 		"url": "https://github.com/Renesas-SST/meta-renesas.git",
 		"branch": "",
-		"tag": "rz-cmn-srp-3.2",
+		"tag": "rz-cmn-srp-3.3-rc1",
 		"commit": "",
 		"patches": [],
 		"type": "git",
@@ -92,8 +92,8 @@
 	},
 	"meta-rz-multi-os": {
 		"url": "https://github.com/Renesas-SST/meta-rz-multi-os.git",
-		"branch": "styhead/rz-cmn",
-		"tag": "",
+		"branch": "",
+		"tag": "rz-cmn-srp-3.3-rc1",
 		"commit": "",
 		"patches": [],
 		"type": "git",
@@ -122,7 +122,7 @@
 	"rzv2h_opencv_accelerator": {
 		"url": "https://github.com/Renesas-SST/rzv2h_opencv_accelerator.git",
 		"branch": "",
-		"tag": "rz-cmn-srp-3.2",
+		"tag": "rz-cmn-srp-3.3-rc1",
 		"commit": "",
 		"patches": [],
 		"type": "git",
@@ -131,7 +131,7 @@
 	"rzv_drp-ai_driver": {
 		"url": "https://github.com/Renesas-SST/rzv_drp-ai_driver.git",
 		"branch": "",
-		"tag": "rz-cmn-srp-3.2",
+		"tag": "rz-cmn-srp-3.3-rc1",
 		"commit": "",
 		"patches": [],
 		"type": "git",
