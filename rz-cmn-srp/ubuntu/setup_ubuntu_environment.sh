@@ -23,8 +23,12 @@ source_env(){
 		. ${SCRIPT_DIR}/include/ubuntu_lxde/prepare_rootfs_qt.sh
 		. ${SCRIPT_DIR}/include/ubuntu_lxde/prepare_conf.sh
 		. ${SCRIPT_DIR}/include/ubuntu_lxde/create_swap.sh
+	elif [ "$UBUNTU_TYPE" = "GNOME" ]; then
+		. ${SCRIPT_DIR}/include/ubuntu_gnome/prepare_env.sh
+		. ${SCRIPT_DIR}/include/ubuntu_gnome/prepare_rootfs.sh
+		. ${SCRIPT_DIR}/include/ubuntu_gnome/prepare_conf.sh
 	else
-		echo "Invalid value passed for UBUNTU_TYPE . Set UBUNTU_TYPE to proper value (CORE / LXDE) in config.ini file."
+		echo "Invalid value passed for UBUNTU_TYPE . Set UBUNTU_TYPE to proper value (CORE / LXDE / GNOME) in config.ini file."
 		exit 1
 	fi
 }
@@ -47,6 +51,7 @@ source_env(){
 . ${SCRIPT_DIR}/include/common/install_libcamera.sh
 . ${SCRIPT_DIR}/include/common/install_libpisp.sh
 . ${SCRIPT_DIR}/include/common/install_qos_userspace.sh
+. ${SCRIPT_DIR}/include/common/install_gnome_pvr.sh
 . ${SCRIPT_DIR}/script/common/install_graphics_v4h.sh
 
 #---------------------------Log helper functions--------------------------------
@@ -219,6 +224,199 @@ main_ubuntu_core(){
 		log_error "install_qos_userspace failed. QoS userspace is required for V4H."
 		exit 1
 	fi
+
+	# Install opencva
+	chroot_run_1_script ${UBUNTU_COMMON_SCRIPT_PATH} "install-opencva.sh"
+	if [ $? -eq 1 ]; then
+		echo "setup dns and time failed."
+		exit 1
+	fi
+
+	# Setup dns and time
+	chroot_run_1_script ${UBUNTU_COMMON_SCRIPT_PATH} "setup_dns_and_time.sh"
+	if [ $? -eq 1 ]; then
+		echo "setup dns and time failed."
+		exit 1
+	fi
+
+	# Copy modprobe configs after all package installations are complete (no dpkg conflicts)
+	copy_modprobe_conf "artifacts_rootfs_source" "rootfs"
+	if [ $? -eq 1 ]; then
+		echo "Warning: copy_modprobe_conf failed."
+	fi
+
+	# Package the root filesystem into a compressed archive (tarball)
+	package_rootfs
+	if [ $? -eq 1 ]; then
+		echo "package_rootfs failed."
+		exit 1
+	fi
+
+	# Create a WIC image from the rootfs
+	create_wic
+	if [ $? -eq 1 ]; then
+		echo "create_wic failed."
+		exit 1
+	fi
+
+	# Move WIC output to output yocto folder
+	move_ubuntu_to_yocto_output
+	if [ $? -eq 1 ]; then
+		echo "move_ubuntu_to_yocto_output failed."
+		exit 1
+	fi
+}
+
+# Main function for ubuntu gnome
+main_ubuntu_gnome(){
+	# Prepare the environment by checking for required files and directories
+	prepare_env
+	if [ $? -eq 1 ]; then
+		echo "prepare_env failed."
+		exit 1
+	fi
+
+	# Prepare the Ubuntu base system (install necessary binaries and setup rootfs)
+	ubuntu_base_prepare
+	if [ $? -eq 1 ]; then
+		echo "ubuntu_base_prepare failed."
+		exit 1
+	fi
+
+	# Prepare rootfs by copying relevant binaries and folders to the Ubuntu OS
+	prepare_rootfs
+	if [ $? -eq 1 ]; then
+		echo "prepare_rootfs failed."
+		exit 1
+	fi
+
+	# Set configuration files
+	set_config
+	if [ $? -eq 1 ]; then
+		echo "set_config failed."
+		exit 1
+	fi
+
+	# Prepare env file for rootfs
+	prepare_env_rootfs "${SCRIPT_DIR}/config.ini"
+
+	# Run script to fix dpkg install lock if any
+	chroot_run_1_script ${UBUNTU_COMMON_SCRIPT_PATH} "dpkg-install-lock-fix.sh"
+
+	# Run the script 'apt_install_base.sh' inside chroot environment
+	chroot_run_1_script ${UBUNTU_GNOME_SCRIPT_PATH} "apt_install_base.sh"
+	if [ $? -eq 1 ]; then
+		echo "apt_install_base failed."
+		exit 1
+	fi
+
+	# Mount chroot to install common packages
+	chroot_run_1_script ${UBUNTU_COMMON_SCRIPT_PATH} "apt_common_install.sh"
+	if [ $? -eq 1 ]; then
+		echo "apt_common_install failed."
+		exit 1
+	fi
+
+	# Run the script 'set_root_password.sh' inside chroot environment
+	chroot_run_1_script ${UBUNTU_GNOME_SCRIPT_PATH} "set_root_password.sh"
+	if [ $? -eq 1 ]; then
+		echo "set_root_password failed."
+		exit 1
+	fi
+
+	# Run the script 'link_to_leagcy_iptables.sh' inside chroot environment
+	chroot_run_1_script ${UBUNTU_GNOME_SCRIPT_PATH} "link_to_leagcy_iptables.sh"
+	if [ $? -eq 1 ]; then
+		echo "link_to_leagcy_iptables failed."
+		exit 1
+	fi
+
+	# Set up configuration after install packages
+	set_config_after_install
+	if [ $? -eq 1 ]; then
+		echo "set_config_after_install failed."
+		exit 1
+	fi
+
+	# Allow user ssh without password
+	allow_empty_password_ssh
+	if [ $? -eq 1 ]; then
+		echo "allow_empty_password_ssh failed."
+		exit 1
+	fi
+
+	# Install gstreamer to ubuntu
+	install_gstreamer "rootfs" "artifacts_rootfs_source"
+	if [ $? -eq 1 ]; then
+		echo "install_gstreamer failed."
+		exit 1
+	fi
+
+	# Install drpai and mmngr libraries
+	install_renesas_library "rootfs" "artifacts_rootfs_source"
+	if [ $? -eq 1 ]; then
+		echo "install_renesas_library failed."
+		exit 1
+	fi
+
+	# Install IMDT utils to ubuntu rootfs
+	install_imdt_utils "rootfs" "artifacts_rootfs_source"
+	if [ $? -eq 1 ]; then
+		echo "install_imdt_utils failed."
+		exit 1
+	fi
+
+	# Install weston to ubuntu
+	install_weston "rootfs" "artifacts_rootfs_source"
+	if [ $? -eq 1 ]; then
+		echo "install_weston failed."
+		exit 1
+	fi
+
+	log_info "Installing V4H board support..."
+	install_v4h_pcie_firmware "artifacts_rootfs_source" "rootfs"
+	if [ $? -eq 1 ]; then
+		log_warning "install_v4h_pcie_firmware failed or skipped."
+	fi
+
+	install_powervr_graphics "artifacts_rootfs_source" "rootfs"
+	if [ $? -eq 1 ]; then
+		log_warning "install_powervr_graphics failed or skipped."
+	fi
+
+	setup_libdrm_pvr "artifacts_rootfs_source" "rootfs"
+	if [ $? -eq 1 ]; then
+		log_warning "setup_libdrm_pvr failed or skipped."
+	fi
+
+	setup_wayland_pvr "artifacts_rootfs_source" "rootfs"
+	if [ $? -eq 1 ]; then
+		log_warning "setup_wayland_pvr failed or skipped."
+	fi
+
+	install_libcamera "artifacts_rootfs_source" "rootfs"
+	if [ $? -eq 1 ]; then
+		log_warning "install_libcamera failed or skipped."
+	fi
+
+	install_libpisp "artifacts_rootfs_source" "rootfs"
+	if [ $? -eq 1 ]; then
+		log_warning "install_libpisp failed or skipped."
+	fi
+
+	install_qos_userspace "artifacts_rootfs_source" "rootfs"
+	if [ $? -eq 1 ]; then
+		log_warning "install_qos_userspace failed or skipped."
+	fi
+
+	log_info "Installing GNOME desktop with PowerVR acceleration..."
+	install_gnome_pvr "artifacts_rootfs_source" "rootfs" \
+		"${SCRIPT_DIR}/files_to_add/pvr-gnome" "${SCRIPT_DIR}/files_to_add/pvr"
+	if [ $? -eq 1 ]; then
+		log_warning "install_gnome_pvr failed or skipped."
+	fi
+
+	chroot_run_1_script ${UBUNTU_COMMON_SCRIPT_PATH} "setup_gnome_pvr_chroot.sh"
 
 	# Install opencva
 	chroot_run_1_script ${UBUNTU_COMMON_SCRIPT_PATH} "install-opencva.sh"
@@ -547,6 +745,15 @@ run_ubuntu_build() {
 			source_env
 			main_ubuntu_lxde
 			;;
+		ubuntu-gnome)
+			UBUNTU_TYPE="GNOME"
+			OUTPUT_ROOTFS="ubuntu-gnome-image"
+			OUTPUT_WIC="ubuntu-gnome-image.wic"
+			cleanup_ubuntu_artifacts
+
+			source_env
+			main_ubuntu_gnome
+			;;
 		all-ubuntu-images)
 			UBUNTU_TYPE="CORE"
 			OUTPUT_ROOTFS="ubuntu-core-image"
@@ -564,9 +771,18 @@ run_ubuntu_build() {
 			OUTPUT_WIC="ubuntu-lxde-image.wic"
 			source_env
 			main_ubuntu_lxde
+
+			# Clean old build artifacts before next build
+			cleanup_ubuntu_artifacts
+
+			UBUNTU_TYPE="GNOME"
+			OUTPUT_ROOTFS="ubuntu-gnome-image"
+			OUTPUT_WIC="ubuntu-gnome-image.wic"
+			source_env
+			main_ubuntu_gnome
 			;;
 		*)
-			echo "Unknown UBUNTU_TYPE: $ubuntu_type. Please set it to CORE, LXDE, or ALL."
+			echo "Unknown UBUNTU_TYPE: $ubuntu_type. Please set it to CORE, LXDE, GNOME, or ALL."
 			return 1
 			;;
 	esac

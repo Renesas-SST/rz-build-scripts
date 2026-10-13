@@ -193,7 +193,7 @@ set_config() {
 	fi
 
 	# Configure network manager
-	copy_file_conf "ubuntu_lxde" "NetworkManager.conf" "${ROOTFS}/etc/NetworkManager" "644"
+	copy_file_conf "common" "NetworkManager.conf" "${ROOTFS}/etc/NetworkManager" "644"
 	if [ $? -eq 1 ]; then
 		echo "Failed to configure network manager. Exiting."
 		return 1

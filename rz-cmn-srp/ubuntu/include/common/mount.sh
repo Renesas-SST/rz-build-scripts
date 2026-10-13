@@ -126,7 +126,7 @@ chroot_run_1_script() {
 
 	# Chroot and excute script
 	sudo chroot ./rootfs /bin/bash -c "
-		chmod 777 /tmp
+		chmod 1777 /tmp
 		chmod 777 '$script_path'
 		cd /
 		'$script_path'

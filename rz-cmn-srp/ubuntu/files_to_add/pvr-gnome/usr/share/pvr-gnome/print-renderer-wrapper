@@ -1,0 +1,23 @@
+#!/bin/sh
+# GPU-aware gnome-control-center print-renderer launcher.
+# On PowerVR (V4H): re-inject PVR vulkan/zink vars so System Details reports
+#   the real GPU instead of llvmpipe.
+# On Panfrost/Mesa (G2L): pass through — Mesa reports correctly.
+# Installed as /usr/libexec/gnome-control-center-print-renderer via dpkg-divert.
+
+has_pvr_gpu() {
+    for dev in /sys/class/drm/card*/device; do
+        [ -d "$dev" ] || continue
+        drv=$(readlink "$dev/driver" 2>/dev/null) || continue
+        case "${drv##*/}" in pvrsrvkm) return 0 ;; esac
+    done
+    return 1
+}
+
+if has_pvr_gpu; then
+    export VK_DRIVER_FILES=/etc/vulkan/icd.d/powervr_icd.json
+    export MESA_LOADER_DRIVER_OVERRIDE=zink
+    export LIBGL_KOPPER_DISABLE=1
+fi
+
+exec /usr/libexec/gnome-control-center-print-renderer.real "$@"
