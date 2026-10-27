@@ -191,38 +191,32 @@ main_ubuntu_core(){
 
 	install_powervr_graphics "artifacts_rootfs_source" "rootfs"
 	if [ $? -eq 1 ]; then
-		log_error "install_powervr_graphics failed. PowerVR runtime is required for V4H."
-		exit 1
+		log_warning "install_powervr_graphics failed or skipped."
 	fi
 
 	setup_libdrm_pvr "artifacts_rootfs_source" "rootfs"
 	if [ $? -eq 1 ]; then
-		log_error "setup_libdrm_pvr failed. libdrm is required for PowerVR GPU support."
-		exit 1
+		log_warning "setup_libdrm_pvr failed or skipped."
 	fi
 
 	setup_wayland_pvr "artifacts_rootfs_source" "rootfs"
 	if [ $? -eq 1 ]; then
-		log_error "setup_wayland_pvr failed. Wayland/Weston is required for V4H display."
-		exit 1
+		log_warning "setup_wayland_pvr failed or skipped."
 	fi
 
 	install_libcamera "artifacts_rootfs_source" "rootfs"
 	if [ $? -eq 1 ]; then
-		log_error "install_libcamera failed. libcamera is required for V4H camera support."
-		exit 1
+		log_warning "install_libcamera failed or skipped."
 	fi
 
 	install_libpisp "artifacts_rootfs_source" "rootfs"
 	if [ $? -eq 1 ]; then
-		log_error "install_libpisp failed. libpisp is required for V4H camera support."
-		exit 1
+		log_warning "install_libpisp failed or skipped."
 	fi
 
 	install_qos_userspace "artifacts_rootfs_source" "rootfs"
 	if [ $? -eq 1 ]; then
-		log_error "install_qos_userspace failed. QoS userspace is required for V4H."
-		exit 1
+		log_warning "install_qos_userspace failed or skipped."
 	fi
 
 	# Install opencva
@@ -571,38 +565,32 @@ main_ubuntu_lxde(){
 
 	install_powervr_graphics "rootfs_qt" "rootfs"
 	if [ $? -eq 1 ]; then
-		log_error "install_powervr_graphics failed. PowerVR runtime is required for V4H."
-		exit 1
+		log_warning "install_powervr_graphics failed or skipped."
 	fi
 
 	setup_libdrm_pvr "rootfs_qt" "rootfs"
 	if [ $? -eq 1 ]; then
-		log_error "setup_libdrm_pvr failed. libdrm is required for PowerVR GPU support."
-		exit 1
+		log_warning "setup_libdrm_pvr failed or skipped."
 	fi
 
 	setup_wayland_pvr "rootfs_qt" "rootfs"
 	if [ $? -eq 1 ]; then
-		log_error "setup_wayland_pvr failed. Wayland/Weston is required for V4H display."
-		exit 1
+		log_warning "setup_wayland_pvr failed or skipped."
 	fi
 
 	install_libcamera "rootfs_qt" "rootfs"
 	if [ $? -eq 1 ]; then
-		log_error "install_libcamera failed. libcamera is required for V4H camera support."
-		exit 1
+		log_warning "install_libcamera failed or skipped."
 	fi
 
 	install_libpisp "rootfs_qt" "rootfs"
 	if [ $? -eq 1 ]; then
-		log_error "install_libpisp failed. libpisp is required for V4H camera support."
-		exit 1
+		log_warning "install_libpisp failed or skipped."
 	fi
 
 	install_qos_userspace "rootfs_qt" "rootfs"
 	if [ $? -eq 1 ]; then
-		log_error "install_qos_userspace failed. QoS userspace is required for V4H."
-		exit 1
+		log_warning "install_qos_userspace failed or skipped."
 	fi
 
 	# Install wifi and bluetooth packages

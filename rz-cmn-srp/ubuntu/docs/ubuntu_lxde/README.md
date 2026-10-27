@@ -29,7 +29,7 @@ This release provides the following features:
 **Additional Features**
 - Custom Ubuntu LXDE build scripts for easy setup and deployment.
 - Verified Linux Package (VLP) Yocto build support
-- Linux BSP functionality (pinned to the 6.10 baseline per platform)
+- Linux BSP functionality (pinned to the 6.18 baseline per platform)
 - Codec libraries supported.
 - 40 IO expansion interfaces supported for hardware connectivity.
 - On-board Audio Codec with Stereo Jack Analog Audio IO.
