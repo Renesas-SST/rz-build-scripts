@@ -1,0 +1,21 @@
+#!/bin/sh
+# GPU-aware native EGL/GLES wrapper.
+# On PowerVR (V4H): put PVR EGL ahead of Mesa for native blob performance.
+# On Panfrost/Mesa (G2L): pass through — Mesa EGL works natively.
+# Installed over a binary with dpkg-divert; the real binary is "$0.real".
+
+has_pvr_gpu() {
+    for dev in /sys/class/drm/card*/device; do
+        [ -d "$dev" ] || continue
+        drv=$(readlink "$dev/driver" 2>/dev/null) || continue
+        case "${drv##*/}" in pvrsrvkm) return 0 ;; esac
+    done
+    return 1
+}
+
+if has_pvr_gpu; then
+    export LD_LIBRARY_PATH="/usr/lib/aarch64-linux-gnu/pvr${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+    unset MESA_LOADER_DRIVER_OVERRIDE LIBGL_KOPPER_DISABLE ZINK_DEBUG
+fi
+
+exec "$(readlink -f "$0").real" "$@"

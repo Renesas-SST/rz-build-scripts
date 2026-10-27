@@ -1,0 +1,14 @@
+#!/bin/sh
+# Run a program against the PowerVR GL stack.
+#
+# The PowerVR libEGL dlopen()s the *unversioned* "libGLESv2.so". ldconfig only
+# caches SONAMEs (libGLESv2.so.2), so the unversioned name is not in the cache
+# and the loader falls through to the default directories, where Mesa's
+# /usr/lib/aarch64-linux-gnu/libGLESv2.so wins. PowerVR EGL + Mesa GLES then
+# makes eglCreateContext fail with EGL_BAD_MATCH (0x3009).
+#
+# Putting the pvr directory on LD_LIBRARY_PATH makes dlopen find the matching
+# PowerVR libGLESv2.so first.
+#
+# usage: pvr-run ./my_gles_app [args...]
+exec env LD_LIBRARY_PATH="/usr/lib/aarch64-linux-gnu/pvr${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" "$@"

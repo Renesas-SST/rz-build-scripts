@@ -116,7 +116,7 @@ function set_network_config() {
 	mkdir -p "$(dirname "$NETWORK_CONF")" || { echo "Failed to create $(dirname "$NETWORK_CONF")"; return 1; }
 
 	# Check exist file network config
-	NETWORK_CONFIG_FILE="${SCRIPT_DIR}/config/ubuntu_core/network_interfaces.conf"
+	NETWORK_CONFIG_FILE="${SCRIPT_DIR}/config/common/network_interfaces.conf"
 	if [[ ! -f "$NETWORK_CONFIG_FILE" ]]; then
 		echo "Configuration file $NETWORK_CONFIG_FILE not found"
 		return 1
@@ -131,7 +131,7 @@ function set_network_config() {
 	mkdir -p "$(dirname "$NETWORK_MANAGER_CONF")" || { echo "Failed to create $(dirname "$NETWORK_MANAGER_CONF")"; return 1; }
 
 	# Check exist file network config
-	NETWORK_MANAGER_CONFIG_FILE="${SCRIPT_DIR}/config/ubuntu_core/NetworkManager.conf"
+	NETWORK_MANAGER_CONFIG_FILE="${SCRIPT_DIR}/config/common/NetworkManager.conf"
 	if [[ ! -f "$NETWORK_MANAGER_CONFIG_FILE" ]]; then
 		echo "Configuration file $NETWORK_MANAGER_CONFIG_FILE not found"
 		return 1

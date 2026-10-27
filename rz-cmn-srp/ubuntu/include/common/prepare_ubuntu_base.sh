@@ -74,13 +74,12 @@ download_ubuntu_base() {
 	# Default assign to ./ if DOWNLOAD_DIR is unset or empty
 	: "${DOWNLOAD_DIR:=./}"
 
-	# Check if there is an exisitng file of any minor version available. Skip download if the file is available.
-	EXISTING_FILE=$(find "$DOWNLOAD_DIR" -maxdepth 1 -type f -name "$UBUNTU_BASE_FILE_PATTERN" 2>/dev/null | head -n 1)
+	# Check if the exact latest version is already downloaded. Skip download only if it matches.
+	LOCAL_FILE="${DOWNLOAD_DIR}/${UBUNTU_LATEST_IMAGE}"
 
-	if [ -n "$EXISTING_FILE" ]; then
-		echo "Found pre-downloaded image in $DOWNLOAD_DIR:"
-		echo "$EXISTING_FILE"
-		LOCAL_FILE="$EXISTING_FILE"
+	if [ -f "$LOCAL_FILE" ]; then
+		echo "Found latest image already downloaded:"
+		echo "$LOCAL_FILE"
 	else
 		LOCAL_FILE="${DOWNLOAD_DIR}/${UBUNTU_LATEST_IMAGE}"
 		echo "Downloading image: $DOWNLOAD_URL"

@@ -1,0 +1,26 @@
+#!/bin/sh
+# Systemd user-environment-generator: emit PVR session env vars ONLY when
+# PowerVR GPU hardware is present. On Panfrost/Mesa boards this outputs
+# nothing, so the session gets a clean Mesa environment.
+#
+# Replaces the static environment.d/90-powervr-gtk.conf which would break
+# non-PVR boards (MESA_LOADER_DRIVER_OVERRIDE=zink with no Vulkan ICD).
+
+for dev in /sys/class/drm/card*/device; do
+    [ -d "$dev" ] || continue
+    drv=$(readlink "$dev/driver" 2>/dev/null) || continue
+    case "${drv##*/}" in
+        pvrsrvkm)
+            cat <<'EOF'
+VK_DRIVER_FILES=/etc/vulkan/icd.d/powervr_icd.json
+GSK_RENDERER=cairo
+MESA_LOADER_DRIVER_OVERRIDE=zink
+LIBGL_KOPPER_DISABLE=1
+WEBKIT_DISABLE_DMABUF_RENDERER=1
+ELECTRON_OZONE_PLATFORM_HINT=x11
+ZINK_DEBUG=noreorder
+EOF
+            exit 0
+            ;;
+    esac
+done
