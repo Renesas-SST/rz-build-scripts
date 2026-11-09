@@ -224,7 +224,7 @@ install_libcamera_userspace() {
 verify_libcamera_userspace() {
 	local ubuntu_rootfs="${1:-.}"
 	local missing=0
-	local file lib
+	local file lib dir found
 
 	if ! command -v readelf > /dev/null 2>&1; then
 		echo "WARNING: readelf not found, skipping the camera library check"
@@ -244,10 +244,17 @@ verify_libcamera_userspace() {
 			continue
 		fi
 		for lib in $(readelf -d "${ubuntu_rootfs}/${file}" 2>/dev/null | sed -n 's/.*Shared library: \[\(.*\)\]/\1/p'); do
-			if ! ls "${ubuntu_rootfs}"/usr/lib/aarch64-linux-gnu/"$lib" \
-				"${ubuntu_rootfs}"/lib/aarch64-linux-gnu/"$lib" \
-				"${ubuntu_rootfs}"/usr/lib/"$lib" \
-				"${ubuntu_rootfs}"/lib/"$lib" > /dev/null 2>&1; then
+			# A library is found when it exists in any of the loader directories
+			# (ls with several paths fails when only one of them is absent, so
+			# test them one by one)
+			found=0
+			for dir in usr/lib/aarch64-linux-gnu lib/aarch64-linux-gnu usr/lib lib; do
+				if [ -e "${ubuntu_rootfs}/${dir}/${lib}" ]; then
+					found=1
+					break
+				fi
+			done
+			if [ "$found" -eq 0 ]; then
 				echo "MISSING library for /${file}: ${lib}"
 				missing=$((missing + 1))
 			fi
