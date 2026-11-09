@@ -583,6 +583,13 @@ main_ubuntu_lxde(){
 		log_warning "install_libcamera failed or skipped."
 	fi
 
+	# libcamera GStreamer plugin and cam tool (LXDE only; the GStreamer core
+	# and the other plugins come from the Ubuntu packages)
+	install_libcamera_userspace "rootfs_qt" "rootfs"
+	if [ $? -eq 1 ]; then
+		log_warning "install_libcamera_userspace failed or skipped."
+	fi
+
 	install_libpisp "rootfs_qt" "rootfs"
 	if [ $? -eq 1 ]; then
 		log_warning "install_libpisp failed or skipped."
@@ -625,6 +632,12 @@ main_ubuntu_lxde(){
 	if [ $? -eq 1 ]; then
 		echo "apt_audio_video failed."
 		exit 1
+	fi
+
+	# Check that cam and the libcamera GStreamer plugin have all their libraries
+	verify_libcamera_userspace "rootfs"
+	if [ $? -eq 1 ]; then
+		log_warning "verify_libcamera_userspace reported missing items."
 	fi
 
 	# Install opencva
