@@ -267,6 +267,13 @@ set_config_after_install() {
 		return 1
 	fi
 
+	# VLC launcher for the V4H camera (libcamerasrc piped to VLC)
+	copy_file_conf "ubuntu_lxde" "v4h-camera-vlc.sh" "${ROOTFS}/usr/local/bin/" "755"
+	if [ $? -eq 1 ]; then
+		echo "Failed to copy v4h-camera-vlc.sh to /usr/local/bin. Exiting."
+		return 1
+	fi
+
 	# Configure hostapd.service
 	copy_file_conf "common" "hostapd.service" "${ROOTFS}/etc/systemd/system/" "755"
 	if [ $? -eq 1 ]; then
