@@ -375,6 +375,7 @@ renesas@builder-pc:~/renesas/rz-cmn-srp/yocto_rzcmn_board/build/tmp/deploy/image
 │   │           │   │   ├── create_wic.sh
 │   │           │   │   ├── install_gstreamer.sh
 │   │           │   │   ├── install_imdt_utils.sh
+│   │           │   │   ├── install_sparrow_hawk_utils.sh
 │   │           │   │   ├── install_weston.sh
 │   │           │   │   ├── mount.sh
 │   │           │   │   ├── prepare_env_rootfs.sh

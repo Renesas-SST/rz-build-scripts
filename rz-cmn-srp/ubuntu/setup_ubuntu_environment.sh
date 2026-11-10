@@ -38,6 +38,7 @@ source_env(){
 . ${SCRIPT_DIR}/include/common/install_renesas_library.sh
 . ${SCRIPT_DIR}/include/common/install_weston.sh
 . ${SCRIPT_DIR}/include/common/install_imdt_utils.sh
+. ${SCRIPT_DIR}/include/common/install_sparrow_hawk_utils.sh
 . ${SCRIPT_DIR}/include/common/yocto_working.sh
 . ${SCRIPT_DIR}/include/common/prepare_ubuntu_base.sh
 . ${SCRIPT_DIR}/include/common/allow_empty_password.sh
@@ -172,6 +173,13 @@ main_ubuntu_core(){
 	install_imdt_utils "rootfs" "artifacts_rootfs_source"
 	if [ $? -eq 1 ]; then
 		echo "install_imdt_utils failed."
+		exit 1
+	fi
+
+	# Install the Sparrow-Hawk camera scripts to ubuntu rootfs
+	install_sparrow_hawk_utils "rootfs" "artifacts_rootfs_source"
+	if [ $? -eq 1 ]; then
+		echo "install_sparrow_hawk_utils failed."
 		exit 1
 	fi
 
@@ -357,6 +365,13 @@ main_ubuntu_gnome(){
 	install_imdt_utils "rootfs" "artifacts_rootfs_source"
 	if [ $? -eq 1 ]; then
 		echo "install_imdt_utils failed."
+		exit 1
+	fi
+
+	# Install the Sparrow-Hawk camera scripts to ubuntu rootfs
+	install_sparrow_hawk_utils "rootfs" "artifacts_rootfs_source"
+	if [ $? -eq 1 ]; then
+		echo "install_sparrow_hawk_utils failed."
 		exit 1
 	fi
 
@@ -554,6 +569,13 @@ main_ubuntu_lxde(){
 	if [ $? -eq 1 ]; then
 			echo "install_imdt_utils failed."
 			exit 1
+	fi
+
+	# Install the Sparrow-Hawk camera scripts to ubuntu rootfs
+	install_sparrow_hawk_utils "rootfs" "rootfs_qt"
+	if [ $? -eq 1 ]; then
+		echo "install_sparrow_hawk_utils failed."
+		exit 1
 	fi
 
 	log_info "Installing V4H board support for LXDE..."
