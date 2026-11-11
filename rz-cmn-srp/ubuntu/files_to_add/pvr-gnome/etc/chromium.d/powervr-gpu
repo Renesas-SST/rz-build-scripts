@@ -1,0 +1,17 @@
+# GPU-aware chromium flags.
+# On PowerVR (V4H): use ANGLE-on-Vulkan for WebGL via the PVR ICD.
+# On Panfrost/Mesa (G2L): no extra flags needed — Mesa works natively.
+
+has_pvr_gpu() {
+    for dev in /sys/class/drm/card*/device; do
+        [ -d "$dev" ] || continue
+        drv=$(readlink "$dev/driver" 2>/dev/null) || continue
+        case "${drv##*/}" in pvrsrvkm) return 0 ;; esac
+    done
+    return 1
+}
+
+if has_pvr_gpu; then
+    export VK_DRIVER_FILES=/etc/vulkan/icd.d/powervr_icd.json
+    CHROMIUM_FLAGS="$CHROMIUM_FLAGS --use-angle=vulkan --ignore-gpu-blocklist --ozone-platform-hint=auto"
+fi

@@ -1,6 +1,6 @@
 # RZ Common System Ubuntu build package
 
-This directory (ubuntu/) provides an organized framework to create Ubuntu-based images (e.g., Ubuntu Core, Ubuntu LXDE) for Renesas RZ boards. The main script acts as a controller that **includes and invokes modular scripts** to perform image creation tasks.
+This directory (ubuntu/) provides an organized framework to create Ubuntu-based images (e.g., Ubuntu Core, Ubuntu LXDE, Ubuntu GNOME) for Renesas RZ boards. The main script acts as a controller that **includes and invokes modular scripts** to perform image creation tasks.
 
 ## Top-level directory layout
 
@@ -9,20 +9,27 @@ ubuntu/
 ├── config
 │   ├── common
 │   ├── ubuntu_core
-│   └── ubuntu_lxde
+│   ├── ubuntu_lxde
+│   └── ubuntu_gnome
 ├── config.ini
+├── files_to_add
+│   ├── pvr
+│   └── pvr-gnome
 ├── docs
 │   ├── ubuntu_core
-│   └── ubuntu_lxde
+│   ├── ubuntu_lxde
+│   └── ubuntu_gnome
 ├── include
 │   ├── common
 │   ├── ubuntu_core
-│   └── ubuntu_lxde
+│   ├── ubuntu_lxde
+│   └── ubuntu_gnome
 ├── README.md
 ├── script
 │   ├── common
 │   ├── ubuntu_core
-│   └── ubuntu_lxde
+│   ├── ubuntu_lxde
+│   └── ubuntu_gnome
 └── setup_ubuntu_environment.sh
 ``` 
 
@@ -31,6 +38,7 @@ ubuntu/
 | File                 | Description                                                                                                                                                     |
 |----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | config/       | The folder that holds configuration files for different Ubuntu variants.                                                                                    |
+| files_to_add/ | Contains static files staged directly into the rootfs during image assembly (e.g., PowerVR GPU runtime files, GNOME wrappers).                              |
 | include/       | Contains scripts related to Ubuntu (e.g., for creating WIC files, packaging the root filesystem, preparing the environment, etc.) |
 | docs/             | Contains documentation detailing supported features and usage instructions for each Ubuntu image variant.                                                      |
 | script/       | The folder that contains all scripts related to Ubuntu image creation.                                                                                          |
@@ -51,11 +59,12 @@ To build Ubuntu images with full RZ SoC IP support, you must first manually down
 For more details on each Ubuntu image, please refer to its README:
 - Ubuntu core: docs/ubuntu_core/README.md
 - Ubuntu LXDE: docs/ubuntu_lxde/README.md
+- Ubuntu GNOME: docs/ubuntu_gnome/README.md
 
 ## User configuration (config.ini)
 ### User Account Settings
 
-Both Ubuntu Core and Ubuntu LXDE images support setting up a non-root user account via the `config.ini` file. This is necessary because desktop environments like LXDE cannot run as the root user.
+Both Ubuntu Core, Ubuntu LXDE, and Ubuntu GNOME images support setting up a non-root user account via the `config.ini` file. This is necessary because desktop environments like LXDE and GNOME cannot run as the root user.
 
 To configure the default user credentials, edit the following entries in `config.ini`:
 

@@ -919,9 +919,8 @@ build_sdk() {
 			# If IMAGE is set to 'all-supported-images', build SDK for all images
 			echo "Building SDK for all supported images..."
 
-			# Iterate over all values in the JSON for given key 'yocto'
-			# Extract and iterate through the JSON array for the given key
-			${JQ} -r --arg key "yocto" '.images | .[$key][]' "${CONFIG_JSON}" | while IFS= read -r img; do
+			mapfile -t yocto_images < <(${JQ} -r --arg key "yocto" '.images | .[$key][]' "${CONFIG_JSON}")
+			for img in "${yocto_images[@]}"; do
 				log_info "Now building SDK for '${img}'"
 				MACHINE=${MACHINE} bitbake ${img} -c populate_sdk_ext
 			done
@@ -946,9 +945,8 @@ build_sdk() {
 			# If IMAGE is set to 'all-yocto-images', build SDK for all images
 			log_info "Building SDK for all supported 'yocto' images..."
 
-			# Iterate over all values in the JSON for given key 'yocto'
-			# Extract and iterate through the JSON array for the given key
-			${JQ} -r --arg key "yocto" '.images | .[$key][]' "${CONFIG_JSON}" | while IFS= read -r img; do
+			mapfile -t yocto_images < <(${JQ} -r --arg key "yocto" '.images | .[$key][]' "${CONFIG_JSON}")
+			for img in "${yocto_images[@]}"; do
 				log_info "Now building SDK for '${img}'"
 				MACHINE=${MACHINE} bitbake "${img}" -c populate_sdk_ext
 			done
@@ -963,7 +961,8 @@ build_sdk() {
 
 			# Logic to check for individual yocto or ubuntu image and build only that image
 			# Method: Find keys where the target value exists in the array and then use it to setup bitbake command
-			${JQ} -r --arg value "${IMAGE}" '.images | to_entries | map(select(.value | index($value) != null)) | .[].key' "${CONFIG_JSON}" | while IFS= read -r entry; do
+			mapfile -t image_types < <(${JQ} -r --arg value "${IMAGE}" '.images | to_entries | map(select(.value | index($value) != null)) | .[].key' "${CONFIG_JSON}")
+			for entry in "${image_types[@]}"; do
 				if [ "${entry}" = "yocto" ]; then
 					log_info "Building SDK for ${IMAGE}"
 					MACHINE=${MACHINE} bitbake "${IMAGE}" -c populate_sdk_ext
@@ -1004,18 +1003,16 @@ build() {
 			# If IMAGE is set to 'all-yocto-images', build all images
 			log_info "Building all supported 'yocto' images..."
 
-			# Iterate over all values in the JSON for given key 'yocto'
-			# Extract and iterate through the JSON array for the given key
-			${JQ} -r --arg key "yocto" '.images | .[$key][]' "${CONFIG_JSON}" | while IFS= read -r img; do
+			mapfile -t yocto_images < <(${JQ} -r --arg key "yocto" '.images | .[$key][]' "${CONFIG_JSON}")
+			for img in "${yocto_images[@]}"; do
 				log_info "Now building '${img}'"
 				MACHINE=${MACHINE} bitbake ${img}
 			done
 
 			log_info "Building all supported 'ubuntu' images..."
 
-			# Iterate over all values in the JSON for given key 'yocto'
-			# Extract and iterate through the JSON array for the given key
-			${JQ} -r --arg key "ubuntu" '.images | .[$key][]' "${CONFIG_JSON}" | while IFS= read -r img; do
+			mapfile -t ubuntu_images < <(${JQ} -r --arg key "ubuntu" '.images | .[$key][]' "${CONFIG_JSON}")
+			for img in "${ubuntu_images[@]}"; do
 				log_info "Building ${img} now..."
 
 				# Build prerequisite artifacts for the Ubuntu image
@@ -1042,9 +1039,8 @@ build() {
 			# If IMAGE is set to 'all-ubuntu-images', build all images
 			log_info "Building all supported 'ubuntu' images..."
 
-			# Iterate over all values in the JSON for given key 'ubuntu'
-			# Extract and iterate through the JSON array for the given key
-			${JQ} -r --arg key "ubuntu" '.images | .[$key][]' "${CONFIG_JSON}" | while IFS= read -r img; do
+			mapfile -t ubuntu_images < <(${JQ} -r --arg key "ubuntu" '.images | .[$key][]' "${CONFIG_JSON}")
+			for img in "${ubuntu_images[@]}"; do
 				log_info "Building ${img} now..."
 
 				# Build prerequisite artifacts for the Ubuntu image
@@ -1070,9 +1066,8 @@ build() {
 			# If IMAGE is set to 'all-yocto-images', build all images
 			log_info "Building all supported 'yocto' images..."
 
-			# Iterate over all values in the JSON for given key 'yocto'
-			# Extract and iterate through the JSON array for the given key
-			${JQ} -r --arg key "yocto" '.images | .[$key][]' "${CONFIG_JSON}" | while IFS= read -r img; do
+			mapfile -t yocto_images < <(${JQ} -r --arg key "yocto" '.images | .[$key][]' "${CONFIG_JSON}")
+			for img in "${yocto_images[@]}"; do
 				log_info "Now building '${img}'"
 				MACHINE=${MACHINE} bitbake "${img}"
 			done
@@ -1087,7 +1082,8 @@ build() {
 
 			# Logic to check for individual yocto or ubuntu image and build only that image
 			# Method: Find keys where the target value exists in the array and then use it to setup bitbake command
-			${JQ} -r --arg value "${IMAGE}" '.images | to_entries | map(select(.value | index($value) != null)) | .[].key' "${CONFIG_JSON}" | while IFS= read -r entry; do
+			mapfile -t image_types < <(${JQ} -r --arg value "${IMAGE}" '.images | to_entries | map(select(.value | index($value) != null)) | .[].key' "${CONFIG_JSON}")
+			for entry in "${image_types[@]}"; do
 				if [ "${entry}" = "yocto" ]; then
 					log_info "Building ${IMAGE} for ${entry}"
 					MACHINE=${MACHINE} bitbake "${IMAGE}"

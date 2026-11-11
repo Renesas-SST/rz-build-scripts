@@ -1,0 +1,24 @@
+#!/bin/sh
+# GPU-aware Xwayland launcher.
+# On PowerVR (V4H): strip PVR from LD paths — PVR blob EGL crashes Xwayland;
+#   Mesa gives Xwayland stable GL. Apply zink workarounds.
+# On Panfrost/Mesa (G2L): pass through unchanged.
+# Installed as /usr/bin/Xwayland via dpkg-divert.
+
+has_pvr_gpu() {
+    for dev in /sys/class/drm/card*/device; do
+        [ -d "$dev" ] || continue
+        drv=$(readlink "$dev/driver" 2>/dev/null) || continue
+        case "${drv##*/}" in pvrsrvkm) return 0 ;; esac
+    done
+    return 1
+}
+
+if has_pvr_gpu; then
+    unset LD_PRELOAD
+    LD_LIBRARY_PATH=$(printf %s "$LD_LIBRARY_PATH" | tr : '\n' | grep -v 'aarch64-linux-gnu/pvr' | paste -sd: -)
+    if [ -n "$LD_LIBRARY_PATH" ]; then export LD_LIBRARY_PATH; else unset LD_LIBRARY_PATH; fi
+    export ZINK_DEBUG=noreorder,flushsync
+fi
+
+exec /usr/bin/Xwayland.real "$@"

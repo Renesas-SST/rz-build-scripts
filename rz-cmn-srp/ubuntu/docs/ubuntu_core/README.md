@@ -12,7 +12,7 @@ This release targets the Renesas RZ/G2L, RZ/V2L, and RZ/V2H-EVK development prod
 **Key Features (Common to most boards unless specified):**
 
 * Verified Linux Package (VLP) Yocto build support
-* Linux BSP functionality (pinned to the 6.10 baseline per platform)
+* Linux BSP functionality (pinned to the 6.18 baseline per platform)
 * Codec libraries supported.
 * On-board Audio Codec with Stereo Jack Analog Audio IO.
 * Generic USB Bluetooth framework support.

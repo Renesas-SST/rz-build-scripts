@@ -7,7 +7,7 @@
 export LC_ALL=C
 
 # Chmod /tmp
-chmod 777 /tmp
+chmod 1777 /tmp
 
 # Update the package list
 apt update

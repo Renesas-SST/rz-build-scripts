@@ -29,7 +29,7 @@ This release provides the following features:
 **Additional Features**
 - Custom Ubuntu LXDE build scripts for easy setup and deployment.
 - Verified Linux Package (VLP) Yocto build support
-- Linux BSP functionality (pinned to the 6.10 baseline per platform)
+- Linux BSP functionality (pinned to the 6.18 baseline per platform)
 - Codec libraries supported.
 - 40 IO expansion interfaces supported for hardware connectivity.
 - On-board Audio Codec with Stereo Jack Analog Audio IO.
@@ -250,6 +250,58 @@ You can use VLC Media Player to capture and view live video from a CSI camera. H
 
 Now you should be able to see live video from your CSI camera in VLC.
 
+> **Sparrow-Hawk (R-Car V4H):** the steps above do not apply to this board. Use Camshark as described in the next section.
+
+#### Sparrow-Hawk (R-Car V4H): Raspberry Pi Camera V2 / V3 with Camshark
+On Sparrow-Hawk the camera is not a plain V4L2 capture device: the picture goes through `sensor -> CSI-2 -> ISP -> VIN`, the links are fixed, and libcamera configures and debayers the pipeline in user space. VLC **Open Capture Device** cannot show it. Use **Camshark**, which runs on a Linux host and controls the camera on the board over SSH.
+
+| Camera | Sensor | Connector |
+| ------ | ------ | --------- |
+| Pi Camera V2 | IMX219 | J1 |
+| Pi Camera V3 | IMX708 | J2 |
+
+1. **Enable the camera overlay.** Boot through `run mmc_do_boot` so that the DTB and the overlays are loaded from the SD card. Set the line of your connector and sensor to `1` (or `yes`) in `uEnv.txt` on the boot partition and reboot. Nothing is enabled by default.
+
+   ```ini
+   enable_overlay_csi_j1_imx219=1
+   #enable_overlay_csi_j2_imx219=1
+   #enable_overlay_csi_j1_imx708=1
+   #enable_overlay_csi_j2_imx708=1
+   ```
+
+   - Enable only the overlay of a connector that has a camera fitted. With the J1 and J2 IMX708 overlays enabled and J2 empty, the IMX708 on J2 failed to probe (`failed to read chip id ... error -5`), the `rcar-vin` driver did not register and there was no `/dev/media*` device.
+   - The flag `enable_overlay_csi_j1_imx708` needs a U-Boot that has the change "rz-cmn: recognize the Sparrow-Hawk J1 IMX708 overlay flag". Without it, add the file at the U-Boot prompt (do not use `env default -a`):
+
+     ```
+     => run envboot
+     => setenv fdt_extra_overlays "sparrow-hawk-1.0-cru-csi-j1-imx708.dtbo"
+     => run prodsdboot
+     ```
+
+   - Do not apply the same overlay twice. If the U-Boot log already shows `Applying DT overlay: sparrow-hawk-1.0-cru-csi-j2-imx708.dtbo`, do not add that file to `fdt_extra_overlays`.
+
+2. **Check the camera on the board.** `cam -l` must list the camera before you start Camshark:
+
+   ```bash
+   cam -l
+   ls -l /dev/media0 /dev/video*
+   media-ctl -d /dev/media0 -p
+   ```
+
+   The camera name is the path in parentheses printed by `cam -l`; the numeric order can change. Do not run `media-ctl -r` on this board.
+
+3. **Start Camshark on the host:**
+
+   ```bash
+   DISPLAY=:0 XAUTHORITY=<HOME>/.Xauthority camshark -v --no-tunnel -t 20 root@<BOARD_IP>
+   ```
+
+   In the Camshark window: select IMX219 or IMX708 from the camera list, select a viewfinder/profile configuration, start the stream, and stop it before switching to the other camera.
+
+**Notes**
+- The Camshark server that Camshark uploads to the board needs the libcamera **Python binding**. If it stops with `ModuleNotFoundError: No module named 'libcamera'`, the board does not have it: check with `python3 -c "import libcamera"`.
+- Only one program can use a camera at a time. Stop the Camshark stream and close Camshark before you run another libcamera application. A stale server can be stopped from the board console with `pkill -f camshark_server.pyz`.
+
 ### Default Web Browser
 
 Ubuntu LXDE comes with a default web browser pre-installed. This browser provides essential features for browsing the internet and is lightweight, making it suitable for low-resource systems.
@@ -332,3 +384,4 @@ Ubuntu LXDE provides an easy way to connect to Bluetooth devices. Follow these s
 ### Known issues:
 
 - The taskbar may not display the correct screen width on some systems. Workaround: Open terminal on LXDE, and run the command `lxpanelctl menu`, then change the Width to 0%.
+- Sparrow-Hawk (R-Car V4H): the camera cannot be selected in VLC with **Open Capture Device**. The picture goes through the ISP and is configured by libcamera. The only `/dev/video*` node that carries it (VIN, raw Bayer `RG10`) cannot be shown by VLC, reading it directly fails with `VIDIOC_STREAMON returned -1 (Broken pipe)`, and the other video nodes deliver nothing.

@@ -1,0 +1,5 @@
+# dma-buf heaps (/dev/dma_heap/*): allocation source for the Vulkan WSI
+# layer's swapchain buffers (see /usr/share/vulkan/implicit_layer.d/).
+# Default is root:root 0600; grant the render group rw like the GPU render
+# node so ordinary GUI sessions can allocate.
+SUBSYSTEM=="dma_heap", GROUP="render", MODE="0660"

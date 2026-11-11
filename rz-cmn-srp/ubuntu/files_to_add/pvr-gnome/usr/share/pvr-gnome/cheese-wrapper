@@ -1,0 +1,21 @@
+#!/bin/sh
+# GPU-aware cheese launcher.
+# On PowerVR (V4H): force software rendering — clutter-gst viewfinder presents
+#   black on Mesa zink over the PVR Vulkan ICD.
+# On Panfrost/Mesa (G2L): pass through — Mesa renders correctly.
+# Installed over /usr/bin/cheese via dpkg-divert; the real binary is "$0.real".
+
+has_pvr_gpu() {
+    for dev in /sys/class/drm/card*/device; do
+        [ -d "$dev" ] || continue
+        drv=$(readlink "$dev/driver" 2>/dev/null) || continue
+        case "${drv##*/}" in pvrsrvkm) return 0 ;; esac
+    done
+    return 1
+}
+
+if has_pvr_gpu; then
+    export LIBGL_ALWAYS_SOFTWARE=1
+fi
+
+exec "$(readlink -f "$0").real" "$@"

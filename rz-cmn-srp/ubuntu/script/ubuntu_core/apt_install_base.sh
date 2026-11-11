@@ -6,7 +6,7 @@
 # ------------------------------------------------------------------------------------------#
 
 export LC_ALL=C
-chmod 777 /tmp
+chmod 1777 /tmp
 apt update
 apt clean
 apt autoclean

@@ -15,7 +15,8 @@
 		],
 		"ubuntu": [
 			"ubuntu-core",
-			"ubuntu-lxde"
+			"ubuntu-lxde",
+			"ubuntu-gnome"
 		],
 		"static": [
 			[

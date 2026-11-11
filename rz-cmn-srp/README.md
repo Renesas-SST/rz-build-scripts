@@ -28,19 +28,26 @@ $ tree -L 3
     ├── config
     │   ├── common
     │   ├── ubuntu_core
+    │   ├── ubuntu_gnome
     │   └── ubuntu_lxde
     ├── config.ini
+    ├── files_to_add
+    │   ├── pvr
+    │   └── pvr-gnome
     ├── docs
     │   ├── ubuntu_core
+    │   ├── ubuntu_gnome
     │   └── ubuntu_lxde
     ├── include
     │   ├── common
     │   ├── ubuntu_core
+    │   ├── ubuntu_gnome
     │   └── ubuntu_lxde
     ├── README.md
     ├── script
     │   ├── common
     │   ├── ubuntu_core
+    │   ├── ubuntu_gnome
     │   └── ubuntu_lxde
     └── setup_ubuntu_environment.sh
 ``` 
@@ -57,7 +64,7 @@ $ tree -L 3
 | files_to_add/              | A folder containing additional files that need to be added to the meta layer. These files are specified in the `add_files` field of `git_patch.json`, which defines their source locations and target destinations. For example: <br><br>**meta-rz-features/** <br>• 0001-rzg2l-sbc-Bring-compat_alloc_user_space-back.patch<br>• 0004-rzg2l-sbc-Get-interrupt-number.patch|
 | rz_builder.sh      | The main build script that performs setup, configuration, and build operations for both Ubuntu and Yocto build processes.                                       |
 | site.conf [optional]  | An optional overrride site.conf. If present, this will be used as the override file. If not, the template conf site.conf will be used from meta-renesas layer.  |
-| ubuntu/               | Directory containing files and scripts related to building Ubuntu-based images for the platform, supporting variants such as ubuntu_core and ubuntu_lxde.  |
+| ubuntu/               | Directory containing files and scripts related to building Ubuntu-based images for the platform, supporting variants such as ubuntu_core, ubuntu_lxde, and ubuntu_gnome.  |
 | README.md             | This document. This document provides an overview of the rz-sbc build package. It serves as a guide for users to understand how to set up and execute the Yocto build process, as well as how to manage and utilize the build artifacts and patches.|
 
 ## Image Categories
@@ -82,6 +89,7 @@ The user can use this config in three ways:
 - **ubuntu**: Lists Ubuntu-based images available for building, such as:
 	- `ubuntu-core`
 	- `ubuntu-lxde`
+	- `ubuntu-gnome`
 
 - **static**: Defines groups of images to build multiple targets in one command, including:
 	- `all-yocto-images`
@@ -487,6 +495,7 @@ renesas@builder-pc:~/renesas/rz-cmn-srp/yocto_rzcmn_board/build/tmp/deploy/image
 	│   ├── renesas-quickboot-cli.wic
 	│   ├── renesas-quickboot-wayland.wic
 	│   ├── ubuntu-core-image.wic.gz
+	│   ├── ubuntu-gnome-image.wic.gz
 	│   ├── ubuntu-lxde-image.wic.gz
 	│   ├── rootfs
 	│   │   ├── core-image-bsp.tar.bz2
@@ -498,6 +507,7 @@ renesas@builder-pc:~/renesas/rz-cmn-srp/yocto_rzcmn_board/build/tmp/deploy/image
 	│   │   ├── renesas-quickboot-cli.tar.bz2
 	│   │   ├── renesas-quickboot-wayland.tar.bz2
 	│   │   ├── ubuntu-lxde-image.tar.bz2
+	│   │   ├── ubuntu-gnome-image.tar.bz2
 	│   │   └── ubuntu-core-image.tar.bz2
 	│   ├── <board>-<version>-platform-settings.bin
 	│   ├── <board>-<version>-platform-settings.srec
